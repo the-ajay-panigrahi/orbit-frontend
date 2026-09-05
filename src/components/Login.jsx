@@ -1,13 +1,50 @@
-import { useState } from "react";
-import { Link } from "react-router-dom";
-import { Mail, Lock, LogIn, ArrowRight } from "lucide-react";
+import { useState, useEffect } from "react";
+import { Link, useNavigate } from "react-router-dom";
+import { useDispatch, useSelector } from "react-redux";
+import axios from "axios";
+import { Mail, Lock, LogIn, ArrowRight, AlertCircle } from "lucide-react";
+import { addUser } from "../utils/userSlice";
+import { BASE_URL } from "../utils/constants";
 
 export default function Login() {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
+  const [error, setError] = useState("");
+  const [loading, setLoading] = useState(false);
 
-  const handleSubmit = (e) => {
+  const dispatch = useDispatch();
+  const navigate = useNavigate();
+  const user = useSelector((store) => store.user);
+
+  useEffect(() => {
+    if (user) {
+      navigate("/feed");
+    }
+  }, [user, navigate]);
+
+  const handleSubmit = async (e) => {
     e.preventDefault();
+    setError("");
+    setLoading(true);
+
+    try {
+      const res = await axios.post(
+        `${BASE_URL}/login`,
+        { email, password },
+        { withCredentials: true },
+      );
+
+      dispatch(addUser(res?.data?.data));
+      navigate("/feed");
+    } catch (err) {
+      setError(
+        err?.response?.data?.error ||
+          err?.response?.data?.message ||
+          "Something went wrong while logging in. Please try again.",
+      );
+    } finally {
+      setLoading(false);
+    }
   };
 
   return (
@@ -22,6 +59,13 @@ export default function Login() {
               Find people you actually want to work and connect with
             </p>
           </div>
+
+          {error && (
+            <div className="alert alert-error text-xs py-2 px-3 rounded-lg flex items-center gap-2">
+              <AlertCircle className="w-4 h-4 shrink-0" />
+              <span>{error}</span>
+            </div>
+          )}
 
           <form onSubmit={handleSubmit} className="flex flex-col gap-4">
             <div className="form-control">
@@ -70,10 +114,15 @@ export default function Login() {
 
             <button
               type="submit"
+              disabled={loading}
               className="btn btn-primary w-full mt-2 gap-2 shadow-lg shadow-primary/20"
             >
-              <LogIn className="w-4 h-4" />
-              <span>Sign In</span>
+              {loading ? (
+                <span className="loading loading-spinner loading-xs" />
+              ) : (
+                <LogIn className="w-4 h-4" />
+              )}
+              <span>{loading ? "Signing In..." : "Sign In"}</span>
             </button>
           </form>
 

@@ -1,9 +1,35 @@
 import { useState } from "react";
-import { Link } from "react-router-dom";
-import { Orbit, Palette, ChevronDown, Check, User, Search } from "lucide-react";
+import { Link, useNavigate } from "react-router-dom";
+import { useSelector, useDispatch } from "react-redux";
+import axios from "axios";
+import {
+  Orbit,
+  Palette,
+  ChevronDown,
+  Check,
+  User,
+  Search,
+  LogOut,
+} from "lucide-react";
+import { removeUser } from "../utils/userSlice";
+import { BASE_URL } from "../utils/constants";
 
 export default function Navbar({ theme, onSelectTheme, themes }) {
+  const user = useSelector((store) => store.user);
+  const dispatch = useDispatch();
+  const navigate = useNavigate();
   const [search, setSearch] = useState("");
+
+  const handleLogout = async () => {
+    try {
+      await axios.post(`${BASE_URL}/logout`, {}, { withCredentials: true });
+    } catch (err) {
+      console.error("Logout failed:", err);
+    } finally {
+      dispatch(removeUser());
+      navigate("/login");
+    }
+  };
 
   const filteredThemes = themes.filter((t) =>
     t.toLowerCase().includes(search.toLowerCase().trim()),
@@ -109,15 +135,61 @@ export default function Navbar({ theme, onSelectTheme, themes }) {
           </div>
         </div>
 
-        <Link
-          to="/login"
-          className="avatar shrink-0 hover:opacity-80 transition-opacity"
-          title="Login"
-        >
-          <div className="w-8 h-8 rounded-full bg-base-300 text-base-content/70 border border-base-content/10 flex items-center justify-center overflow-hidden">
-            <User className="w-4 h-4 m-auto" />
+        {user ? (
+          <div className="dropdown dropdown-end">
+            <button
+              tabIndex={0}
+              className="avatar shrink-0 hover:opacity-80 transition-opacity focus:outline-none flex items-center cursor-pointer"
+              title={`${user.firstName} ${user.lastName || ""}`.trim()}
+              aria-label="User menu"
+            >
+              <div className="w-8 h-8 rounded-full bg-base-300 text-base-content/70 border border-base-content/10 flex items-center justify-center overflow-hidden">
+                {user?.profilePictureUrl ? (
+                  <img
+                    src={user.profilePictureUrl}
+                    alt={user.firstName || "User"}
+                    className="w-full h-full object-cover"
+                  />
+                ) : (
+                  <User className="w-4 h-4 m-auto" />
+                )}
+              </div>
+            </button>
+
+            <ul
+              tabIndex={0}
+              className="dropdown-content menu p-2 shadow-2xl bg-base-100 rounded-2xl w-52 border border-base-content/10 mt-2 z-50 text-xs gap-1"
+            >
+              <li className="px-3 py-2 border-b border-base-content/10 pointer-events-none">
+                <span className="font-semibold text-xs text-base-content block truncate p-0">
+                  {user.firstName} {user.lastName || ""}
+                </span>
+                <span className="text-[11px] text-base-content/60 block truncate p-0">
+                  {user.email}
+                </span>
+              </li>
+              <li>
+                <button
+                  onClick={handleLogout}
+                  className="flex items-center gap-2 py-2 text-error hover:bg-error/10 hover:text-error rounded-lg transition-colors w-full text-left cursor-pointer"
+                >
+                  <LogOut className="w-3.5 h-3.5" />
+                  <span>Logout</span>
+                </button>
+              </li>
+            </ul>
           </div>
-        </Link>
+        ) : (
+          <Link
+            to="/login"
+            className="avatar shrink-0 hover:opacity-80 transition-opacity"
+            title="Login"
+          >
+            <div className="w-8 h-8 rounded-full bg-base-300 text-base-content/70 border border-base-content/10 flex items-center justify-center overflow-hidden">
+              <User className="w-4 h-4 m-auto" />
+            </div>
+          </Link>
+        )}
       </div>
     </header>
   );
