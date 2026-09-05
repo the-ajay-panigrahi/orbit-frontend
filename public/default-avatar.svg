@@ -1,0 +1,7 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 400 400" width="100%" height="100%" fill="none">
+  <rect width="400" height="400" rx="28" fill="currentColor" fill-opacity="0.08"/>
+  <!-- Head -->
+  <circle cx="200" cy="155" r="62" fill="currentColor" fill-opacity="0.22"/>
+  <!-- Torso -->
+  <path d="M92 340 C92 245, 140 235, 200 235 C260 235, 308 245, 308 340 Z" fill="currentColor" fill-opacity="0.22"/>
+</svg>

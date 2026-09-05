@@ -1,0 +1,124 @@
+import { useState } from "react";
+import { Link } from "react-router-dom";
+import { Orbit, Palette, ChevronDown, Check, User, Search } from "lucide-react";
+
+export default function Navbar({ theme, onSelectTheme, themes }) {
+  const [search, setSearch] = useState("");
+
+  const filteredThemes = themes.filter((t) =>
+    t.toLowerCase().includes(search.toLowerCase().trim()),
+  );
+
+  return (
+    <header className="navbar bg-base-100/80 backdrop-blur-md sticky top-0 z-40 border-b border-base-content/10 px-4 sm:px-8 transition-colors duration-200">
+      <div className="flex-1 flex items-center">
+        <Link to="/feed" className="flex items-center gap-2 select-none">
+          <Orbit className="w-6 h-6 text-primary stroke-[2.2] shrink-0" />
+          <span className="text-lg sm:text-xl font-bold tracking-tight text-base-content whitespace-nowrap">
+            Orbit
+          </span>
+        </Link>
+      </div>
+
+      <div className="flex-none flex items-center gap-2 sm:gap-3">
+        <div className="dropdown dropdown-end">
+          <button
+            tabIndex={0}
+            className="btn btn-sm btn-ghost gap-1.5 sm:gap-2 border border-base-content/15 rounded-full px-2.5 sm:px-3.5 hover:bg-base-content/5 transition-colors"
+            aria-label="Theme selector"
+          >
+            <Palette className="w-4 h-4 text-base-content/70 shrink-0" />
+            <span className="text-xs font-semibold capitalize text-base-content max-w-[80px] sm:max-w-none truncate">
+              {theme}
+            </span>
+            <ChevronDown className="w-3.5 h-3.5 text-base-content/50 shrink-0" />
+          </button>
+
+          <div
+            tabIndex={0}
+            className="dropdown-content z-50 p-3 shadow-2xl bg-base-100 rounded-2xl w-[calc(100vw-2rem)] max-w-sm sm:max-w-md md:max-w-lg border border-base-content/10 mt-2"
+          >
+            <div className="flex items-center justify-between gap-2 pb-2.5 mb-2 border-b border-base-content/10">
+              <div className="flex items-center gap-1.5 shrink-0">
+                <span className="text-xs font-bold text-base-content uppercase tracking-wider">
+                  Themes
+                </span>
+                <span className="badge badge-sm badge-neutral text-[10px] font-mono">
+                  {filteredThemes.length} / {themes.length}
+                </span>
+              </div>
+
+              <div className="relative w-36 sm:w-48">
+                <Search className="w-3.5 h-3.5 absolute left-2.5 top-1/2 -translate-y-1/2 text-base-content/40" />
+                <input
+                  type="text"
+                  placeholder="Filter themes..."
+                  value={search}
+                  onChange={(e) => setSearch(e.target.value)}
+                  className="input input-xs w-full pl-8 pr-2 py-1 bg-base-200 border-0 rounded-lg text-xs focus:outline-none focus:ring-1 focus:ring-primary text-base-content"
+                />
+              </div>
+            </div>
+
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-1.5 max-h-[22rem] sm:max-h-[26rem] overflow-y-auto pr-1">
+              {filteredThemes.map((t) => {
+                const isActive = theme === t;
+                return (
+                  <button
+                    key={t}
+                    onClick={() => {
+                      onSelectTheme(t);
+                      if (document.activeElement) {
+                        document.activeElement.blur();
+                      }
+                    }}
+                    className={`flex items-center justify-between p-2 rounded-xl border text-xs text-left transition-all ${
+                      isActive
+                        ? "bg-base-content/10 border-primary shadow-xs font-bold text-base-content"
+                        : "bg-base-100 hover:bg-base-200/70 border-base-content/10 text-base-content/80"
+                    }`}
+                  >
+                    <div className="flex items-center gap-1.5 truncate">
+                      {isActive ? (
+                        <Check className="w-3.5 h-3.5 text-primary shrink-0 stroke-[2.5]" />
+                      ) : (
+                        <span className="w-3.5 h-3.5 shrink-0" />
+                      )}
+                      <span className="capitalize truncate">{t}</span>
+                    </div>
+
+                    <span
+                      data-theme={t}
+                      className="flex gap-1 p-1 bg-base-100 rounded-md border border-base-content/10 shadow-xs shrink-0"
+                    >
+                      <span className="w-1.5 h-3.5 rounded-xs bg-primary" />
+                      <span className="w-1.5 h-3.5 rounded-xs bg-secondary" />
+                      <span className="w-1.5 h-3.5 rounded-xs bg-accent" />
+                      <span className="w-1.5 h-3.5 rounded-xs bg-neutral" />
+                    </span>
+                  </button>
+                );
+              })}
+
+              {filteredThemes.length === 0 && (
+                <div className="col-span-full py-8 text-center text-xs text-base-content/50">
+                  No themes found matching &ldquo;{search}&rdquo;
+                </div>
+              )}
+            </div>
+          </div>
+        </div>
+
+        <Link
+          to="/login"
+          className="avatar shrink-0 hover:opacity-80 transition-opacity"
+          title="Login"
+        >
+          <div className="w-8 h-8 rounded-full bg-base-300 text-base-content/70 border border-base-content/10 flex items-center justify-center overflow-hidden">
+            <User className="w-4 h-4 m-auto" />
+          </div>
+        </Link>
+      </div>
+    </header>
+  );
+}
