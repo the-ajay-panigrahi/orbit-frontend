@@ -1,5 +1,5 @@
 import { useState, useEffect } from "react";
-import { Outlet, useNavigate } from "react-router-dom";
+import { Outlet, useNavigate, useLocation } from "react-router-dom";
 import { useDispatch, useSelector } from "react-redux";
 import axios from "axios";
 import Navbar from "./Navbar";
@@ -10,7 +10,9 @@ import { addUser } from "../utils/userSlice";
 export default function Body() {
   const dispatch = useDispatch();
   const navigate = useNavigate();
+  const location = useLocation();
   const user = useSelector((store) => store.user);
+  const [isLoading, setIsLoading] = useState(!user);
 
   const [theme, setTheme] = useState(() => {
     return localStorage.getItem("orbit-theme") || "bumblebee";
@@ -21,9 +23,13 @@ export default function Body() {
     localStorage.setItem("orbit-theme", theme);
   }, [theme]);
 
+  // 1. Initial session verification on mount/refresh
   useEffect(() => {
     const fetchUser = async () => {
-      if (user) return;
+      if (user) {
+        setIsLoading(false);
+        return;
+      }
 
       try {
         const res = await axios.get(`${BASE_URL}/profile/view`, {
@@ -31,14 +37,35 @@ export default function Body() {
         });
         dispatch(addUser(res.data.data));
       } catch (err) {
-        if (err?.response?.status === 401 || err?.status === 401) {
-          navigate("/login");
-        }
+        // Not authenticated or token expired
+      } finally {
+        setIsLoading(false);
       }
     };
 
     fetchUser();
-  }, [user, dispatch, navigate]);
+  }, [user, dispatch]);
+
+  // 2. Global Route Guard: automatically redirects based on auth status
+  useEffect(() => {
+    if (isLoading) return;
+
+    if (!user && location.pathname !== "/login") {
+      // Unauthenticated user trying to access protected route (e.g. /feed)
+      navigate("/login");
+    } else if (user && location.pathname === "/login") {
+      // Authenticated user trying to access /login
+      navigate("/feed");
+    }
+  }, [user, isLoading, location.pathname, navigate]);
+
+  if (isLoading) {
+    return (
+      <div className="min-h-screen bg-base-200 flex items-center justify-center">
+        <span className="loading loading-spinner loading-lg text-primary"></span>
+      </div>
+    );
+  }
 
   return (
     <div className="min-h-screen bg-base-200 flex flex-col transition-colors duration-200">
@@ -50,4 +77,5 @@ export default function Body() {
     </div>
   );
 }
+
 
