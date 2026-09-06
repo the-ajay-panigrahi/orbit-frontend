@@ -53,7 +53,7 @@ export default function Navbar({ theme, onSelectTheme, themes }) {
         <div className="dropdown dropdown-end">
           <button
             tabIndex={0}
-            className="btn btn-sm btn-ghost gap-1.5 sm:gap-2 border border-base-content/15 rounded-full px-2.5 sm:px-3.5 hover:bg-base-content/5 transition-colors"
+            className="btn btn-sm btn-ghost gap-2 border border-base-content/15 rounded-full hover:bg-base-content/5 transition-colors"
             aria-label="Theme selector"
           >
             <Palette className="w-4 h-4 text-base-content/70 shrink-0" />
@@ -84,7 +84,7 @@ export default function Navbar({ theme, onSelectTheme, themes }) {
                   placeholder="Filter themes..."
                   value={search}
                   onChange={(e) => setSearch(e.target.value)}
-                  className="input input-xs w-full pl-8 pr-2 py-1 bg-base-200 border-0 rounded-lg text-xs focus:outline-none focus:ring-1 focus:ring-primary text-base-content"
+                  className="input input-xs w-full pl-8 pr-2 py-1 bg-base-200 border-0 rounded-lg focus:outline-none focus:ring-1 focus:ring-primary text-base-content"
                 />
               </div>
             </div>
@@ -103,7 +103,7 @@ export default function Navbar({ theme, onSelectTheme, themes }) {
                     }}
                     className={`flex items-center justify-between p-2 rounded-xl border text-xs text-left transition-all ${
                       isActive
-                        ? "bg-base-content/10 border-primary shadow-xs font-bold text-base-content"
+                        ? "bg-base-content/10 border-primary shadow-sm font-bold text-base-content"
                         : "bg-base-100 hover:bg-base-200/70 border-base-content/10 text-base-content/80"
                     }`}
                   >
@@ -118,12 +118,12 @@ export default function Navbar({ theme, onSelectTheme, themes }) {
 
                     <span
                       data-theme={t}
-                      className="flex gap-1 p-1 bg-base-100 rounded-md border border-base-content/10 shadow-xs shrink-0"
+                      className="flex gap-1 p-1 bg-base-100 rounded-md border border-base-content/10 shadow-sm shrink-0"
                     >
-                      <span className="w-1.5 h-3.5 rounded-xs bg-primary" />
-                      <span className="w-1.5 h-3.5 rounded-xs bg-secondary" />
-                      <span className="w-1.5 h-3.5 rounded-xs bg-accent" />
-                      <span className="w-1.5 h-3.5 rounded-xs bg-neutral" />
+                      <span className="w-1.5 h-3.5 rounded-sm bg-primary" />
+                      <span className="w-1.5 h-3.5 rounded-sm bg-secondary" />
+                      <span className="w-1.5 h-3.5 rounded-sm bg-accent" />
+                      <span className="w-1.5 h-3.5 rounded-sm bg-neutral" />
                     </span>
                   </button>
                 );
@@ -164,10 +164,10 @@ export default function Navbar({ theme, onSelectTheme, themes }) {
               className="dropdown-content menu p-2 shadow-2xl bg-base-100 rounded-2xl w-52 border border-base-content/10 mt-2 z-50 text-xs gap-1"
             >
               <li className="px-3 py-2 border-b border-base-content/10 pointer-events-none">
-                <span className="font-semibold text-xs text-base-content block truncate p-0">
+                <span className="font-semibold text-xs text-base-content block truncate">
                   {user.firstName} {user.lastName || ""}
                 </span>
-                <span className="text-[11px] text-base-content/60 block truncate p-0">
+                <span className="text-[11px] text-base-content/60 block truncate">
                   {user.email}
                 </span>
               </li>
