@@ -1,18 +1,14 @@
 import { useState, useEffect } from "react";
 import { useDispatch, useSelector } from "react-redux";
-import { useOutletContext } from "react-router-dom";
 import axios from "axios";
 import { UserCheck } from "lucide-react";
 import { BASE_URL } from "../utils/constants";
 import { addFeed } from "../utils/feedSlice";
 import UserCard from "./UserCard";
 
-export default function Feed({ theme: propTheme }) {
+export default function Feed() {
   const feed = useSelector((store) => store.feed);
   const dispatch = useDispatch();
-  const outletContext = useOutletContext();
-  const theme = propTheme || outletContext?.theme || "bumblebee";
-
   const [error, setError] = useState("");
 
   useEffect(() => {
@@ -102,7 +98,7 @@ export default function Feed({ theme: propTheme }) {
 
   return (
     <div className="flex-1 flex flex-col items-center justify-center p-4 sm:p-6">
-      <UserCard user={user} showActions={true} theme={theme} />
+      <UserCard user={user} showActions={true} />
     </div>
   );
 }
