@@ -1,16 +1,25 @@
-import { useEffect } from "react";
+import { useState, useEffect } from "react";
 import { Outlet, useNavigate } from "react-router-dom";
 import { useDispatch, useSelector } from "react-redux";
 import axios from "axios";
 import Navbar from "./Navbar";
 import Footer from "./Footer";
-import { BASE_URL } from "../utils/constants";
+import { BASE_URL, ALL_THEMES } from "../utils/constants";
 import { addUser } from "../utils/userSlice";
 
-export default function Body({ theme, onSelectTheme, themes }) {
+export default function Body() {
   const dispatch = useDispatch();
   const navigate = useNavigate();
   const user = useSelector((store) => store.user);
+
+  const [theme, setTheme] = useState(() => {
+    return localStorage.getItem("orbit-theme") || "bumblebee";
+  });
+
+  useEffect(() => {
+    document.documentElement.setAttribute("data-theme", theme);
+    localStorage.setItem("orbit-theme", theme);
+  }, [theme]);
 
   useEffect(() => {
     const fetchUser = async () => {
@@ -33,11 +42,12 @@ export default function Body({ theme, onSelectTheme, themes }) {
 
   return (
     <div className="min-h-screen bg-base-200 flex flex-col transition-colors duration-200">
-      <Navbar theme={theme} onSelectTheme={onSelectTheme} themes={themes} />
+      <Navbar theme={theme} onSelectTheme={setTheme} themes={ALL_THEMES} />
       <main className="flex-1 flex flex-col">
-        <Outlet />
+        <Outlet context={{ theme }} />
       </main>
       <Footer />
     </div>
   );
 }
+

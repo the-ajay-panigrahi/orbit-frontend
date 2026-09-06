@@ -1,6 +1,9 @@
 import { X, Heart, Sparkles, MapPin, Sparkle } from "lucide-react";
+import { useOutletContext } from "react-router-dom";
 
-export default function Feed({ theme }) {
+export default function Feed({ theme: propTheme }) {
+  const outletContext = useOutletContext();
+  const theme = propTheme || outletContext?.theme || "bumblebee";
   return (
     <div className="flex-1 flex flex-col items-center justify-center p-4 sm:p-6">
       <div className="card w-full max-w-sm bg-base-100 shadow-xl border border-base-content/10 overflow-hidden transition-all duration-300 hover:shadow-2xl">
