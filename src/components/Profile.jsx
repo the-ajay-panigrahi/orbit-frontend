@@ -34,12 +34,29 @@ export default function Profile() {
         type: "error",
         message: "Maximum limit of 30 skills reached.",
       });
+      setTimeout(() => {
+        setToast((curr) => (curr?.message?.includes("30 skills") ? null : curr));
+      }, 3000);
       return;
     }
 
-    if (!skills.some((s) => s.toLowerCase() === trimmed.toLowerCase())) {
-      setSkills((prev) => [...prev, trimmed]);
+    const isDuplicate = skills.some(
+      (s) => s.toLowerCase() === trimmed.toLowerCase(),
+    );
+
+    if (isDuplicate) {
+      setToast({
+        type: "error",
+        message: `"${trimmed}" is already added to your skills.`,
+      });
+      setTimeout(() => {
+        setToast((curr) => (curr?.message?.includes(trimmed) ? null : curr));
+      }, 2500);
+      setSkillInput("");
+      return;
     }
+
+    setSkills((prev) => [...prev, trimmed]);
     setSkillInput("");
   };
 
