@@ -19,7 +19,7 @@ export default function UserCard({
   return (
     <div className="card w-full max-w-sm bg-base-100 shadow-xl border border-base-content/10 overflow-hidden transition-all duration-300 hover:shadow-2xl">
       <figure className="p-4 pb-0">
-        <div className="w-full h-64 sm:h-72 rounded-2xl bg-base-200 text-base-content flex items-center justify-center overflow-hidden border border-base-content/5">
+        <div className="w-full h-56 sm:h-60 rounded-2xl bg-base-200 text-base-content flex items-center justify-center overflow-hidden border border-base-content/5">
           <img
             src={profilePictureUrl}
             alt={fullName}

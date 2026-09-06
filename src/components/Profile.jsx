@@ -345,26 +345,26 @@ export default function Profile() {
         </div>
 
         {/* Right Column: Live Card Preview (flush aligned with left card) */}
-        <div className="lg:col-span-5 flex flex-col items-center justify-center">
+        <div className="lg:col-span-5 flex flex-col items-center justify-start">
           <UserCard user={previewUser} showActions={false} />
         </div>
       </div>
 
       {toast && (
-        <div className="toast toast-bottom toast-end z-50 p-4">
+        <div className="toast toast-top toast-center sm:toast-end z-50 pt-16 sm:pt-18 px-4">
           <div
             className={`alert ${
               toast.type === "success"
                 ? "alert-success text-success-content"
                 : "alert-error text-error-content"
-            } shadow-xl border border-base-content/10 text-xs flex items-center gap-2`}
+            } shadow-2xl border border-base-content/10 text-xs flex items-center gap-2`}
           >
             {toast.type === "success" ? (
               <Check className="w-4 h-4 stroke-[2.5]" />
             ) : (
               <AlertCircle className="w-4 h-4 stroke-[2.5]" />
             )}
-            <span>{toast.message}</span>
+            <span className="font-medium">{toast.message}</span>
           </div>
         </div>
       )}
