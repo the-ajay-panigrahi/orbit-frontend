@@ -38,7 +38,10 @@ export default function Navbar({ theme, onSelectTheme, themes }) {
   return (
     <header className="navbar bg-base-100/80 backdrop-blur-md sticky top-0 z-40 border-b border-base-content/10 px-4 sm:px-8 transition-colors duration-200">
       <div className="flex-1 flex items-center">
-        <Link to="/feed" className="flex items-center gap-2 select-none">
+        <Link
+          to={user ? "/feed" : "/login"}
+          className="flex items-center gap-2 select-none"
+        >
           <Orbit className="w-6 h-6 text-primary stroke-[2.2] shrink-0" />
           <span className="text-lg sm:text-xl font-bold tracking-tight text-base-content whitespace-nowrap">
             Orbit
@@ -135,7 +138,7 @@ export default function Navbar({ theme, onSelectTheme, themes }) {
           </div>
         </div>
 
-        {user ? (
+        {user && (
           <div className="dropdown dropdown-end">
             <button
               tabIndex={0}
@@ -179,16 +182,6 @@ export default function Navbar({ theme, onSelectTheme, themes }) {
               </li>
             </ul>
           </div>
-        ) : (
-          <Link
-            to="/login"
-            className="avatar shrink-0 hover:opacity-80 transition-opacity"
-            title="Login"
-          >
-            <div className="w-8 h-8 rounded-full bg-base-300 text-base-content/70 border border-base-content/10 flex items-center justify-center overflow-hidden">
-              <User className="w-4 h-4 m-auto" />
-            </div>
-          </Link>
         )}
       </div>
     </header>
