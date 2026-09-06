@@ -2,9 +2,10 @@ import { useState, useEffect } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { useOutletContext } from "react-router-dom";
 import axios from "axios";
-import { X, Heart, Sparkles, MapPin, Sparkle, UserCheck } from "lucide-react";
+import { UserCheck } from "lucide-react";
 import { BASE_URL } from "../utils/constants";
 import { addFeed } from "../utils/feedSlice";
+import UserCard from "./UserCard";
 
 export default function Feed({ theme: propTheme }) {
   const feed = useSelector((store) => store.feed);
@@ -98,92 +99,10 @@ export default function Feed({ theme: propTheme }) {
   }
 
   const user = feed[0];
-  const fullName = `${user.firstName || ""} ${user.lastName || ""}`.trim();
 
   return (
     <div className="flex-1 flex flex-col items-center justify-center p-4 sm:p-6">
-      <div className="card w-full max-w-sm bg-base-100 shadow-xl border border-base-content/10 overflow-hidden transition-all duration-300 hover:shadow-2xl">
-        <figure className="p-4 sm:p-5 pb-0">
-          <div className="w-full h-60 sm:h-64 rounded-2xl bg-base-200 text-base-content flex items-center justify-center overflow-hidden border border-base-content/5">
-            <img
-              src={user.profilePictureUrl || "/default-avatar.svg"}
-              alt={fullName}
-              className="w-full h-full object-cover"
-              onError={(e) => {
-                e.target.src = "/default-avatar.svg";
-              }}
-            />
-          </div>
-        </figure>
-
-        <div className="card-body p-5 gap-3">
-          <div className="flex items-center justify-between">
-            <div>
-              <h2 className="card-title text-xl font-bold tracking-tight text-base-content">
-                {fullName}
-              </h2>
-              {(user.age || user.gender) && (
-                <p className="text-xs text-base-content/60 flex items-center gap-1 mt-0.5 capitalize">
-                  <MapPin className="w-3 h-3" />
-                  <span>
-                    {[user.age, user.gender].filter(Boolean).join(" • ")}
-                  </span>
-                </p>
-              )}
-            </div>
-            <span className="badge badge-sm badge-outline font-medium text-xs">
-              Active
-            </span>
-          </div>
-
-          {user.lookingFor && (
-            <div className="flex items-center gap-1.5 text-xs text-primary font-medium">
-              <Sparkle className="w-3.5 h-3.5" />
-              <span>Looking for: {user.lookingFor}</span>
-            </div>
-          )}
-
-          <p className="text-xs sm:text-sm text-base-content/75 leading-relaxed">
-            {user.about || "Building and discovering on Orbit."}
-          </p>
-
-          {user.skills && user.skills.length > 0 && (
-            <div className="flex flex-wrap gap-1.5 pt-1">
-              {user.skills.map((skill, idx) => (
-                <span
-                  key={idx}
-                  className="badge badge-sm bg-base-200 text-base-content/80 font-mono border-0"
-                >
-                  {skill}
-                </span>
-              ))}
-            </div>
-          )}
-
-          <div className="card-actions justify-between items-center mt-2 pt-3 border-t border-base-content/10">
-            <button
-              className="btn btn-circle btn-outline border-error/30 text-error hover:bg-error hover:text-error-content hover:border-error transition-all"
-              aria-label="Pass"
-              title="Pass"
-            >
-              <X className="w-5 h-5 stroke-[2.2]" />
-            </button>
-
-            <span className="text-[11px] text-base-content/50 font-mono flex items-center gap-1.5 capitalize">
-              <Sparkles className="w-3 h-3 text-primary" />
-              <span>{theme}</span>
-            </span>
-
-            <button
-              className="btn btn-circle btn-primary shadow-lg shadow-primary/25 hover:scale-105 transition-all"
-              aria-label="Connect"
-              title="Connect"
-            >
-              <Heart className="w-5 h-5 fill-current" />
-            </button>
-          </div>
-        </div>
-      </div>
+      <UserCard user={user} showActions={true} theme={theme} />
     </div>
   );
 }

@@ -57,7 +57,7 @@ export default function Navbar({ theme, onSelectTheme, themes }) {
             aria-label="Theme selector"
           >
             <Palette className="w-4 h-4 text-base-content/70 shrink-0" />
-            <span className="text-xs font-semibold capitalize text-base-content max-w-[80px] sm:max-w-none truncate">
+            <span className="text-xs font-semibold capitalize text-base-content max-w-20 sm:max-w-none truncate">
               {theme}
             </span>
             <ChevronDown className="w-3.5 h-3.5 text-base-content/50 shrink-0" />
@@ -89,7 +89,7 @@ export default function Navbar({ theme, onSelectTheme, themes }) {
               </div>
             </div>
 
-            <div className="grid grid-cols-1 sm:grid-cols-2 gap-1.5 max-h-[22rem] sm:max-h-[26rem] overflow-y-auto pr-1">
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-1.5 max-h-88 sm:max-h-104 overflow-y-auto pr-1">
               {filteredThemes.map((t) => {
                 const isActive = theme === t;
                 return (
@@ -170,6 +170,20 @@ export default function Navbar({ theme, onSelectTheme, themes }) {
                 <span className="text-[11px] text-base-content/60 block truncate">
                   {user.email}
                 </span>
+              </li>
+              <li>
+                <Link
+                  to="/profile"
+                  onClick={() => {
+                    if (document.activeElement) {
+                      document.activeElement.blur();
+                    }
+                  }}
+                  className="flex items-center gap-2 py-2 hover:bg-base-200 rounded-lg transition-colors cursor-pointer text-base-content"
+                >
+                  <User className="w-3.5 h-3.5" />
+                  <span>Profile</span>
+                </Link>
               </li>
               <li>
                 <button
