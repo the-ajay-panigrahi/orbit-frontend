@@ -34,7 +34,9 @@ export default function Body() {
         });
         dispatch(addUser(res.data.data));
       } catch (err) {
-        // Not authenticated
+        if (err?.response?.status !== 401) {
+          console.error("Session check error:", err?.message || err);
+        }
       } finally {
         setIsLoading(false);
       }
