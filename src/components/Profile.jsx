@@ -1,4 +1,5 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
+import { useLocation } from "react-router-dom";
 import { useSelector, useDispatch } from "react-redux";
 import axios from "axios";
 import { User, Check, AlertCircle, RotateCcw, Save } from "lucide-react";
@@ -9,6 +10,7 @@ import UserCard from "./UserCard";
 export default function Profile() {
   const user = useSelector((store) => store.user);
   const dispatch = useDispatch();
+  const location = useLocation();
 
   const [firstName, setFirstName] = useState(user?.firstName || "");
   const [lastName, setLastName] = useState(user?.lastName || "");
@@ -23,7 +25,27 @@ export default function Profile() {
   const [skillInput, setSkillInput] = useState("");
 
   const [isSaving, setIsSaving] = useState(false);
-  const [toast, setToast] = useState(null);
+  const [toast, setToast] = useState(() => {
+    if (location.state?.welcome) {
+      return {
+        type: "success",
+        message: "Welcome to Orbit! Customize your profile to get started.",
+      };
+    }
+    return null;
+  });
+
+  useEffect(() => {
+    if (location.state?.welcome) {
+      const timer = setTimeout(() => {
+        setToast((curr) =>
+          curr?.message?.includes("Welcome to Orbit") ? null : curr,
+        );
+      }, 4000);
+      window.history.replaceState({}, document.title);
+      return () => clearTimeout(timer);
+    }
+  }, [location.state]);
 
   const handleAddSkill = (rawSkill) => {
     const trimmed = rawSkill.trim().replace(/,/g, "");

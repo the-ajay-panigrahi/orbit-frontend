@@ -17,7 +17,7 @@ export default function UserCard({
   const skills = Array.isArray(user?.skills) ? user.skills : [];
 
   return (
-    <div className="card w-full max-w-sm bg-base-100 shadow-xl border border-base-content/10 overflow-hidden transition-all duration-300 hover:shadow-2xl">
+    <div className="card w-full max-w-sm min-h-[480px] sm:min-h-[500px] bg-base-100 shadow-xl border border-base-content/10 overflow-hidden transition-all duration-300 hover:shadow-2xl flex flex-col justify-between">
       <figure className="p-4 pb-0">
         <div className="w-full h-56 sm:h-60 rounded-2xl bg-base-200 text-base-content flex items-center justify-center overflow-hidden border border-base-content/5">
           <img
@@ -31,7 +31,7 @@ export default function UserCard({
         </div>
       </figure>
 
-      <div className="card-body p-4 sm:p-5 gap-3">
+      <div className="card-body p-4 sm:p-5 gap-3 flex-1 flex flex-col justify-between">
         <div className="flex items-center justify-between gap-2">
           <h2 className="card-title text-lg sm:text-xl font-bold tracking-tight text-base-content truncate">
             {fullName}

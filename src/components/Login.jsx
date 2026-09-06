@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef } from "react";
 import { useNavigate } from "react-router-dom";
 import { useDispatch, useSelector } from "react-redux";
 import axios from "axios";
@@ -28,9 +28,10 @@ export default function Login() {
   const dispatch = useDispatch();
   const navigate = useNavigate();
   const user = useSelector((store) => store.user);
+  const hasSubmitted = useRef(false);
 
   useEffect(() => {
-    if (user) {
+    if (user && !hasSubmitted.current) {
       navigate("/feed");
     }
   }, [user, navigate]);
@@ -39,6 +40,7 @@ export default function Login() {
     e.preventDefault();
     setError("");
     setLoading(true);
+    hasSubmitted.current = true;
 
     try {
       const endpoint = isLoginForm ? "/login" : "/signup";
@@ -59,9 +61,13 @@ export default function Login() {
         dispatch(addUser(res.data.data));
       }
 
-      // If signing up, take them directly to profile to customize bio/skills; if logging in, go to feed
-      navigate(isLoginForm ? "/feed" : "/profile");
+      if (isLoginForm) {
+        navigate("/feed");
+      } else {
+        navigate("/profile", { state: { welcome: true } });
+      }
     } catch (err) {
+      hasSubmitted.current = false;
       setError(
         err?.response?.data?.error ||
           err?.response?.data?.message ||

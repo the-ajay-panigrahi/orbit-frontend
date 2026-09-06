@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { Link, useNavigate } from "react-router-dom";
+import { Link, useNavigate, useLocation } from "react-router-dom";
 import { useSelector, useDispatch } from "react-redux";
 import axios from "axios";
 import {
@@ -10,6 +10,9 @@ import {
   User,
   Search,
   LogOut,
+  Compass,
+  Users,
+  UserCheck,
 } from "lucide-react";
 import { removeUser } from "../utils/userSlice";
 import { BASE_URL } from "../utils/constants";
@@ -18,6 +21,7 @@ export default function Navbar({ theme, onSelectTheme, themes }) {
   const user = useSelector((store) => store.user);
   const dispatch = useDispatch();
   const navigate = useNavigate();
+  const location = useLocation();
   const [search, setSearch] = useState("");
 
   const handleLogout = async () => {
@@ -47,6 +51,60 @@ export default function Navbar({ theme, onSelectTheme, themes }) {
             Orbit
           </span>
         </Link>
+
+        {user && (
+          <nav className="hidden md:flex items-center gap-1.5 ml-6">
+            <Link
+              to="/feed"
+              className={`btn btn-sm btn-ghost gap-2 font-medium text-xs rounded-lg transition-colors cursor-pointer ${
+                location.pathname === "/feed"
+                  ? "bg-base-content/10 text-primary font-semibold"
+                  : "text-base-content/70 hover:text-base-content"
+              }`}
+            >
+              <Compass className="w-4 h-4" />
+              <span>Feed</span>
+            </Link>
+
+            <Link
+              to="/profile"
+              className={`btn btn-sm btn-ghost gap-2 font-medium text-xs rounded-lg transition-colors cursor-pointer ${
+                location.pathname === "/profile"
+                  ? "bg-base-content/10 text-primary font-semibold"
+                  : "text-base-content/70 hover:text-base-content"
+              }`}
+            >
+              <User className="w-4 h-4" />
+              <span>Profile</span>
+            </Link>
+
+            <button
+              type="button"
+              disabled
+              className="btn btn-sm btn-ghost gap-2 font-medium text-xs rounded-lg text-base-content/40 cursor-not-allowed"
+              title="Coming soon"
+            >
+              <Users className="w-4 h-4" />
+              <span>Connections</span>
+              <span className="badge badge-xs badge-neutral text-[9px] font-mono">
+                Soon
+              </span>
+            </button>
+
+            <button
+              type="button"
+              disabled
+              className="btn btn-sm btn-ghost gap-2 font-medium text-xs rounded-lg text-base-content/40 cursor-not-allowed"
+              title="Coming soon"
+            >
+              <UserCheck className="w-4 h-4" />
+              <span>Requests</span>
+              <span className="badge badge-xs badge-neutral text-[9px] font-mono">
+                Soon
+              </span>
+            </button>
+          </nav>
+        )}
       </div>
 
       <div className="flex-none flex items-center gap-2 sm:gap-3">
