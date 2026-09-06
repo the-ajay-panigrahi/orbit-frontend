@@ -1,4 +1,4 @@
-import { X, Heart, MapPin, Sparkle } from "lucide-react";
+import { X, Heart, Sparkle } from "lucide-react";
 
 export default function UserCard({
   user = {},
@@ -19,7 +19,7 @@ export default function UserCard({
   return (
     <div className="card w-full max-w-sm bg-base-100 shadow-xl border border-base-content/10 overflow-hidden transition-all duration-300 hover:shadow-2xl">
       <figure className="p-4 pb-0">
-        <div className="w-full h-48 sm:h-52 rounded-2xl bg-base-200 text-base-content flex items-center justify-center overflow-hidden border border-base-content/5">
+        <div className="w-full h-64 sm:h-72 rounded-2xl bg-base-200 text-base-content flex items-center justify-center overflow-hidden border border-base-content/5">
           <img
             src={profilePictureUrl}
             alt={fullName}
@@ -31,18 +31,15 @@ export default function UserCard({
         </div>
       </figure>
 
-      <div className="card-body p-4 sm:p-5 gap-2.5">
-        <div>
+      <div className="card-body p-4 sm:p-5 gap-3">
+        <div className="flex items-center justify-between gap-2">
           <h2 className="card-title text-lg sm:text-xl font-bold tracking-tight text-base-content truncate">
             {fullName}
           </h2>
           {(age || gender) && (
-            <p className="text-xs text-base-content/60 flex items-center gap-1 mt-0.5 capitalize">
-              <MapPin className="w-3 h-3 shrink-0" />
-              <span className="truncate">
-                {[age, gender].filter(Boolean).join(" • ")}
-              </span>
-            </p>
+            <span className="text-xs font-semibold text-base-content/70 bg-base-200 px-2.5 py-1 rounded-full shrink-0 capitalize">
+              {[age, gender].filter(Boolean).join(" • ")}
+            </span>
           )}
         </div>
 
