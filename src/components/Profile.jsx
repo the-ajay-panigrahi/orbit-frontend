@@ -351,7 +351,7 @@ export default function Profile() {
       </div>
 
       {toast && (
-        <div className="toast toast-top toast-center sm:toast-end z-50 pt-16 sm:pt-18 px-4">
+        <div className="toast toast-top toast-center z-50 pt-16 sm:pt-18 px-4">
           <div
             className={`alert ${
               toast.type === "success"

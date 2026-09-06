@@ -1,8 +1,17 @@
 import { useState, useEffect } from "react";
-import { Link, useNavigate } from "react-router-dom";
+import { useNavigate } from "react-router-dom";
 import { useDispatch, useSelector } from "react-redux";
 import axios from "axios";
-import { Mail, Lock, LogIn, UserPlus, ArrowRight, AlertCircle, User } from "lucide-react";
+import {
+  Mail,
+  Lock,
+  LogIn,
+  UserPlus,
+  AlertCircle,
+  User,
+  Eye,
+  EyeOff,
+} from "lucide-react";
 import { addUser } from "../utils/userSlice";
 import { BASE_URL } from "../utils/constants";
 
@@ -12,6 +21,7 @@ export default function Login() {
   const [lastName, setLastName] = useState("");
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
+  const [showPassword, setShowPassword] = useState(false);
   const [error, setError] = useState("");
   const [loading, setLoading] = useState(false);
 
@@ -49,7 +59,7 @@ export default function Login() {
         dispatch(addUser(res.data.data));
       }
 
-      // If signing up, take them to their profile to customize their bio/skills; if logging in, go to feed
+      // If signing up, take them directly to profile to customize bio/skills; if logging in, go to feed
       navigate(isLoginForm ? "/feed" : "/profile");
     } catch (err) {
       setError(
@@ -155,27 +165,35 @@ export default function Login() {
             </div>
 
             <div className="form-control">
-              <label className="label py-0.5 flex justify-between">
+              <label className="label py-0.5">
                 <span className="label-text text-xs font-semibold text-base-content/80">
                   Password
                 </span>
-                {isLoginForm && (
-                  <span className="text-[11px] text-primary hover:underline cursor-pointer">
-                    Forgot?
-                  </span>
-                )}
               </label>
               <div className="relative">
                 <Lock className="w-4 h-4 absolute left-3 top-1/2 -translate-y-1/2 text-base-content/40" />
                 <input
-                  type="password"
+                  type={showPassword ? "text" : "password"}
                   required
                   minLength={8}
                   placeholder="••••••••"
                   value={password}
                   onChange={(e) => setPassword(e.target.value)}
-                  className="input input-sm input-bordered w-full pl-9 text-xs text-base-content bg-base-200/50 focus:bg-base-100 rounded-lg"
+                  className="input input-sm input-bordered w-full pl-9 pr-9 text-xs text-base-content bg-base-200/50 focus:bg-base-100 rounded-lg"
                 />
+                <button
+                  type="button"
+                  onClick={() => setShowPassword(!showPassword)}
+                  className="absolute right-3 top-1/2 -translate-y-1/2 text-base-content/40 hover:text-base-content focus:outline-none cursor-pointer"
+                  title={showPassword ? "Hide password" : "Show password"}
+                  aria-label={showPassword ? "Hide password" : "Show password"}
+                >
+                  {showPassword ? (
+                    <EyeOff className="w-4 h-4" />
+                  ) : (
+                    <Eye className="w-4 h-4" />
+                  )}
+                </button>
               </div>
             </div>
 
@@ -228,18 +246,6 @@ export default function Login() {
               </p>
             )}
           </div>
-
-          <div className="divider text-[11px] text-base-content/40 my-0 uppercase">
-            Or
-          </div>
-
-          <Link
-            to="/feed"
-            className="btn btn-sm btn-ghost btn-outline border-base-content/15 w-full text-xs gap-1.5 cursor-pointer"
-          >
-            <span>Explore Orbit</span>
-            <ArrowRight className="w-3.5 h-3.5" />
-          </Link>
         </div>
       </div>
     </div>
