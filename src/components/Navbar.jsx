@@ -78,31 +78,29 @@ export default function Navbar({ theme, onSelectTheme, themes }) {
               <span>Profile</span>
             </Link>
 
-            <button
-              type="button"
-              disabled
-              className="btn btn-sm btn-ghost gap-2 font-medium text-xs rounded-lg text-base-content/40 cursor-not-allowed"
-              title="Coming soon"
+            <Link
+              to="/connections"
+              className={`btn btn-sm btn-ghost gap-2 font-medium text-xs rounded-lg transition-colors cursor-pointer ${
+                location.pathname === "/connections"
+                  ? "bg-base-content/10 text-primary font-semibold"
+                  : "text-base-content/70 hover:text-base-content"
+              }`}
             >
               <Users className="w-4 h-4" />
               <span>Connections</span>
-              <span className="badge badge-xs badge-neutral text-[9px] font-mono">
-                Soon
-              </span>
-            </button>
+            </Link>
 
-            <button
-              type="button"
-              disabled
-              className="btn btn-sm btn-ghost gap-2 font-medium text-xs rounded-lg text-base-content/40 cursor-not-allowed"
-              title="Coming soon"
+            <Link
+              to="/requests"
+              className={`btn btn-sm btn-ghost gap-2 font-medium text-xs rounded-lg transition-colors cursor-pointer ${
+                location.pathname === "/requests"
+                  ? "bg-base-content/10 text-primary font-semibold"
+                  : "text-base-content/70 hover:text-base-content"
+              }`}
             >
               <UserCheck className="w-4 h-4" />
               <span>Requests</span>
-              <span className="badge badge-xs badge-neutral text-[9px] font-mono">
-                Soon
-              </span>
-            </button>
+            </Link>
           </nav>
         )}
       </div>
@@ -241,6 +239,34 @@ export default function Navbar({ theme, onSelectTheme, themes }) {
                 >
                   <User className="w-3.5 h-3.5" />
                   <span>Profile</span>
+                </Link>
+              </li>
+              <li>
+                <Link
+                  to="/connections"
+                  onClick={() => {
+                    if (document.activeElement) {
+                      document.activeElement.blur();
+                    }
+                  }}
+                  className="flex items-center gap-2 py-2 hover:bg-base-200 rounded-lg transition-colors cursor-pointer text-base-content"
+                >
+                  <Users className="w-3.5 h-3.5" />
+                  <span>Connections</span>
+                </Link>
+              </li>
+              <li>
+                <Link
+                  to="/requests"
+                  onClick={() => {
+                    if (document.activeElement) {
+                      document.activeElement.blur();
+                    }
+                  }}
+                  className="flex items-center gap-2 py-2 hover:bg-base-200 rounded-lg transition-colors cursor-pointer text-base-content"
+                >
+                  <UserCheck className="w-3.5 h-3.5" />
+                  <span>Requests</span>
                 </Link>
               </li>
               <li>

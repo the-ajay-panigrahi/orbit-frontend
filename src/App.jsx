@@ -3,6 +3,8 @@ import Body from "./components/Body";
 import Feed from "./components/Feed";
 import Login from "./components/Login";
 import Profile from "./components/Profile";
+import Connections from "./components/Connections";
+import Requests from "./components/Requests";
 import PrivateRoute from "./components/PrivateRoute";
 
 const appRouter = createBrowserRouter([
@@ -28,6 +30,14 @@ const appRouter = createBrowserRouter([
           {
             path: "profile",
             element: <Profile />,
+          },
+          {
+            path: "connections",
+            element: <Connections />,
+          },
+          {
+            path: "requests",
+            element: <Requests />,
           },
         ],
       },
