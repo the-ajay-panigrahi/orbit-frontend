@@ -16,6 +16,17 @@
   -moz-osx-font-smoothing: grayscale;
 }
 
+/* Theme-adaptive text selection highlight across all 36 themes */
+::selection {
+  background-color: var(--color-primary);
+  color: var(--color-primary-content);
+}
+
+::-moz-selection {
+  background-color: var(--color-primary);
+  color: var(--color-primary-content);
+}
+
 .font-mono {
   font-family: "JetBrains Mono", monospace;
 }
