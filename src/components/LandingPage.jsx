@@ -1,7 +1,7 @@
 import { useState, useEffect, useRef, useCallback } from "react";
 import { Link, useOutletContext } from "react-router-dom";
 import { useSelector } from "react-redux";
-import { motion } from "motion/react";
+import { motion, AnimatePresence } from "motion/react";
 import {
   Orbit,
   Sparkles,
@@ -78,6 +78,7 @@ export default function LandingPage() {
   const [deck, setDeck] = useState(MOCK_FOUNDERS);
   const [isAutoplay, setIsAutoplay] = useState(true);
   const [isHovered, setIsHovered] = useState(false);
+  const [matchCelebration, setMatchCelebration] = useState(null);
 
   // Gesture and fly-out states (exact same architecture as Feed.jsx)
   const [dragOffset, setDragOffset] = useState({ x: 0, y: 0 });
@@ -91,13 +92,17 @@ export default function LandingPage() {
   const currentUser = deck[0];
   const nextUser = deck.length > 1 ? deck[1] : null;
 
-  // Exact swipe trigger from Feed.jsx
+  // Exact swipe trigger from Feed.jsx with celebratory match teaser
   const triggerSwipeAction = useCallback(
     (direction, targetUser) => {
       if (!targetUser || isActionPending) return;
 
       setIsActionPending(true);
       setFlyDirection(direction);
+
+      if (direction === "right") {
+        setMatchCelebration(targetUser);
+      }
 
       setTimeout(() => {
         // Rotate deck: move top card to end of deck so demo loops smoothly
@@ -114,6 +119,50 @@ export default function LandingPage() {
     },
     [isActionPending],
   );
+
+  // Auto-dismiss match celebration after 4.5s
+  useEffect(() => {
+    if (!matchCelebration) return;
+    const timer = setTimeout(() => {
+      setMatchCelebration(null);
+    }, 4500);
+    return () => clearTimeout(timer);
+  }, [matchCelebration]);
+
+  // Keyboard navigation for card deck (ArrowLeft: Pass, ArrowRight: Connect, Space: Play/Pause)
+  useEffect(() => {
+    const handleKeyDown = (e) => {
+      if (
+        ["INPUT", "TEXTAREA", "SELECT"].includes(e.target?.tagName) ||
+        e.target?.isContentEditable
+      ) {
+        return;
+      }
+
+      if (e.key === "ArrowLeft") {
+        e.preventDefault();
+        triggerSwipeAction("left", currentUser);
+      } else if (e.key === "ArrowRight") {
+        e.preventDefault();
+        triggerSwipeAction("right", currentUser);
+      } else if (e.key === " " || e.code === "Space") {
+        e.preventDefault();
+        setIsAutoplay((prev) => !prev);
+      }
+    };
+
+    window.addEventListener("keydown", handleKeyDown);
+    return () => window.removeEventListener("keydown", handleKeyDown);
+  }, [currentUser, triggerSwipeAction]);
+
+  // Spotlight mouse-follow effect for cards
+  const handleSpotlightMove = (e) => {
+    const rect = e.currentTarget.getBoundingClientRect();
+    const x = e.clientX - rect.left;
+    const y = e.clientY - rect.top;
+    e.currentTarget.style.setProperty("--mouse-x", `${x}px`);
+    e.currentTarget.style.setProperty("--mouse-y", `${y}px`);
+  };
 
   // Autoplay Swiping Timer (every 4.5s when not hovered/dragging)
   useEffect(() => {
@@ -386,21 +435,61 @@ export default function LandingPage() {
               )}
             </div>
 
-            {/* Micro hint below cards */}
-            <div className="hidden sm:flex items-center gap-6 mt-4 text-[11px] font-mono text-base-content/40">
-              <span className="flex items-center gap-1">
-                <kbd className="kbd kbd-xs">
+            {/* Micro hint below cards with keyboard shortcuts */}
+            <div className="hidden sm:flex items-center gap-4 mt-4 text-[11px] font-mono text-base-content/50">
+              <span className="flex items-center gap-1.5">
+                <kbd className="kbd kbd-xs bg-base-200">
                   <ArrowLeft className="w-3 h-3" />
                 </kbd>
                 <span>Pass</span>
               </span>
-              <span className="flex items-center gap-1">
-                <kbd className="kbd kbd-xs">
+              <span>•</span>
+              <span className="flex items-center gap-1.5">
+                <kbd className="kbd kbd-xs bg-base-200">
                   <ArrowRight className="w-3 h-3" />
                 </kbd>
                 <span>Connect</span>
               </span>
+              <span>•</span>
+              <span className="flex items-center gap-1.5">
+                <kbd className="kbd kbd-xs bg-base-200">Space</kbd>
+                <span>{isAutoplay ? "Pause" : "Play"}</span>
+              </span>
             </div>
+
+            {/* Celebratory "It's a Match!" Teaser Toast */}
+            <AnimatePresence>
+              {matchCelebration && (
+                <motion.div
+                  initial={{ opacity: 0, y: 14, scale: 0.95 }}
+                  animate={{ opacity: 1, y: 0, scale: 1 }}
+                  exit={{ opacity: 0, y: -8, scale: 0.95 }}
+                  transition={{ duration: 0.25 }}
+                  className="mt-3 w-full max-w-sm"
+                >
+                  <div className="alert shadow-xl text-xs py-2.5 px-3.5 rounded-2xl flex items-center justify-between gap-3 border border-success/30 bg-base-100 text-base-content">
+                    <div className="flex items-center gap-2.5 min-w-0">
+                      <span className="text-lg shrink-0">🎉</span>
+                      <div className="truncate">
+                        <p className="font-bold text-xs truncate">
+                          Mutual Match with {matchCelebration.firstName}!
+                        </p>
+                        <p className="text-[11px] text-base-content/70 truncate">
+                          Looking for {matchCelebration.lookingFor || "co-founders"}
+                        </p>
+                      </div>
+                    </div>
+                    <Link
+                      to="/login?mode=signup"
+                      className="btn btn-xs btn-primary shrink-0 rounded-lg font-semibold gap-1 cursor-pointer"
+                    >
+                      <span>Join</span>
+                      <ArrowRight className="w-3 h-3" />
+                    </Link>
+                  </div>
+                </motion.div>
+              )}
+            </AnimatePresence>
           </motion.div>
         </div>
       </section>
@@ -477,20 +566,29 @@ export default function LandingPage() {
         <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
           {/* Step 1 */}
           <motion.div
-            className="card bg-base-100 border border-base-content/15 rounded-2xl p-6 sm:p-8 space-y-4 hover:border-base-content/30 hover:shadow-xl transition-all"
+            className="group relative overflow-hidden card bg-base-100 border border-base-content/15 rounded-2xl p-6 sm:p-8 space-y-4 hover:border-base-content/30 hover:shadow-xl transition-all"
+            onMouseMove={handleSpotlightMove}
             whileHover={{ y: -4 }}
             transition={{ duration: 0.2 }}
           >
-            <div className="w-12 h-12 rounded-xl bg-base-200 border border-base-content/15 text-base-content flex items-center justify-center font-bold text-lg shadow-2xs">
+            {/* Dynamic Mouse Spotlight */}
+            <div
+              className="pointer-events-none absolute -inset-px rounded-2xl opacity-0 group-hover:opacity-100 transition-opacity duration-300"
+              style={{
+                background:
+                  "radial-gradient(350px circle at var(--mouse-x, 50%) var(--mouse-y, 50%), color-mix(in srgb, var(--color-primary) 12%, transparent), transparent 75%)",
+              }}
+            />
+            <div className="relative z-10 w-12 h-12 rounded-xl bg-base-200 border border-base-content/15 text-base-content flex items-center justify-center font-bold text-lg shadow-2xs">
               <Code2 className="w-6 h-6 stroke-[2.2]" />
             </div>
-            <div className="space-y-1.5">
+            <div className="relative z-10 space-y-1.5">
               <span className="badge badge-sm badge-neutral font-mono text-[10px] font-bold uppercase tracking-wider">
                 Step 01
               </span>
               <h3 className="text-lg font-bold text-base-content">Signal Over Noise</h3>
             </div>
-            <p className="text-xs sm:text-sm text-base-content/75 leading-relaxed">
+            <p className="relative z-10 text-xs sm:text-sm text-base-content/75 leading-relaxed">
               Every profile highlights concrete technical skills, active repositories, and what the
               builder is currently creating. No inflated resumes.
             </p>
@@ -498,20 +596,29 @@ export default function LandingPage() {
 
           {/* Step 2 */}
           <motion.div
-            className="card bg-base-100 border border-base-content/15 rounded-2xl p-6 sm:p-8 space-y-4 hover:border-base-content/30 hover:shadow-xl transition-all"
+            className="group relative overflow-hidden card bg-base-100 border border-base-content/15 rounded-2xl p-6 sm:p-8 space-y-4 hover:border-base-content/30 hover:shadow-xl transition-all"
+            onMouseMove={handleSpotlightMove}
             whileHover={{ y: -4 }}
             transition={{ duration: 0.2 }}
           >
-            <div className="w-12 h-12 rounded-xl bg-base-200 border border-base-content/15 text-base-content flex items-center justify-center font-bold text-lg shadow-2xs">
+            {/* Dynamic Mouse Spotlight */}
+            <div
+              className="pointer-events-none absolute -inset-px rounded-2xl opacity-0 group-hover:opacity-100 transition-opacity duration-300"
+              style={{
+                background:
+                  "radial-gradient(350px circle at var(--mouse-x, 50%) var(--mouse-y, 50%), color-mix(in srgb, var(--color-primary) 12%, transparent), transparent 75%)",
+              }}
+            />
+            <div className="relative z-10 w-12 h-12 rounded-xl bg-base-200 border border-base-content/15 text-base-content flex items-center justify-center font-bold text-lg shadow-2xs">
               <Users className="w-6 h-6 stroke-[2.2]" />
             </div>
-            <div className="space-y-1.5">
+            <div className="relative z-10 space-y-1.5">
               <span className="badge badge-sm badge-neutral font-mono text-[10px] font-bold uppercase tracking-wider">
                 Step 02
               </span>
               <h3 className="text-lg font-bold text-base-content">Mutual-Match Intent</h3>
             </div>
-            <p className="text-xs sm:text-sm text-base-content/75 leading-relaxed">
+            <p className="relative z-10 text-xs sm:text-sm text-base-content/75 leading-relaxed">
               Swipe cards right to express interest, or pass to see the next builder. Connections
               only happen when both builders mutually agree to connect.
             </p>
@@ -519,20 +626,29 @@ export default function LandingPage() {
 
           {/* Step 3 */}
           <motion.div
-            className="card bg-base-100 border border-base-content/15 rounded-2xl p-6 sm:p-8 space-y-4 hover:border-base-content/30 hover:shadow-xl transition-all"
+            className="group relative overflow-hidden card bg-base-100 border border-base-content/15 rounded-2xl p-6 sm:p-8 space-y-4 hover:border-base-content/30 hover:shadow-xl transition-all"
+            onMouseMove={handleSpotlightMove}
             whileHover={{ y: -4 }}
             transition={{ duration: 0.2 }}
           >
-            <div className="w-12 h-12 rounded-xl bg-base-200 border border-base-content/15 text-base-content flex items-center justify-center font-bold text-lg shadow-2xs">
+            {/* Dynamic Mouse Spotlight */}
+            <div
+              className="pointer-events-none absolute -inset-px rounded-2xl opacity-0 group-hover:opacity-100 transition-opacity duration-300"
+              style={{
+                background:
+                  "radial-gradient(350px circle at var(--mouse-x, 50%) var(--mouse-y, 50%), color-mix(in srgb, var(--color-primary) 12%, transparent), transparent 75%)",
+              }}
+            />
+            <div className="relative z-10 w-12 h-12 rounded-xl bg-base-200 border border-base-content/15 text-base-content flex items-center justify-center font-bold text-lg shadow-2xs">
               <Rocket className="w-6 h-6 stroke-[2.2]" />
             </div>
-            <div className="space-y-1.5">
+            <div className="relative z-10 space-y-1.5">
               <span className="badge badge-sm badge-neutral font-mono text-[10px] font-bold uppercase tracking-wider">
                 Step 03
               </span>
               <h3 className="text-lg font-bold text-base-content">Collaborate & Ship</h3>
             </div>
-            <p className="text-xs sm:text-sm text-base-content/75 leading-relaxed">
+            <p className="relative z-10 text-xs sm:text-sm text-base-content/75 leading-relaxed">
               Once connected, coordinate projects, exchange repos, and build side projects or
               venture-backed startups together.
             </p>

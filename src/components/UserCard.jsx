@@ -59,7 +59,8 @@ export default function UserCard({
             {skills.map((skill, idx) => (
               <span
                 key={idx}
-                className="badge badge-xs sm:badge-sm bg-base-200 text-base-content/80 font-mono border-0"
+                className="badge badge-xs sm:badge-sm bg-base-200 hover:bg-primary/20 hover:text-primary transition-colors cursor-default text-base-content/80 font-mono border-0 select-none"
+                title={`Skill: ${skill}`}
               >
                 {skill}
               </span>
