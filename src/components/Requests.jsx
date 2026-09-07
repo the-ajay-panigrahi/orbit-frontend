@@ -21,9 +21,11 @@ export default function Requests() {
   const [error, setError] = useState("");
   const [toastMessage, setToastMessage] = useState("");
   const [processingId, setProcessingId] = useState(null);
+  const [isLoading, setIsLoading] = useState(true);
 
   const handleRefresh = () => {
     setError("");
+    setIsLoading(true);
     axios
       .get(`${BASE_URL}/user/requests/received`, { withCredentials: true })
       .then((res) => {
@@ -34,34 +36,38 @@ export default function Requests() {
           err?.response?.data?.error ||
             "Failed to load requests. Please try again.",
         );
+      })
+      .finally(() => {
+        setIsLoading(false);
       });
   };
 
+  // Always fetch fresh requests on mount
   useEffect(() => {
-    let ignore = false;
+    const controller = new AbortController();
 
-    if (!requests) {
-      axios
-        .get(`${BASE_URL}/user/requests/received`, { withCredentials: true })
-        .then((res) => {
-          if (!ignore) {
-            dispatch(addRequests(res?.data?.data || []));
-          }
-        })
-        .catch((err) => {
-          if (!ignore) {
-            setError(
-              err?.response?.data?.error ||
-                "Failed to load requests. Please try again.",
-            );
-          }
-        });
-    }
+    axios
+      .get(`${BASE_URL}/user/requests/received`, {
+        withCredentials: true,
+        signal: controller.signal,
+      })
+      .then((res) => {
+        dispatch(addRequests(res?.data?.data || []));
+      })
+      .catch((err) => {
+        if (!axios.isCancel(err)) {
+          setError(
+            err?.response?.data?.error ||
+              "Failed to load requests. Please try again.",
+          );
+        }
+      })
+      .finally(() => {
+        setIsLoading(false);
+      });
 
-    return () => {
-      ignore = true;
-    };
-  }, [requests, dispatch]);
+    return () => controller.abort();
+  }, [dispatch]);
 
   const handleReviewRequest = async (status, requestId, senderName) => {
     if (processingId) return;
@@ -92,7 +98,7 @@ export default function Requests() {
   };
 
   // Loading Skeleton State
-  if (!requests && !error) {
+  if (isLoading && !requests) {
     return (
       <div className="flex-1 w-full max-w-3xl mx-auto p-4 sm:p-6 flex flex-col gap-4">
         <div className="skeleton h-8 w-48 rounded-lg mb-2"></div>

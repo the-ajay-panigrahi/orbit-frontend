@@ -15,6 +15,9 @@ import {
   UserCheck,
 } from "lucide-react";
 import { removeUser } from "../utils/userSlice";
+import { removeFeed } from "../utils/feedSlice";
+import { removeConnections } from "../utils/connectionSlice";
+import { clearRequests } from "../utils/requestSlice";
 import { BASE_URL } from "../utils/constants";
 
 export default function Navbar({ theme, onSelectTheme, themes }) {
@@ -31,6 +34,9 @@ export default function Navbar({ theme, onSelectTheme, themes }) {
       console.error("Logout failed:", err);
     } finally {
       dispatch(removeUser());
+      dispatch(removeFeed());
+      dispatch(removeConnections());
+      dispatch(clearRequests());
       navigate("/login");
     }
   };

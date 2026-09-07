@@ -21,9 +21,11 @@ export default function Connections() {
   const [searchQuery, setSearchQuery] = useState("");
   const [error, setError] = useState("");
   const [toastMessage, setToastMessage] = useState("");
+  const [isLoading, setIsLoading] = useState(true);
 
   const handleRefresh = () => {
     setError("");
+    setIsLoading(true);
     axios
       .get(`${BASE_URL}/user/connections`, { withCredentials: true })
       .then((res) => {
@@ -34,34 +36,38 @@ export default function Connections() {
           err?.response?.data?.error ||
             "Failed to load connections. Please try again.",
         );
+      })
+      .finally(() => {
+        setIsLoading(false);
       });
   };
 
+  // Always fetch fresh connections on mount
   useEffect(() => {
-    let ignore = false;
+    const controller = new AbortController();
 
-    if (!connections) {
-      axios
-        .get(`${BASE_URL}/user/connections`, { withCredentials: true })
-        .then((res) => {
-          if (!ignore) {
-            dispatch(addConnections(res?.data?.data || []));
-          }
-        })
-        .catch((err) => {
-          if (!ignore) {
-            setError(
-              err?.response?.data?.error ||
-                "Failed to load connections. Please try again.",
-            );
-          }
-        });
-    }
+    axios
+      .get(`${BASE_URL}/user/connections`, {
+        withCredentials: true,
+        signal: controller.signal,
+      })
+      .then((res) => {
+        dispatch(addConnections(res?.data?.data || []));
+      })
+      .catch((err) => {
+        if (!axios.isCancel(err)) {
+          setError(
+            err?.response?.data?.error ||
+              "Failed to load connections. Please try again.",
+          );
+        }
+      })
+      .finally(() => {
+        setIsLoading(false);
+      });
 
-    return () => {
-      ignore = true;
-    };
-  }, [connections, dispatch]);
+    return () => controller.abort();
+  }, [dispatch]);
 
   const handleMessageClick = (connectionName) => {
     setToastMessage(
@@ -88,7 +94,7 @@ export default function Connections() {
   });
 
   // Loading skeleton
-  if (!connections && !error) {
+  if (isLoading && !connections) {
     return (
       <div className="flex-1 w-full max-w-4xl mx-auto p-4 sm:p-6 flex flex-col gap-4">
         <div className="skeleton h-8 w-48 rounded-lg mb-2"></div>
