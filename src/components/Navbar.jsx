@@ -203,13 +203,13 @@ export default function Navbar({ theme, onSelectTheme, themes }) {
         {!user ? (
           <div className="flex items-center gap-2 ml-1">
             <Link
-              to="/login"
+              to="/login?mode=signin"
               className="btn btn-sm btn-ghost text-xs font-semibold rounded-lg text-base-content/80 hover:text-base-content"
             >
               Sign In
             </Link>
             <Link
-              to="/login"
+              to="/login?mode=signup"
               className="btn btn-sm btn-primary text-xs font-semibold rounded-lg shadow-sm"
             >
               Get Started

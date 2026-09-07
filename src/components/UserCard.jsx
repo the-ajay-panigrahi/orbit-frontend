@@ -23,7 +23,7 @@ export default function UserCard({
           <img
             src={profilePictureUrl}
             alt={fullName}
-            className="w-full h-full object-cover"
+            className="w-full h-full object-cover object-top"
             onError={(e) => {
               e.target.src = "/default-avatar.svg";
             }}

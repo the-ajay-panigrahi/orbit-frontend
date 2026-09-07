@@ -1,13 +1,12 @@
-import { useState } from "react";
+import { useState, useEffect, useRef } from "react";
 import { Link, useOutletContext } from "react-router-dom";
 import { useSelector } from "react-redux";
-import { motion } from "motion/react";
+import { motion, useMotionValue, useTransform } from "motion/react";
 import {
   Orbit,
   Sparkles,
   Zap,
   Users,
-  UserCheck,
   ArrowRight,
   Palette,
   Check,
@@ -17,6 +16,9 @@ import {
   Rocket,
   ShieldCheck,
   Layers,
+  Play,
+  Pause,
+  RotateCcw,
 } from "lucide-react";
 
 // Curated showcase themes for quick real-time interaction
@@ -31,7 +33,7 @@ const FEATURED_THEMES = [
   "dim",
 ];
 
-// Realistic builder profiles for the interactive mock card deck preview
+// Realistic builder profiles with carefully chosen portrait framing & headroom
 const MOCK_FOUNDERS = [
   {
     id: "f1",
@@ -41,7 +43,8 @@ const MOCK_FOUNDERS = [
     about: "Building agentic dev tools and multi-modal models. Looking for a product-minded co-founder to build with.",
     skills: ["TypeScript", "PyTorch", "Python", "React", "LLMs"],
     lookingFor: "Full-Stack Co-Founder",
-    avatar: "https://images.unsplash.com/photo-1534528741775-53994a69daeb?w=500&auto=format&fit=crop&q=80",
+    avatar: "https://images.unsplash.com/photo-1573496359142-b8d87734a5a2?w=600&auto=format&fit=crop&crop=face,top&q=80",
+    defaultAction: "right", // Connect
   },
   {
     id: "f2",
@@ -51,7 +54,8 @@ const MOCK_FOUNDERS = [
     about: "Ex-Stripe engineer building real-time collaboration engines. Obsessed with low-latency systems.",
     skills: ["Go", "Next.js", "PostgreSQL", "Docker", "Redis"],
     lookingFor: "Design & Growth Partner",
-    avatar: "https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=500&auto=format&fit=crop&q=80",
+    avatar: "https://images.unsplash.com/photo-1500648767791-00dcc994a43e?w=600&auto=format&fit=crop&crop=face,top&q=80",
+    defaultAction: "left", // Pass
   },
   {
     id: "f3",
@@ -61,7 +65,8 @@ const MOCK_FOUNDERS = [
     about: "Crafting fluid design systems and micro-interactions. Turning complex developer tools into intuitive canvases.",
     skills: ["Figma", "Tailwind CSS", "React", "Design Systems"],
     lookingFor: "Backend Engineer",
-    avatar: "https://images.unsplash.com/photo-1494790108377-be9c29b29330?w=500&auto=format&fit=crop&q=80",
+    avatar: "https://images.unsplash.com/photo-1534528741775-53994a69daeb?w=600&auto=format&fit=crop&crop=face,top&q=80",
+    defaultAction: "right", // Connect
   },
 ];
 
@@ -69,22 +74,66 @@ export default function LandingPage() {
   const user = useSelector((store) => store.user);
   const { theme, setTheme } = useOutletContext() || {};
   const [activeCardIndex, setActiveCardIndex] = useState(0);
-  const [mockActionFeedback, setMockActionFeedback] = useState(null);
+  const [actionFeedback, setActionFeedback] = useState(null); // 'right' | 'left' | null
+  const [isAutoplay, setIsAutoplay] = useState(true);
+  const [isHovered, setIsHovered] = useState(false);
+  const isAnimatingRef = useRef(false);
+
+  // Motion drag values
+  const dragX = useMotionValue(0);
+  const cardRotate = useTransform(dragX, [-200, 200], [-14, 14]);
+  const connectStampOpacity = useTransform(dragX, [20, 90], [0, 1]);
+  const passStampOpacity = useTransform(dragX, [-20, -90], [0, 1]);
 
   const currentFounder = MOCK_FOUNDERS[activeCardIndex];
+  const nextFounder = MOCK_FOUNDERS[(activeCardIndex + 1) % MOCK_FOUNDERS.length];
+  const thirdFounder = MOCK_FOUNDERS[(activeCardIndex + 2) % MOCK_FOUNDERS.length];
 
-  const handleMockSwipe = (direction) => {
-    setMockActionFeedback(direction);
+  // Execute swipe logic
+  const triggerSwipe = (direction) => {
+    if (isAnimatingRef.current) return;
+    isAnimatingRef.current = true;
+    setActionFeedback(direction);
+
     setTimeout(() => {
       setActiveCardIndex((prev) => (prev + 1) % MOCK_FOUNDERS.length);
-      setMockActionFeedback(null);
-    }, 300);
+      setActionFeedback(null);
+      dragX.set(0);
+      isAnimatingRef.current = false;
+    }, 320);
+  };
+
+  // Autoplay Swiping Timer (every 4.5 seconds when not hovered and autoplay enabled)
+  useEffect(() => {
+    if (!isAutoplay || isHovered) return;
+
+    const timer = setInterval(() => {
+      if (isAnimatingRef.current) return;
+      const targetAction = currentFounder.defaultAction || "right";
+      triggerSwipe(targetAction);
+    }, 4500);
+
+    return () => clearInterval(timer);
+  }, [isAutoplay, isHovered, activeCardIndex, currentFounder]);
+
+  // Handle Drag End with velocity/offset threshold
+  const handleDragEnd = (_, info) => {
+    const offset = info.offset.x;
+    const velocity = info.velocity.x;
+
+    if (offset > 85 || velocity > 350) {
+      triggerSwipe("right");
+    } else if (offset < -85 || velocity < -350) {
+      triggerSwipe("left");
+    } else {
+      dragX.set(0);
+    }
   };
 
   return (
     <div className="flex flex-col w-full overflow-hidden">
       {/* ─── Hero Section ────────────────────────────────────────── */}
-      <section className="relative px-4 sm:px-6 lg:px-8 pt-12 pb-20 sm:pt-16 sm:pb-28 max-w-7xl mx-auto w-full">
+      <section className="relative px-4 sm:px-6 lg:px-8 pt-10 pb-20 sm:pt-14 sm:pb-28 max-w-7xl mx-auto w-full">
         {/* Subtle decorative background glow */}
         <div className="absolute top-1/4 left-1/2 -translate-x-1/2 -translate-y-1/2 w-96 sm:w-[600px] h-96 sm:h-[600px] bg-primary/10 rounded-full blur-3xl pointer-events-none -z-10" />
 
@@ -97,7 +146,7 @@ export default function LandingPage() {
             transition={{ duration: 0.6, ease: "easeOut" }}
           >
             {/* Pill Tag */}
-            <div className="inline-flex items-center gap-2 px-3 py-1.5 rounded-full bg-base-100 border border-base-content/10 shadow-xs text-xs font-semibold text-base-content/80">
+            <div className="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full bg-base-100 border border-base-content/10 shadow-xs text-xs font-semibold text-base-content/80">
               <Sparkles className="w-3.5 h-3.5 text-primary" />
               <span>Networking for the builder generation</span>
             </div>
@@ -119,8 +168,8 @@ export default function LandingPage() {
             {/* Primary Action Buttons */}
             <div className="flex flex-wrap items-center justify-center lg:justify-start gap-4 pt-2">
               <Link
-                to={user ? "/feed" : "/login"}
-                className="btn btn-primary btn-md px-7 rounded-xl font-semibold shadow-md hover:shadow-lg transition-all flex items-center gap-2 group"
+                to={user ? "/feed" : "/login?mode=signup"}
+                className="btn btn-primary btn-md px-7 rounded-xl font-semibold shadow-md hover:shadow-lg transition-all flex items-center gap-2 group cursor-pointer"
               >
                 <span>{user ? "Open Your Feed" : "Join Orbit"}</span>
                 <ArrowRight className="w-4 h-4 transition-transform group-hover:translate-x-1" />
@@ -128,7 +177,7 @@ export default function LandingPage() {
 
               <a
                 href="#how-it-works"
-                className="btn btn-ghost btn-md px-6 rounded-xl font-medium border border-base-content/15 text-base-content/80 hover:text-base-content transition-all"
+                className="btn btn-ghost btn-md px-6 rounded-xl font-medium border border-base-content/15 text-base-content/80 hover:text-base-content transition-all cursor-pointer"
               >
                 Explore How It Works
               </a>
@@ -151,53 +200,119 @@ export default function LandingPage() {
             </div>
           </motion.div>
 
-          {/* Right Column: Interactive Mock Card Deck */}
+          {/* Right Column: Interactive Mock Card Deck with Drag & Gestures */}
           <motion.div
             className="lg:col-span-5 flex flex-col items-center justify-center"
             initial={{ opacity: 0, scale: 0.94 }}
             animate={{ opacity: 1, scale: 1 }}
             transition={{ duration: 0.7, delay: 0.15, ease: "easeOut" }}
           >
-            <div className="relative w-full max-w-sm sm:max-w-md">
-              {/* Background Stack Card (Peek Card 2) */}
-              <div className="absolute inset-0 translate-y-6 scale-90 bg-base-100 rounded-3xl border border-base-content/10 opacity-30 shadow-md pointer-events-none" />
+            {/* Interactive Card Deck Container */}
+            <div
+              className="relative w-full max-w-sm sm:max-w-md select-none"
+              onMouseEnter={() => setIsHovered(true)}
+              onMouseLeave={() => setIsHovered(false)}
+            >
+              {/* Autoplay status bar / swipe hint */}
+              <div className="flex items-center justify-between px-2 mb-2 text-xs text-base-content/60">
+                <span className="flex items-center gap-1.5 font-medium">
+                  <span className="relative flex h-2 w-2">
+                    {isAutoplay && !isHovered ? (
+                      <>
+                        <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-primary opacity-75" />
+                        <span className="relative inline-flex rounded-full h-2 w-2 bg-primary" />
+                      </>
+                    ) : (
+                      <span className="relative inline-flex rounded-full h-2 w-2 bg-base-content/30" />
+                    )}
+                  </span>
+                  <span>{isHovered ? "Paused on hover" : isAutoplay ? "Auto demo playing" : "Autoplay paused"}</span>
+                </span>
 
-              {/* Middle Stack Card (Peek Card 1) */}
-              <div className="absolute inset-0 translate-y-3 scale-95 bg-base-100 rounded-3xl border border-base-content/10 opacity-60 shadow-lg pointer-events-none" />
+                <div className="flex items-center gap-2">
+                  <button
+                    onClick={() => setIsAutoplay((prev) => !prev)}
+                    className="hover:text-base-content flex items-center gap-1 text-[11px] font-mono cursor-pointer"
+                    title={isAutoplay ? "Pause auto demo" : "Resume auto demo"}
+                  >
+                    {isAutoplay ? <Pause className="w-3 h-3" /> : <Play className="w-3 h-3" />}
+                    <span>{isAutoplay ? "Pause" : "Play"}</span>
+                  </button>
+                  <span>•</span>
+                  <span className="text-[11px] font-mono">Swipe or drag card</span>
+                </div>
+              </div>
 
-              {/* Foreground Interactive Card */}
+              {/* Background Stack Card 2 (Bottom Peek) */}
+              <div className="absolute inset-0 top-6 scale-90 bg-base-100 rounded-3xl border border-base-content/10 opacity-30 shadow-md pointer-events-none" />
+
+              {/* Background Stack Card 1 (Middle Peek) */}
+              <div className="absolute inset-0 top-3 scale-95 bg-base-100 rounded-3xl border border-base-content/10 opacity-60 shadow-lg pointer-events-none" />
+
+              {/* Foreground Interactive Card with Motion Drag */}
               <motion.div
                 key={currentFounder.id}
-                initial={{ scale: 0.96, opacity: 0 }}
+                drag="x"
+                dragConstraints={{ left: 0, right: 0 }}
+                dragElastic={0.8}
+                onDragEnd={handleDragEnd}
+                style={{
+                  x: dragX,
+                  rotate: cardRotate,
+                }}
+                initial={{ scale: 0.95, opacity: 0 }}
                 animate={{
                   scale: 1,
                   opacity: 1,
-                  x: mockActionFeedback === "right" ? 120 : mockActionFeedback === "left" ? -120 : 0,
-                  rotate: mockActionFeedback === "right" ? 8 : mockActionFeedback === "left" ? -8 : 0,
+                  x: actionFeedback === "right" ? 280 : actionFeedback === "left" ? -280 : 0,
+                  rotate: actionFeedback === "right" ? 16 : actionFeedback === "left" ? -16 : 0,
                 }}
-                transition={{ duration: 0.35 }}
-                className="relative bg-base-100 rounded-3xl border border-base-content/10 shadow-2xl overflow-hidden z-10"
+                transition={{ duration: 0.3 }}
+                className="relative bg-base-100 rounded-3xl border border-base-content/10 shadow-2xl overflow-hidden z-10 cursor-grab active:cursor-grabbing touch-none"
               >
-                {/* Visual Image Banner */}
+                {/* ── Dynamic "CONNECT" Stamp / Overlay ── */}
+                <motion.div
+                  style={{
+                    opacity: actionFeedback === "right" ? 1 : connectStampOpacity,
+                  }}
+                  className="absolute top-6 left-6 z-30 pointer-events-none flex items-center gap-1.5 px-3.5 py-1.5 rounded-xl border-2 border-success bg-success/20 backdrop-blur-md text-success font-black tracking-widest text-sm uppercase shadow-lg -rotate-12"
+                >
+                  <Heart className="w-4 h-4 fill-current" />
+                  <span>CONNECT</span>
+                </motion.div>
+
+                {/* ── Dynamic "PASS" Stamp / Overlay ── */}
+                <motion.div
+                  style={{
+                    opacity: actionFeedback === "left" ? 1 : passStampOpacity,
+                  }}
+                  className="absolute top-6 right-6 z-30 pointer-events-none flex items-center gap-1.5 px-3.5 py-1.5 rounded-xl border-2 border-error bg-error/20 backdrop-blur-md text-error font-black tracking-widest text-sm uppercase shadow-lg rotate-12"
+                >
+                  <X className="w-4 h-4 stroke-[3]" />
+                  <span>PASS</span>
+                </motion.div>
+
+                {/* Visual Image Banner with Fixed Headroom (object-cover object-top) */}
                 <div className="relative h-64 sm:h-72 w-full overflow-hidden bg-base-300">
                   <img
                     src={currentFounder.avatar}
                     alt={currentFounder.name}
-                    className="w-full h-full object-cover select-none"
+                    className="w-full h-full object-cover object-top select-none pointer-events-none"
+                    loading="eager"
                   />
                   <div className="absolute inset-0 bg-gradient-to-t from-base-100 via-transparent to-black/20" />
 
                   {/* Looking For Tag */}
-                  <div className="absolute top-4 left-4">
+                  <div className="absolute top-4 left-4 z-20">
                     <span className="badge badge-neutral badge-sm backdrop-blur-md bg-neutral/80 text-neutral-content font-medium px-3 py-2 border-0">
                       Seeking: {currentFounder.lookingFor}
                     </span>
                   </div>
 
-                  {/* Interactive Hint */}
-                  <div className="absolute top-4 right-4">
+                  {/* Live Interactive Hint */}
+                  <div className="absolute top-4 right-4 z-20">
                     <span className="badge badge-primary badge-sm shadow-xs font-semibold">
-                      Live Preview
+                      Interactive Card
                     </span>
                   </div>
                 </div>
@@ -232,22 +347,33 @@ export default function LandingPage() {
                   {/* Card Deck Action Controls */}
                   <div className="pt-2 border-t border-base-content/10 flex items-center justify-between">
                     <button
-                      onClick={() => handleMockSwipe("left")}
-                      className="btn btn-circle btn-outline btn-sm sm:btn-md border-base-content/20 hover:border-error hover:bg-error hover:text-error-content transition-all"
-                      title="Pass card"
+                      onClick={(e) => {
+                        e.stopPropagation();
+                        triggerSwipe("left");
+                      }}
+                      className="btn btn-circle btn-outline btn-sm sm:btn-md border-base-content/20 hover:border-error hover:bg-error hover:text-error-content transition-all cursor-pointer"
+                      title="Pass card (swipe left)"
                       aria-label="Pass card"
                     >
                       <X className="w-5 h-5" />
                     </button>
 
-                    <span className="text-[11px] font-mono text-base-content/50">
-                      Profile {activeCardIndex + 1} of {MOCK_FOUNDERS.length}
-                    </span>
+                    <div className="flex flex-col items-center">
+                      <span className="text-[11px] font-mono text-base-content/50">
+                        Profile {activeCardIndex + 1} of {MOCK_FOUNDERS.length}
+                      </span>
+                      <span className="text-[10px] text-base-content/40">
+                        drag left or right
+                      </span>
+                    </div>
 
                     <button
-                      onClick={() => handleMockSwipe("right")}
-                      className="btn btn-circle btn-primary btn-sm sm:btn-md shadow-md hover:scale-105 transition-transform"
-                      title="Connect card"
+                      onClick={(e) => {
+                        e.stopPropagation();
+                        triggerSwipe("right");
+                      }}
+                      className="btn btn-circle btn-primary btn-sm sm:btn-md shadow-md hover:scale-105 transition-transform cursor-pointer"
+                      title="Connect card (swipe right)"
                       aria-label="Connect card"
                     >
                       <Heart className="w-5 h-5 fill-current" />
@@ -414,8 +540,8 @@ export default function LandingPage() {
 
             <div className="pt-2">
               <Link
-                to={user ? "/feed" : "/login"}
-                className="btn btn-primary btn-md px-8 rounded-xl font-semibold shadow-md hover:shadow-lg transition-all inline-flex items-center gap-2 group"
+                to={user ? "/feed" : "/login?mode=signup"}
+                className="btn btn-primary btn-md px-8 rounded-xl font-semibold shadow-md hover:shadow-lg transition-all inline-flex items-center gap-2 group cursor-pointer"
               >
                 <span>{user ? "Go to Feed" : "Get Started Now"}</span>
                 <ArrowRight className="w-4 h-4 transition-transform group-hover:translate-x-1" />

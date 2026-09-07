@@ -1,5 +1,5 @@
 import { useState, useEffect, useRef } from "react";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, useSearchParams } from "react-router-dom";
 import { useDispatch, useSelector } from "react-redux";
 import axios from "axios";
 import {
@@ -16,7 +16,18 @@ import { addUser } from "../utils/userSlice";
 import { BASE_URL } from "../utils/constants";
 
 export default function Login() {
-  const [isLoginForm, setIsLoginForm] = useState(true);
+  const [searchParams] = useSearchParams();
+  const mode = searchParams.get("mode");
+  const [isLoginForm, setIsLoginForm] = useState(mode !== "signup");
+
+  useEffect(() => {
+    if (mode === "signup") {
+      setIsLoginForm(false);
+    } else if (mode === "signin" || mode === "login") {
+      setIsLoginForm(true);
+    }
+  }, [mode]);
+
   const [firstName, setFirstName] = useState("");
   const [lastName, setLastName] = useState("");
   const [email, setEmail] = useState("");
@@ -80,7 +91,9 @@ export default function Login() {
 
   const handleToggleForm = () => {
     setError("");
-    setIsLoginForm((prev) => !prev);
+    const nextIsLogin = !isLoginForm;
+    setIsLoginForm(nextIsLogin);
+    navigate(`/login?mode=${nextIsLogin ? "signin" : "signup"}`, { replace: true });
   };
 
   return (
