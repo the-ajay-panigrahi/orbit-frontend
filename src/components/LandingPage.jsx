@@ -563,20 +563,18 @@ export default function LandingPage() {
           </p>
         </div>
 
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-8 items-stretch">
           {/* Step 1 */}
-          <motion.div
-            className="group relative overflow-hidden card bg-base-100 border border-base-content/15 rounded-2xl p-6 sm:p-8 space-y-4 hover:border-base-content/30 hover:shadow-xl transition-all"
+          <div
+            className="group relative overflow-hidden h-full flex flex-col justify-start card bg-base-100 border border-base-content/15 rounded-2xl p-6 sm:p-8 space-y-4 hover:border-base-content/35 hover:shadow-xl hover:-translate-y-1 transition-all duration-300"
             onMouseMove={handleSpotlightMove}
-            whileHover={{ y: -4 }}
-            transition={{ duration: 0.2 }}
           >
             {/* Dynamic Mouse Spotlight */}
             <div
-              className="pointer-events-none absolute -inset-px rounded-2xl opacity-0 group-hover:opacity-100 transition-opacity duration-300"
+              className="pointer-events-none absolute inset-0 rounded-2xl opacity-0 group-hover:opacity-100 transition-opacity duration-300"
               style={{
                 background:
-                  "radial-gradient(350px circle at var(--mouse-x, 50%) var(--mouse-y, 50%), color-mix(in srgb, var(--color-primary) 12%, transparent), transparent 75%)",
+                  "radial-gradient(400px circle at var(--mouse-x, 50%) var(--mouse-y, 50%), color-mix(in srgb, var(--color-primary) 12%, transparent), transparent 75%)",
               }}
             />
             <div className="relative z-10 w-12 h-12 rounded-xl bg-base-200 border border-base-content/15 text-base-content flex items-center justify-center font-bold text-lg shadow-2xs">
@@ -592,21 +590,19 @@ export default function LandingPage() {
               Every profile highlights concrete technical skills, active repositories, and what the
               builder is currently creating. No inflated resumes.
             </p>
-          </motion.div>
+          </div>
 
           {/* Step 2 */}
-          <motion.div
-            className="group relative overflow-hidden card bg-base-100 border border-base-content/15 rounded-2xl p-6 sm:p-8 space-y-4 hover:border-base-content/30 hover:shadow-xl transition-all"
+          <div
+            className="group relative overflow-hidden h-full flex flex-col justify-start card bg-base-100 border border-base-content/15 rounded-2xl p-6 sm:p-8 space-y-4 hover:border-base-content/35 hover:shadow-xl hover:-translate-y-1 transition-all duration-300"
             onMouseMove={handleSpotlightMove}
-            whileHover={{ y: -4 }}
-            transition={{ duration: 0.2 }}
           >
             {/* Dynamic Mouse Spotlight */}
             <div
-              className="pointer-events-none absolute -inset-px rounded-2xl opacity-0 group-hover:opacity-100 transition-opacity duration-300"
+              className="pointer-events-none absolute inset-0 rounded-2xl opacity-0 group-hover:opacity-100 transition-opacity duration-300"
               style={{
                 background:
-                  "radial-gradient(350px circle at var(--mouse-x, 50%) var(--mouse-y, 50%), color-mix(in srgb, var(--color-primary) 12%, transparent), transparent 75%)",
+                  "radial-gradient(400px circle at var(--mouse-x, 50%) var(--mouse-y, 50%), color-mix(in srgb, var(--color-primary) 12%, transparent), transparent 75%)",
               }}
             />
             <div className="relative z-10 w-12 h-12 rounded-xl bg-base-200 border border-base-content/15 text-base-content flex items-center justify-center font-bold text-lg shadow-2xs">
@@ -622,21 +618,19 @@ export default function LandingPage() {
               Swipe cards right to express interest, or pass to see the next builder. Connections
               only happen when both builders mutually agree to connect.
             </p>
-          </motion.div>
+          </div>
 
           {/* Step 3 */}
-          <motion.div
-            className="group relative overflow-hidden card bg-base-100 border border-base-content/15 rounded-2xl p-6 sm:p-8 space-y-4 hover:border-base-content/30 hover:shadow-xl transition-all"
+          <div
+            className="group relative overflow-hidden h-full flex flex-col justify-start card bg-base-100 border border-base-content/15 rounded-2xl p-6 sm:p-8 space-y-4 hover:border-base-content/35 hover:shadow-xl hover:-translate-y-1 transition-all duration-300"
             onMouseMove={handleSpotlightMove}
-            whileHover={{ y: -4 }}
-            transition={{ duration: 0.2 }}
           >
             {/* Dynamic Mouse Spotlight */}
             <div
-              className="pointer-events-none absolute -inset-px rounded-2xl opacity-0 group-hover:opacity-100 transition-opacity duration-300"
+              className="pointer-events-none absolute inset-0 rounded-2xl opacity-0 group-hover:opacity-100 transition-opacity duration-300"
               style={{
                 background:
-                  "radial-gradient(350px circle at var(--mouse-x, 50%) var(--mouse-y, 50%), color-mix(in srgb, var(--color-primary) 12%, transparent), transparent 75%)",
+                  "radial-gradient(400px circle at var(--mouse-x, 50%) var(--mouse-y, 50%), color-mix(in srgb, var(--color-primary) 12%, transparent), transparent 75%)",
               }}
             />
             <div className="relative z-10 w-12 h-12 rounded-xl bg-base-200 border border-base-content/15 text-base-content flex items-center justify-center font-bold text-lg shadow-2xs">
@@ -652,7 +646,7 @@ export default function LandingPage() {
               Once connected, coordinate projects, exchange repos, and build side projects or
               venture-backed startups together.
             </p>
-          </motion.div>
+          </div>
         </div>
       </section>
 

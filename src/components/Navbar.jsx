@@ -62,10 +62,10 @@ export default function Navbar({ theme, onSelectTheme, themes }) {
           <nav className="hidden md:flex items-center gap-1.5 ml-6">
             <Link
               to="/feed"
-              className={`btn btn-sm btn-ghost gap-2 font-medium text-xs rounded-lg transition-colors cursor-pointer ${
+              className={`btn btn-sm gap-2 text-xs rounded-lg transition-all cursor-pointer ${
                 location.pathname === "/feed"
-                  ? "bg-base-content/10 text-primary font-semibold"
-                  : "text-base-content/70 hover:text-base-content"
+                  ? "btn-primary text-primary-content font-bold shadow-xs"
+                  : "btn-ghost text-base-content/75 hover:text-base-content hover:bg-base-content/10"
               }`}
             >
               <Compass className="w-4 h-4" />
@@ -74,10 +74,10 @@ export default function Navbar({ theme, onSelectTheme, themes }) {
 
             <Link
               to="/profile"
-              className={`btn btn-sm btn-ghost gap-2 font-medium text-xs rounded-lg transition-colors cursor-pointer ${
+              className={`btn btn-sm gap-2 text-xs rounded-lg transition-all cursor-pointer ${
                 location.pathname === "/profile"
-                  ? "bg-base-content/10 text-primary font-semibold"
-                  : "text-base-content/70 hover:text-base-content"
+                  ? "btn-primary text-primary-content font-bold shadow-xs"
+                  : "btn-ghost text-base-content/75 hover:text-base-content hover:bg-base-content/10"
               }`}
             >
               <User className="w-4 h-4" />
@@ -86,10 +86,10 @@ export default function Navbar({ theme, onSelectTheme, themes }) {
 
             <Link
               to="/connections"
-              className={`btn btn-sm btn-ghost gap-2 font-medium text-xs rounded-lg transition-colors cursor-pointer ${
+              className={`btn btn-sm gap-2 text-xs rounded-lg transition-all cursor-pointer ${
                 location.pathname === "/connections"
-                  ? "bg-base-content/10 text-primary font-semibold"
-                  : "text-base-content/70 hover:text-base-content"
+                  ? "btn-primary text-primary-content font-bold shadow-xs"
+                  : "btn-ghost text-base-content/75 hover:text-base-content hover:bg-base-content/10"
               }`}
             >
               <Users className="w-4 h-4" />
@@ -98,10 +98,10 @@ export default function Navbar({ theme, onSelectTheme, themes }) {
 
             <Link
               to="/requests"
-              className={`btn btn-sm btn-ghost gap-2 font-medium text-xs rounded-lg transition-colors cursor-pointer ${
+              className={`btn btn-sm gap-2 text-xs rounded-lg transition-all cursor-pointer ${
                 location.pathname === "/requests"
-                  ? "bg-base-content/10 text-primary font-semibold"
-                  : "text-base-content/70 hover:text-base-content"
+                  ? "btn-primary text-primary-content font-bold shadow-xs"
+                  : "btn-ghost text-base-content/75 hover:text-base-content hover:bg-base-content/10"
               }`}
             >
               <UserCheck className="w-4 h-4" />

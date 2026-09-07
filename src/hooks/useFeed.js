@@ -19,6 +19,11 @@ export function useFeed() {
   const [toastMessage, setToastMessage] = useState("");
   const [isLoading, setIsLoading] = useState(true);
 
+  const feedRef = useRef(feed);
+  useEffect(() => {
+    feedRef.current = feed;
+  }, [feed]);
+
   const pageRef = useRef(1);
   const hasMoreRef = useRef(true);
   const isFetchingRef = useRef(false);
@@ -37,8 +42,14 @@ export function useFeed() {
       isFetchingRef.current = true;
 
       try {
+        const currentDeck = feedRef.current || [];
+        const excludeParam =
+          !replace && currentDeck.length > 0
+            ? `&exclude=${currentDeck.map((u) => u._id).join(",")}`
+            : "";
+
         const res = await axios.get(
-          `${BASE_URL}/user/feed?page=${page}&limit=${FEED_PAGE_LIMIT}`,
+          `${BASE_URL}/user/feed?page=${page}&limit=${FEED_PAGE_LIMIT}${excludeParam}`,
           { withCredentials: true },
         );
 
