@@ -19,3 +19,16 @@
 .font-mono {
   font-family: "JetBrains Mono", monospace;
 }
+
+/* Proportional root scaling for large displays (e.g. 27" 2K / 1440p / 4K) */
+@media (min-width: 1920px) {
+  :root {
+    font-size: 17px;
+  }
+}
+
+@media (min-width: 2560px) {
+  :root {
+    font-size: 18px;
+  }
+}

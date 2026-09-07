@@ -37,7 +37,7 @@ export default function Navbar({ theme, onSelectTheme, themes }) {
       dispatch(removeFeed());
       dispatch(removeConnections());
       dispatch(clearRequests());
-      navigate("/login");
+      navigate("/");
     }
   };
 
@@ -49,7 +49,7 @@ export default function Navbar({ theme, onSelectTheme, themes }) {
     <header className="navbar bg-base-100/80 backdrop-blur-md sticky top-0 z-40 border-b border-base-content/10 px-4 sm:px-8 transition-colors duration-200">
       <div className="flex-1 flex items-center">
         <Link
-          to={user ? "/feed" : "/login"}
+          to={user ? "/feed" : "/"}
           className="flex items-center gap-2 select-none"
         >
           <Orbit className="w-6 h-6 text-primary stroke-[2.2] shrink-0" />
@@ -200,7 +200,22 @@ export default function Navbar({ theme, onSelectTheme, themes }) {
           </div>
         </div>
 
-        {user && (
+        {!user ? (
+          <div className="flex items-center gap-2 ml-1">
+            <Link
+              to="/login"
+              className="btn btn-sm btn-ghost text-xs font-semibold rounded-lg text-base-content/80 hover:text-base-content"
+            >
+              Sign In
+            </Link>
+            <Link
+              to="/login"
+              className="btn btn-sm btn-primary text-xs font-semibold rounded-lg shadow-sm"
+            >
+              Get Started
+            </Link>
+          </div>
+        ) : (
           <div className="dropdown dropdown-end">
             <button
               tabIndex={0}
