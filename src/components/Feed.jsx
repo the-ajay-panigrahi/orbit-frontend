@@ -26,7 +26,6 @@ export default function Feed() {
     pointerHandlers,
   } = useFeed();
 
-  // Loading state (initial mount)
   if (isLoading && !feed) {
     return (
       <div className="flex-1 flex flex-col items-center justify-center p-4 sm:p-6">
@@ -79,7 +78,6 @@ export default function Feed() {
     );
   }
 
-  // Calculate rotation and stamp opacity
   const rotationDeg = isDragging
     ? dragOffset.x * 0.08
     : flyDirection === "right"
@@ -119,7 +117,6 @@ export default function Feed() {
 
   return (
     <div className="flex-1 flex flex-col items-center justify-center p-4 sm:p-6 select-none relative overflow-hidden">
-      {/* Toast Notification */}
       {toastMessage && (
         <div className="toast toast-top toast-center z-50 transition-all duration-300">
           <div className="alert alert-neutral py-2 px-4 shadow-xl border border-base-content/10 text-xs font-medium flex items-center gap-2">
@@ -129,7 +126,6 @@ export default function Feed() {
         </div>
       )}
 
-      {/* Feed Queue Tracker Badge */}
       <div className="mb-4 flex items-center gap-2 text-xs font-mono text-base-content/60">
         <Zap className="w-3.5 h-3.5 text-primary" />
         <span>
@@ -137,9 +133,7 @@ export default function Feed() {
         </span>
       </div>
 
-      {/* Cards Deck Stack Container */}
       <div className="relative w-full max-w-sm min-h-[490px] sm:min-h-[510px] flex items-center justify-center">
-        {/* Background Peek Card (Next in queue) */}
         {nextUser && (
           <div
             key={nextUser._id}
@@ -158,7 +152,7 @@ export default function Feed() {
           </div>
         )}
 
-        {/* Foreground Active Card — key ensures fresh DOM node per user (no bounce glitch) */}
+        {/* Key ensures fresh DOM node per user to prevent transition bounce */}
         <div
           key={currentUser._id}
           ref={cardRef}
@@ -166,7 +160,6 @@ export default function Feed() {
           style={cardStyle}
           className="relative w-full z-20 touch-none flex justify-center"
         >
-          {/* Visual Feedback Stamps */}
           {connectStampOpacity > 0 && (
             <div
               style={{ opacity: connectStampOpacity }}
@@ -194,7 +187,6 @@ export default function Feed() {
         </div>
       </div>
 
-      {/* Keyboard Helper Hints */}
       <div className="hidden sm:flex items-center gap-6 mt-4 text-[11px] font-mono text-base-content/40">
         <span className="flex items-center gap-1">
           <kbd className="kbd kbd-xs">

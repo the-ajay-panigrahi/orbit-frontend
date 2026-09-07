@@ -5,30 +5,32 @@ import { BASE_URL } from "../utils/constants";
 import { addFeed, appendFeed, removeUserFromFeed } from "../utils/feedSlice";
 
 const FEED_PAGE_LIMIT = 10;
-const PREFETCH_THRESHOLD = 3; // Fetch next page when ≤ this many cards remain
+const PREFETCH_THRESHOLD = 3;
 
+/**
+ * Manages the card feed lifecycle: data fetching, threshold-based infinite pagination,
+ * pointer gesture physics (drag, rotation, damping), keyboard shortcuts, and swipe actions.
+ */
 export function useFeed() {
   const feed = useSelector((store) => store.feed);
   const dispatch = useDispatch();
+
   const [error, setError] = useState("");
   const [toastMessage, setToastMessage] = useState("");
   const [isLoading, setIsLoading] = useState(true);
 
-  // Pagination state
   const pageRef = useRef(1);
   const hasMoreRef = useRef(true);
   const isFetchingRef = useRef(false);
 
-  // Swipe gesture & animation state
   const [dragOffset, setDragOffset] = useState({ x: 0, y: 0 });
   const [isDragging, setIsDragging] = useState(false);
-  const [flyDirection, setFlyDirection] = useState(null); // 'left' | 'right' | null
+  const [flyDirection, setFlyDirection] = useState(null);
   const [isActionPending, setIsActionPending] = useState(false);
 
   const dragStartRef = useRef({ x: 0, y: 0 });
   const cardRef = useRef(null);
 
-  // Fetch a specific page of feed data
   const fetchFeedPage = useCallback(
     async (page, replace = false) => {
       if (isFetchingRef.current) return;
@@ -41,7 +43,6 @@ export function useFeed() {
         );
 
         const users = res?.data?.data || [];
-
         if (users.length < FEED_PAGE_LIMIT) {
           hasMoreRef.current = false;
         }
@@ -63,19 +64,15 @@ export function useFeed() {
     [dispatch],
   );
 
-  // Fetch next page when feed is running low
   const maybePrefetchNextPage = useCallback(() => {
     if (!hasMoreRef.current || isFetchingRef.current) return;
-
     pageRef.current += 1;
     fetchFeedPage(pageRef.current, false);
   }, [fetchFeedPage]);
 
-  // Always fetch fresh data on mount
   useEffect(() => {
     pageRef.current = 1;
     hasMoreRef.current = true;
-
     const controller = new AbortController();
 
     axios
@@ -134,7 +131,6 @@ export function useFeed() {
       });
   };
 
-  // Handle trigger action (swipe release, button click, keyboard)
   const triggerSwipeAction = useCallback(
     async (direction, targetUser) => {
       if (!targetUser || isActionPending) return;
@@ -155,7 +151,6 @@ export function useFeed() {
         console.error("Action error:", err?.response?.data?.error);
       }
 
-      // Delay for fly-out animation
       setTimeout(() => {
         dispatch(removeUserFromFeed(targetUser._id));
         setFlyDirection(null);
@@ -169,7 +164,7 @@ export function useFeed() {
         );
         setTimeout(() => setToastMessage(""), 2500);
 
-        // Check if prefetch needed
+        // Feed length in closure still includes the card currently being removed
         const remainingAfterRemove = (feed?.length || 1) - 1;
         if (remainingAfterRemove <= PREFETCH_THRESHOLD && hasMoreRef.current) {
           maybePrefetchNextPage();
@@ -179,11 +174,9 @@ export function useFeed() {
     [dispatch, isActionPending, feed?.length, maybePrefetchNextPage],
   );
 
-  // Keyboard navigation for power users (ArrowLeft = Pass, ArrowRight = Connect)
   useEffect(() => {
     const handleKeyDown = (e) => {
       if (!feed || feed.length === 0 || isActionPending) return;
-
       if (["INPUT", "TEXTAREA"].includes(document.activeElement?.tagName)) {
         return;
       }
@@ -201,7 +194,6 @@ export function useFeed() {
     return () => window.removeEventListener("keydown", handleKeyDown);
   }, [feed, isActionPending, triggerSwipeAction]);
 
-  // Pointer drag gestures (mouse + touch unified)
   const handlePointerDown = (e) => {
     if (isActionPending || !feed || feed.length === 0) return;
     if (e.target.closest("button")) return;
@@ -214,7 +206,7 @@ export function useFeed() {
   const handlePointerMove = (e) => {
     if (!isDragging) return;
     const deltaX = e.clientX - dragStartRef.current.x;
-    const deltaY = (e.clientY - dragStartRef.current.y) * 0.4; // Dampen vertical movement
+    const deltaY = (e.clientY - dragStartRef.current.y) * 0.4;
     setDragOffset({ x: deltaX, y: deltaY });
   };
 
@@ -227,7 +219,7 @@ export function useFeed() {
         e.currentTarget.releasePointerCapture(e.pointerId);
       }
     } catch {
-      // Ignore if pointer capture already lost
+      // Ignore if pointer capture already released
     }
 
     const threshold = 110;
@@ -260,7 +252,6 @@ export function useFeed() {
     dragOffset,
     isDragging,
     flyDirection,
-    isActionPending,
     cardRef,
     handleRefresh,
     triggerSwipeAction,

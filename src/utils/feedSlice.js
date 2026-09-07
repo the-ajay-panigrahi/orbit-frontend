@@ -28,4 +28,3 @@ const feedSlice = createSlice({
 export const { addFeed, appendFeed, removeFeed, removeUserFromFeed } =
   feedSlice.actions;
 export default feedSlice.reducer;
-

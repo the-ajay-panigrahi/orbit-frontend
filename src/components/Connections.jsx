@@ -42,7 +42,6 @@ export default function Connections() {
       });
   };
 
-  // Always fetch fresh connections on mount
   useEffect(() => {
     const controller = new AbortController();
 
@@ -76,7 +75,6 @@ export default function Connections() {
     setTimeout(() => setToastMessage(""), 2800);
   };
 
-  // Filter connections by name or skill
   const filteredConnections = (connections || []).filter((user) => {
     if (!searchQuery.trim()) return true;
     const query = searchQuery.toLowerCase();
@@ -93,7 +91,6 @@ export default function Connections() {
     );
   });
 
-  // Loading skeleton
   if (isLoading && !connections) {
     return (
       <div className="flex-1 w-full max-w-4xl mx-auto p-4 sm:p-6 flex flex-col gap-4">
@@ -118,7 +115,6 @@ export default function Connections() {
     );
   }
 
-  // Error State
   if (error) {
     return (
       <div className="flex-1 flex flex-col items-center justify-center p-4 sm:p-6 text-center">
@@ -134,7 +130,6 @@ export default function Connections() {
 
   return (
     <div className="flex-1 w-full max-w-4xl mx-auto p-4 sm:p-6 flex flex-col">
-      {/* Toast Feedback */}
       {toastMessage && (
         <div className="toast toast-top toast-center z-50">
           <div className="alert alert-neutral py-2 px-4 shadow-xl border border-base-content/10 text-xs font-medium flex items-center gap-2">
@@ -144,7 +139,6 @@ export default function Connections() {
         </div>
       )}
 
-      {/* Header */}
       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 mb-6 pb-4 border-b border-base-content/10">
         <div className="flex items-center gap-3">
           <div className="w-10 h-10 rounded-xl bg-primary/10 text-primary flex items-center justify-center shrink-0">
@@ -177,7 +171,6 @@ export default function Connections() {
         </div>
       </div>
 
-      {/* Search Filter Bar */}
       {connections.length > 0 && (
         <div className="relative mb-6">
           <Search className="w-4 h-4 text-base-content/40 absolute left-3.5 top-1/2 -translate-y-1/2 pointer-events-none" />
@@ -199,7 +192,6 @@ export default function Connections() {
         </div>
       )}
 
-      {/* Empty State */}
       {connections.length === 0 ? (
         <div className="flex-1 flex flex-col items-center justify-center p-8 text-center my-auto">
           <div className="w-16 h-16 rounded-2xl bg-base-200 border border-base-content/10 flex items-center justify-center text-base-content/40 mb-4">
@@ -227,7 +219,6 @@ export default function Connections() {
           </p>
         </div>
       ) : (
-        /* Connections Directory List */
         <div className="flex flex-col gap-3">
           {filteredConnections.map((user) => {
             const fullName =
@@ -242,7 +233,6 @@ export default function Connections() {
                 key={user._id}
                 className="group p-4 sm:p-5 rounded-2xl bg-base-100 border border-base-content/10 shadow-sm hover:shadow-md transition-all flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4"
               >
-                {/* Left Profile Details */}
                 <div className="flex items-start sm:items-center gap-3.5 min-w-0 flex-1">
                   <div className="avatar shrink-0 relative">
                     <div className="w-13 h-13 sm:w-14 sm:h-14 rounded-2xl border border-base-content/10 overflow-hidden bg-base-200">
@@ -275,7 +265,7 @@ export default function Connections() {
 
                     {user.lookingFor && (
                       <div className="flex items-center gap-1.5 text-xs text-primary font-medium">
-                        <Sparkle className="w-3 h-3 shrink-0" />
+                        <Sparkle className="w-3.5 h-3.5 shrink-0" />
                         <span className="truncate">
                           Looking for: {user.lookingFor}
                         </span>
@@ -308,7 +298,6 @@ export default function Connections() {
                   </div>
                 </div>
 
-                {/* Right Action Dock */}
                 <div className="flex items-center gap-2 w-full sm:w-auto justify-end pt-2 sm:pt-0 border-t sm:border-t-0 border-base-content/10 shrink-0">
                   <button
                     onClick={() => handleMessageClick(user.firstName)}

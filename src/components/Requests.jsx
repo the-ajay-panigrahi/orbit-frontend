@@ -42,7 +42,6 @@ export default function Requests() {
       });
   };
 
-  // Always fetch fresh requests on mount
   useEffect(() => {
     const controller = new AbortController();
 
@@ -97,7 +96,6 @@ export default function Requests() {
     }
   };
 
-  // Loading Skeleton State
   if (isLoading && !requests) {
     return (
       <div className="flex-1 w-full max-w-3xl mx-auto p-4 sm:p-6 flex flex-col gap-4">
@@ -124,7 +122,6 @@ export default function Requests() {
     );
   }
 
-  // Error State
   if (error) {
     return (
       <div className="flex-1 flex flex-col items-center justify-center p-4 sm:p-6 text-center">
@@ -140,7 +137,6 @@ export default function Requests() {
 
   return (
     <div className="flex-1 w-full max-w-3xl mx-auto p-4 sm:p-6 flex flex-col">
-      {/* Toast Feedback */}
       {toastMessage && (
         <div className="toast toast-top toast-center z-50">
           <div className="alert alert-neutral py-2 px-4 shadow-xl border border-base-content/10 text-xs font-medium flex items-center gap-2">
@@ -150,7 +146,6 @@ export default function Requests() {
         </div>
       )}
 
-      {/* Header */}
       <div className="flex items-center justify-between mb-6 pb-4 border-b border-base-content/10">
         <div className="flex items-center gap-3">
           <div className="w-10 h-10 rounded-xl bg-primary/10 text-primary flex items-center justify-center">
@@ -181,7 +176,6 @@ export default function Requests() {
         </button>
       </div>
 
-      {/* Empty State */}
       {requests.length === 0 ? (
         <div className="flex-1 flex flex-col items-center justify-center p-8 text-center my-auto">
           <div className="w-16 h-16 rounded-2xl bg-base-200 border border-base-content/10 flex items-center justify-center text-base-content/40 mb-4">
@@ -200,7 +194,6 @@ export default function Requests() {
           </Link>
         </div>
       ) : (
-        /* Requests List */
         <div className="flex flex-col gap-3">
           {requests.map((request) => {
             const sender = request.fromUserId;
@@ -219,7 +212,6 @@ export default function Requests() {
                 key={request._id}
                 className="group p-4 sm:p-5 rounded-2xl bg-base-100 border border-base-content/10 shadow-sm hover:shadow-md transition-all flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4"
               >
-                {/* Left Profile Info */}
                 <div className="flex items-start sm:items-center gap-3.5 min-w-0 flex-1">
                   <div className="avatar shrink-0">
                     <div className="w-13 h-13 sm:w-14 sm:h-14 rounded-2xl border border-base-content/10 overflow-hidden bg-base-200">
@@ -283,7 +275,6 @@ export default function Requests() {
                   </div>
                 </div>
 
-                {/* Right Action Dock */}
                 <div className="flex items-center gap-2 w-full sm:w-auto justify-end pt-2 sm:pt-0 border-t sm:border-t-0 border-base-content/10 shrink-0">
                   <button
                     disabled={isProcessing}

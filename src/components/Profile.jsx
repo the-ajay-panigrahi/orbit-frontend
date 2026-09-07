@@ -179,7 +179,6 @@ export default function Profile() {
       </div>
 
       <div className="grid grid-cols-1 lg:grid-cols-12 gap-6 items-start">
-        {/* Left Column: Edit Form */}
         <div className="lg:col-span-7 card bg-base-100 shadow-xl border border-base-content/10 p-4 sm:p-5">
           <form onSubmit={handleSaveProfile} className="flex flex-col gap-3">
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
@@ -366,7 +365,6 @@ export default function Profile() {
           </form>
         </div>
 
-        {/* Right Column: Live Card Preview (flush aligned with left card) */}
         <div className="lg:col-span-5 flex flex-col items-center justify-start">
           <UserCard user={previewUser} showActions={false} />
         </div>
