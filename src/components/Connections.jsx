@@ -13,11 +13,14 @@ import {
 } from "lucide-react";
 import { BASE_URL } from "../utils/constants";
 import { addConnections } from "../utils/connectionSlice";
+import RowMorphDetailModal from "./RowMorphDetailModal";
 
 export default function Connections() {
   const connections = useSelector((store) => store.connections);
   const dispatch = useDispatch();
 
+  const [selectedUser, setSelectedUser] = useState(null);
+  const [originRect, setOriginRect] = useState(null);
   const [searchQuery, setSearchQuery] = useState("");
   const [error, setError] = useState("");
   const [toastMessage, setToastMessage] = useState("");
@@ -96,19 +99,19 @@ export default function Connections() {
       <div className="flex-1 w-full max-w-4xl mx-auto p-4 sm:p-6 flex flex-col gap-4">
         <div className="skeleton h-8 w-48 rounded-lg mb-2"></div>
         <div className="skeleton h-10 w-full rounded-xl mb-3"></div>
-        {[1, 2, 3].map((n) => (
+        {[1, 2, 3, 4].map((n) => (
           <div
             key={n}
-            className="p-5 rounded-2xl bg-base-100 border border-base-content/10 flex items-center justify-between gap-4"
+            className="p-3 sm:p-3.5 rounded-2xl bg-base-100 border border-base-content/10 flex items-center justify-between gap-4"
           >
-            <div className="flex items-center gap-4">
-              <div className="skeleton w-14 h-14 rounded-2xl shrink-0"></div>
-              <div className="flex flex-col gap-2">
-                <div className="skeleton h-5 w-36"></div>
-                <div className="skeleton h-3.5 w-24"></div>
+            <div className="flex items-center gap-3.5 flex-1 min-w-0">
+              <div className="skeleton w-12 h-12 sm:w-14 sm:h-14 rounded-2xl shrink-0"></div>
+              <div className="flex flex-col gap-2 flex-1">
+                <div className="skeleton h-4 w-36 rounded"></div>
+                <div className="skeleton h-3 w-48 rounded"></div>
               </div>
             </div>
-            <div className="skeleton h-9 w-24 rounded-xl"></div>
+            <div className="skeleton h-8 w-22 rounded-xl shrink-0"></div>
           </div>
         ))}
       </div>
@@ -219,7 +222,7 @@ export default function Connections() {
           </p>
         </div>
       ) : (
-        <div className="flex flex-col gap-3">
+        <div className="flex flex-col gap-2.5">
           {filteredConnections.map((user) => {
             const fullName =
               `${user.firstName || ""} ${user.lastName || ""}`.trim() ||
@@ -231,11 +234,16 @@ export default function Connections() {
             return (
               <div
                 key={user._id}
-                className="group p-4 sm:p-5 rounded-2xl bg-base-100 border border-base-content/10 shadow-sm hover:shadow-md transition-all flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4"
+                onClick={(e) => {
+                  const rect = e.currentTarget.getBoundingClientRect();
+                  setOriginRect(rect);
+                  setSelectedUser(user);
+                }}
+                className="group p-2.5 sm:p-3 rounded-2xl bg-base-100/90 backdrop-blur-sm border border-base-content/15 shadow-xs hover:shadow-lg hover:border-primary/45 transition-all duration-200 flex items-center justify-between gap-3 sm:gap-4 cursor-pointer"
               >
-                <div className="flex items-start sm:items-center gap-3.5 min-w-0 flex-1">
+                <div className="flex items-center gap-3 sm:gap-3.5 min-w-0 flex-1">
                   <div className="avatar shrink-0 relative">
-                    <div className="w-13 h-13 sm:w-14 sm:h-14 rounded-2xl border border-base-content/10 overflow-hidden bg-base-200">
+                    <div className="w-12 h-12 sm:w-14 sm:h-14 rounded-2xl border border-base-content/15 overflow-hidden bg-base-200 shadow-2xs group-hover:scale-105 transition-transform duration-200">
                       <img
                         src={profilePictureUrl}
                         alt={fullName}
@@ -246,66 +254,53 @@ export default function Connections() {
                       />
                     </div>
                     <span
-                      className="absolute -bottom-1 -right-1 w-3.5 h-3.5 rounded-full bg-emerald-500 border-2 border-base-100"
+                      className="absolute -bottom-0.5 -right-0.5 w-3.5 h-3.5 rounded-full bg-emerald-500 border-2 border-base-100 shadow-2xs"
                       title="Connected"
                     />
                   </div>
 
-                  <div className="flex flex-col gap-1 min-w-0 flex-1">
+                  <div className="flex flex-col gap-0.5 min-w-0 flex-1">
                     <div className="flex items-center gap-2 flex-wrap">
-                      <h3 className="text-sm sm:text-base font-bold text-base-content truncate">
+                      <h3 className="text-sm sm:text-base font-bold text-base-content tracking-tight truncate group-hover:text-primary transition-colors">
                         {fullName}
                       </h3>
                       {(user.age || user.gender) && (
-                        <span className="text-[11px] font-semibold text-base-content/60 bg-base-200 px-2 py-0.5 rounded-md shrink-0 capitalize">
+                        <span className="text-[10px] sm:text-[11px] font-semibold text-base-content/70 bg-base-200/80 border border-base-content/10 px-2 py-0.5 rounded-md shrink-0 capitalize">
                           {[user.age, user.gender].filter(Boolean).join(" • ")}
                         </span>
                       )}
                     </div>
 
-                    {user.lookingFor && (
-                      <div className="flex items-center gap-1.5 text-xs text-primary font-medium">
-                        <Sparkle className="w-3.5 h-3.5 shrink-0" />
-                        <span className="truncate">
-                          Looking for: {user.lookingFor}
+                    <div className="flex items-center gap-2 text-xs text-base-content/60 truncate">
+                      {user.lookingFor ? (
+                        <span className="inline-flex items-center gap-1 text-primary font-medium truncate">
+                          <Sparkle className="w-3 h-3 shrink-0" />
+                          <span className="truncate">Looking for: {user.lookingFor}</span>
                         </span>
-                      </div>
-                    )}
-
-                    {user.about && (
-                      <p className="text-xs text-base-content/70 line-clamp-1 break-words">
-                        {user.about}
-                      </p>
-                    )}
-
-                    {skills.length > 0 && (
-                      <div className="flex flex-wrap gap-1 pt-1">
-                        {skills.slice(0, 5).map((skill, idx) => (
-                          <span
-                            key={idx}
-                            className="badge badge-xs bg-base-200 text-base-content/75 font-mono border-0"
-                          >
-                            {skill}
-                          </span>
-                        ))}
-                        {skills.length > 5 && (
-                          <span className="text-[10px] text-base-content/50 self-center font-mono">
-                            +{skills.length - 5} more
-                          </span>
-                        )}
-                      </div>
-                    )}
+                      ) : user.about ? (
+                        <span className="truncate">{user.about}</span>
+                      ) : skills.length > 0 ? (
+                        <span className="font-mono text-[11px] text-base-content/70 truncate">
+                          {skills.slice(0, 3).join(" • ")}
+                        </span>
+                      ) : (
+                        <span>Orbit Builder</span>
+                      )}
+                    </div>
                   </div>
                 </div>
 
-                <div className="flex items-center gap-2 w-full sm:w-auto justify-end pt-2 sm:pt-0 border-t sm:border-t-0 border-base-content/10 shrink-0">
+                <div className="flex items-center gap-2 shrink-0">
                   <button
-                    onClick={() => handleMessageClick(user.firstName)}
-                    className="btn btn-sm btn-outline border-base-content/20 hover:border-primary hover:bg-primary hover:text-primary-content gap-2 transition-all cursor-pointer"
-                    title="Send Message"
+                    onClick={(e) => {
+                      e.stopPropagation();
+                      handleMessageClick(user.firstName);
+                    }}
+                    className="btn btn-sm btn-primary rounded-xl gap-1.5 font-semibold shadow-xs hover:shadow-md cursor-pointer shrink-0"
+                    title={`Message ${user.firstName}`}
                   >
                     <MessageSquare className="w-3.5 h-3.5" />
-                    <span>Message</span>
+                    <span className="hidden xs:inline sm:inline">Message</span>
                   </button>
                 </div>
               </div>
@@ -313,6 +308,32 @@ export default function Connections() {
           })}
         </div>
       )}
+
+      {/* 3D Row-to-Card Morphing Profile Modal */}
+      <RowMorphDetailModal
+        isOpen={Boolean(selectedUser)}
+        onClose={() => {
+          setSelectedUser(null);
+          setOriginRect(null);
+        }}
+        user={selectedUser}
+        originRect={originRect}
+        actions={
+          selectedUser && (
+            <button
+              onClick={() => {
+                handleMessageClick(selectedUser.firstName);
+                setSelectedUser(null);
+                setOriginRect(null);
+              }}
+              className="btn btn-sm btn-primary w-full rounded-xl gap-2 font-semibold shadow-md cursor-pointer"
+            >
+              <MessageSquare className="w-4 h-4" />
+              <span>Message {selectedUser.firstName}</span>
+            </button>
+          )
+        }
+      />
     </div>
   );
 }

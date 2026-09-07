@@ -1,3 +1,4 @@
+import { useState } from "react";
 import {
   UserCheck,
   RotateCcw,
@@ -8,8 +9,11 @@ import {
 } from "lucide-react";
 import { useFeed } from "../hooks/useFeed";
 import UserCard from "./UserCard";
+import Card3DZoomModal from "./Card3DZoomModal";
 
 export default function Feed() {
+  const [isZoomOpen, setIsZoomOpen] = useState(false);
+
   const {
     feed,
     currentUser,
@@ -24,7 +28,9 @@ export default function Feed() {
     handleRefresh,
     triggerSwipeAction,
     pointerHandlers,
-  } = useFeed();
+  } = useFeed({
+    onCardTap: () => setIsZoomOpen(true),
+  });
 
   if (isLoading && !feed) {
     return (
@@ -201,6 +207,16 @@ export default function Feed() {
           <span>Connect</span>
         </span>
       </div>
+
+      {/* 3D Elevated Zoom Inspection Modal */}
+      <Card3DZoomModal
+        isOpen={isZoomOpen}
+        onClose={() => setIsZoomOpen(false)}
+        user={currentUser}
+        onPass={() => triggerSwipeAction("left", currentUser)}
+        onConnect={() => triggerSwipeAction("right", currentUser)}
+        showActions={true}
+      />
     </div>
   );
 }

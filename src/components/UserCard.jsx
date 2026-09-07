@@ -3,8 +3,10 @@ import { X, Heart, Sparkle } from "lucide-react";
 export default function UserCard({
   user = {},
   showActions = false,
+  customActions = null,
   onPass,
   onConnect,
+  className = "",
 }) {
   const firstName = user?.firstName || "";
   const lastName = user?.lastName || "";
@@ -16,8 +18,12 @@ export default function UserCard({
   const about = user?.about;
   const skills = Array.isArray(user?.skills) ? user.skills : [];
 
+  const maxWidthClass = className.includes("max-w-") ? "" : "max-w-sm";
+
   return (
-    <div className="card w-full max-w-sm min-h-[480px] sm:min-h-[500px] bg-base-100 shadow-xl border border-base-content/10 overflow-hidden transition-all duration-300 hover:shadow-2xl flex flex-col justify-between">
+    <div
+      className={`card w-full ${maxWidthClass} min-h-[480px] sm:min-h-[500px] bg-base-100 shadow-xl border border-base-content/10 overflow-hidden transition-all duration-300 hover:shadow-2xl flex flex-col justify-between ${className}`}
+    >
       <figure className="p-4 pb-0">
         <div className="w-full h-56 sm:h-60 rounded-2xl bg-base-200 text-base-content flex items-center justify-center overflow-hidden border border-base-content/5">
           <img
@@ -69,7 +75,9 @@ export default function UserCard({
         )}
 
         <div className="card-actions justify-center items-center mt-1 pt-2.5 border-t border-base-content/10">
-          {showActions ? (
+          {customActions ? (
+            <div className="w-full">{customActions}</div>
+          ) : showActions ? (
             <div className="w-full flex items-center justify-around">
               <button
                 onClick={onPass}

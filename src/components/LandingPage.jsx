@@ -19,6 +19,7 @@ import {
   ArrowLeft,
 } from "lucide-react";
 import UserCard from "./UserCard";
+import Card3DZoomModal from "./Card3DZoomModal";
 
 // Curated showcase themes for quick real-time interaction
 const FEATURED_THEMES = [
@@ -79,6 +80,7 @@ export default function LandingPage() {
   const [isAutoplay, setIsAutoplay] = useState(true);
   const [isHovered, setIsHovered] = useState(false);
   const [matchCelebration, setMatchCelebration] = useState(null);
+  const [isZoomOpen, setIsZoomOpen] = useState(false);
 
   // Gesture and fly-out states (exact same architecture as Feed.jsx)
   const [dragOffset, setDragOffset] = useState({ x: 0, y: 0 });
@@ -111,11 +113,10 @@ export default function LandingPage() {
           const [first, ...rest] = prev;
           return [...rest, first];
         });
-
         setFlyDirection(null);
         setDragOffset({ x: 0, y: 0 });
         setIsActionPending(false);
-      }, 280);
+      }, 260);
     },
     [isActionPending],
   );
@@ -155,18 +156,10 @@ export default function LandingPage() {
     return () => window.removeEventListener("keydown", handleKeyDown);
   }, [currentUser, triggerSwipeAction]);
 
-  // Spotlight mouse-follow effect for cards
-  const handleSpotlightMove = (e) => {
-    const rect = e.currentTarget.getBoundingClientRect();
-    const x = e.clientX - rect.left;
-    const y = e.clientY - rect.top;
-    e.currentTarget.style.setProperty("--mouse-x", `${x}px`);
-    e.currentTarget.style.setProperty("--mouse-y", `${y}px`);
-  };
 
-  // Autoplay Swiping Timer (every 4.5s when not hovered/dragging)
+  // Autoplay Swiping Timer (every 4.5s when not hovered/dragging/inspecting)
   useEffect(() => {
-    if (!isAutoplay || isHovered || isDragging || isActionPending || !currentUser) {
+    if (!isAutoplay || isHovered || isDragging || isActionPending || isZoomOpen || !currentUser) {
       return;
     }
 
@@ -176,7 +169,7 @@ export default function LandingPage() {
     }, 4500);
 
     return () => clearInterval(timer);
-  }, [isAutoplay, isHovered, isDragging, isActionPending, currentUser, triggerSwipeAction]);
+  }, [isAutoplay, isHovered, isDragging, isActionPending, isZoomOpen, currentUser, triggerSwipeAction]);
 
   // Pointer event handlers (exact same as Feed.jsx / useFeed.js)
   const handlePointerDown = (e) => {
@@ -208,6 +201,16 @@ export default function LandingPage() {
     }
 
     const threshold = 110;
+    const deltaX = Math.abs(dragOffset.x);
+    const deltaY = Math.abs(dragOffset.y);
+
+    // Tap detection: if movement was minimal, open enlarged 3D zoom modal
+    if (deltaX < 8 && deltaY < 8) {
+      setIsZoomOpen(true);
+      setDragOffset({ x: 0, y: 0 });
+      return;
+    }
+
     if (dragOffset.x > threshold) {
       triggerSwipeAction("right", currentUser);
     } else if (dragOffset.x < -threshold) {
@@ -358,6 +361,11 @@ export default function LandingPage() {
               </span>
 
               <div className="flex items-center gap-2">
+                <span className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full bg-base-200/90 text-base-content border border-base-content/20 text-xs font-semibold tracking-wide shadow-2xs select-none">
+                  <span className="w-1.5 h-1.5 rounded-full bg-primary shrink-0" />
+                  <span>Demo Profile</span>
+                </span>
+                <span>•</span>
                 <button
                   onClick={() => setIsAutoplay((prev) => !prev)}
                   className="hover:text-base-content flex items-center gap-1 text-[11px] cursor-pointer"
@@ -366,8 +374,6 @@ export default function LandingPage() {
                   {isAutoplay ? <Pause className="w-3 h-3" /> : <Play className="w-3 h-3" />}
                   <span>{isAutoplay ? "Pause" : "Play"}</span>
                 </button>
-                <span>•</span>
-                <span className="text-[11px]">Swipe card</span>
               </div>
             </div>
 
@@ -435,25 +441,29 @@ export default function LandingPage() {
               )}
             </div>
 
-            {/* Micro hint below cards with keyboard shortcuts */}
-            <div className="hidden sm:flex items-center gap-4 mt-4 text-[11px] font-mono text-base-content/50">
-              <span className="flex items-center gap-1.5">
+            {/* Micro hint below cards with keyboard shortcuts & 3D zoom hint */}
+            <div className="hidden sm:flex items-center gap-3 mt-4 text-[11px] font-mono text-base-content/50">
+              <span className="flex items-center gap-1">
                 <kbd className="kbd kbd-xs bg-base-200">
                   <ArrowLeft className="w-3 h-3" />
                 </kbd>
                 <span>Pass</span>
               </span>
               <span>•</span>
-              <span className="flex items-center gap-1.5">
+              <span className="flex items-center gap-1">
                 <kbd className="kbd kbd-xs bg-base-200">
                   <ArrowRight className="w-3 h-3" />
                 </kbd>
                 <span>Connect</span>
               </span>
               <span>•</span>
-              <span className="flex items-center gap-1.5">
+              <span className="flex items-center gap-1">
                 <kbd className="kbd kbd-xs bg-base-200">Space</kbd>
                 <span>{isAutoplay ? "Pause" : "Play"}</span>
+              </span>
+              <span>•</span>
+              <span className="text-primary font-sans font-medium text-[11px]">
+                Tap card to zoom
               </span>
             </div>
 
@@ -492,6 +502,16 @@ export default function LandingPage() {
             </AnimatePresence>
           </motion.div>
         </div>
+
+        {/* 3D Elevated Zoom Inspection Modal for Landing Page */}
+        <Card3DZoomModal
+          isOpen={isZoomOpen}
+          onClose={() => setIsZoomOpen(false)}
+          user={currentUser}
+          onPass={() => triggerSwipeAction("left", currentUser)}
+          onConnect={() => triggerSwipeAction("right", currentUser)}
+          showActions={true}
+        />
       </section>
 
       {/* ─── Live In-Page Theme Switcher Showcase ───────────────── */}
@@ -542,7 +562,7 @@ export default function LandingPage() {
           </div>
 
           <div className="text-[11px] text-base-content/50 font-mono">
-            Currently active theme: <span className="font-bold text-primary capitalize">{theme || "bumblebee"}</span> • 30+ more themes in top navigation
+            Currently active theme: <span className="font-bold text-primary capitalize">{theme || "caramellatte"}</span> • 30+ more themes in top navigation
           </div>
         </div>
       </section>
@@ -566,18 +586,9 @@ export default function LandingPage() {
         <div className="grid grid-cols-1 md:grid-cols-3 gap-8 items-stretch">
           {/* Step 1 */}
           <div
-            className="group relative overflow-hidden h-full flex flex-col justify-start card bg-base-100 border border-base-content/15 rounded-2xl p-6 sm:p-8 space-y-4 hover:border-base-content/35 hover:shadow-xl hover:-translate-y-1 transition-all duration-300"
-            onMouseMove={handleSpotlightMove}
+            className="spotlight-card group relative overflow-hidden h-full flex flex-col justify-start border border-base-content/15 rounded-2xl p-6 sm:p-8 space-y-4 hover:border-primary/40 hover:shadow-xl transition-all duration-300"
           >
-            {/* Dynamic Mouse Spotlight */}
-            <div
-              className="pointer-events-none absolute inset-0 rounded-2xl opacity-0 group-hover:opacity-100 transition-opacity duration-300"
-              style={{
-                background:
-                  "radial-gradient(400px circle at var(--mouse-x, 50%) var(--mouse-y, 50%), color-mix(in srgb, var(--color-primary) 12%, transparent), transparent 75%)",
-              }}
-            />
-            <div className="relative z-10 w-12 h-12 rounded-xl bg-base-200 border border-base-content/15 text-base-content flex items-center justify-center font-bold text-lg shadow-2xs">
+            <div className="relative z-10 w-12 h-12 rounded-xl bg-base-200 border border-base-content/15 text-base-content flex items-center justify-center font-bold text-lg shadow-2xs group-hover:scale-105 group-hover:border-primary/40 transition-transform duration-300">
               <Code2 className="w-6 h-6 stroke-[2.2]" />
             </div>
             <div className="relative z-10 space-y-1.5">
@@ -594,18 +605,9 @@ export default function LandingPage() {
 
           {/* Step 2 */}
           <div
-            className="group relative overflow-hidden h-full flex flex-col justify-start card bg-base-100 border border-base-content/15 rounded-2xl p-6 sm:p-8 space-y-4 hover:border-base-content/35 hover:shadow-xl hover:-translate-y-1 transition-all duration-300"
-            onMouseMove={handleSpotlightMove}
+            className="spotlight-card group relative overflow-hidden h-full flex flex-col justify-start border border-base-content/15 rounded-2xl p-6 sm:p-8 space-y-4 hover:border-primary/40 hover:shadow-xl transition-all duration-300"
           >
-            {/* Dynamic Mouse Spotlight */}
-            <div
-              className="pointer-events-none absolute inset-0 rounded-2xl opacity-0 group-hover:opacity-100 transition-opacity duration-300"
-              style={{
-                background:
-                  "radial-gradient(400px circle at var(--mouse-x, 50%) var(--mouse-y, 50%), color-mix(in srgb, var(--color-primary) 12%, transparent), transparent 75%)",
-              }}
-            />
-            <div className="relative z-10 w-12 h-12 rounded-xl bg-base-200 border border-base-content/15 text-base-content flex items-center justify-center font-bold text-lg shadow-2xs">
+            <div className="relative z-10 w-12 h-12 rounded-xl bg-base-200 border border-base-content/15 text-base-content flex items-center justify-center font-bold text-lg shadow-2xs group-hover:scale-105 group-hover:border-primary/40 transition-transform duration-300">
               <Users className="w-6 h-6 stroke-[2.2]" />
             </div>
             <div className="relative z-10 space-y-1.5">
@@ -622,18 +624,9 @@ export default function LandingPage() {
 
           {/* Step 3 */}
           <div
-            className="group relative overflow-hidden h-full flex flex-col justify-start card bg-base-100 border border-base-content/15 rounded-2xl p-6 sm:p-8 space-y-4 hover:border-base-content/35 hover:shadow-xl hover:-translate-y-1 transition-all duration-300"
-            onMouseMove={handleSpotlightMove}
+            className="spotlight-card group relative overflow-hidden h-full flex flex-col justify-start border border-base-content/15 rounded-2xl p-6 sm:p-8 space-y-4 hover:border-primary/40 hover:shadow-xl transition-all duration-300"
           >
-            {/* Dynamic Mouse Spotlight */}
-            <div
-              className="pointer-events-none absolute inset-0 rounded-2xl opacity-0 group-hover:opacity-100 transition-opacity duration-300"
-              style={{
-                background:
-                  "radial-gradient(400px circle at var(--mouse-x, 50%) var(--mouse-y, 50%), color-mix(in srgb, var(--color-primary) 12%, transparent), transparent 75%)",
-              }}
-            />
-            <div className="relative z-10 w-12 h-12 rounded-xl bg-base-200 border border-base-content/15 text-base-content flex items-center justify-center font-bold text-lg shadow-2xs">
+            <div className="relative z-10 w-12 h-12 rounded-xl bg-base-200 border border-base-content/15 text-base-content flex items-center justify-center font-bold text-lg shadow-2xs group-hover:scale-105 group-hover:border-primary/40 transition-transform duration-300">
               <Rocket className="w-6 h-6 stroke-[2.2]" />
             </div>
             <div className="relative z-10 space-y-1.5">

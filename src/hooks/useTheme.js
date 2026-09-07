@@ -6,7 +6,7 @@ import { ALL_THEMES } from "../utils/constants";
  */
 export function useTheme() {
   const [theme, setTheme] = useState(() => {
-    return localStorage.getItem("orbit-theme") || "bumblebee";
+    return localStorage.getItem("orbit-theme") || "caramellatte";
   });
 
   useEffect(() => {

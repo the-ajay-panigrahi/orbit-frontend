@@ -11,7 +11,7 @@ const PREFETCH_THRESHOLD = 3;
  * Manages the card feed lifecycle: data fetching, threshold-based infinite pagination,
  * pointer gesture physics (drag, rotation, damping), keyboard shortcuts, and swipe actions.
  */
-export function useFeed() {
+export function useFeed({ onCardTap } = {}) {
   const feed = useSelector((store) => store.feed);
   const dispatch = useDispatch();
 
@@ -239,6 +239,15 @@ export function useFeed() {
     } else if (dragOffset.x < -threshold) {
       triggerSwipeAction("left", feed[0]);
     } else {
+      if (
+        Math.abs(dragOffset.x) < 8 &&
+        Math.abs(dragOffset.y) < 8 &&
+        !e.target.closest("button")
+      ) {
+        if (onCardTap && feed && feed.length > 0) {
+          onCardTap(feed[0]);
+        }
+      }
       setDragOffset({ x: 0, y: 0 });
     }
   };

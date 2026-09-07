@@ -6,6 +6,7 @@ import { User, Check, AlertCircle, RotateCcw, Save } from "lucide-react";
 import { BASE_URL } from "../utils/constants";
 import { addUser } from "../utils/userSlice";
 import UserCard from "./UserCard";
+import Card3DZoomModal from "./Card3DZoomModal";
 
 export default function Profile() {
   const user = useSelector((store) => store.user);
@@ -23,6 +24,7 @@ export default function Profile() {
   const [about, setAbout] = useState(user?.about || "");
   const [skills, setSkills] = useState(user?.skills || []);
   const [skillInput, setSkillInput] = useState("");
+  const [isZoomOpen, setIsZoomOpen] = useState(false);
 
   const [isSaving, setIsSaving] = useState(false);
   const [toast, setToast] = useState(() => {
@@ -365,10 +367,30 @@ export default function Profile() {
           </form>
         </div>
 
-        <div className="lg:col-span-5 flex flex-col items-center justify-start">
-          <UserCard user={previewUser} showActions={false} />
+        <div className="lg:col-span-5 flex flex-col items-center justify-start gap-2 select-none">
+          <div
+            onClick={() => setIsZoomOpen(true)}
+            className="cursor-pointer group relative transition-transform duration-200 hover:scale-[1.015] active:scale-[0.99] w-full max-w-sm flex justify-center"
+            title="Click card to zoom and inspect in 3D"
+          >
+            <UserCard user={previewUser} showActions={false} />
+            <div className="absolute top-6 right-6 opacity-0 group-hover:opacity-100 transition-opacity bg-base-100/90 backdrop-blur-md px-2.5 py-1 rounded-full text-[11px] font-semibold text-primary shadow-lg border border-base-content/10 pointer-events-none">
+              Click to Zoom 3D
+            </div>
+          </div>
+          <p className="text-[11px] font-mono text-base-content/50 text-center">
+            Tap card to inspect in 3D
+          </p>
         </div>
       </div>
+
+      {/* 3D Elevated Zoom Inspection Modal for Profile Preview */}
+      <Card3DZoomModal
+        isOpen={isZoomOpen}
+        onClose={() => setIsZoomOpen(false)}
+        user={previewUser}
+        showActions={false}
+      />
 
       {toast && (
         <div className="toast toast-top toast-center z-50 pt-16 sm:pt-18 px-4">

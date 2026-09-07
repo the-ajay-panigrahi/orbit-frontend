@@ -147,8 +147,8 @@ export default function Login() {
                   <p className="text-xs text-base-content/60">Co-founder & CTO @ Pulse AI</p>
                 </div>
               </div>
-              <span className="badge badge-sm badge-ghost text-[10px] font-mono text-base-content/50">
-                Verified Review
+              <span className="badge badge-sm badge-outline border-base-content/25 text-[10px] font-mono text-base-content/70">
+                Simulated Profile
               </span>
             </div>
           </div>

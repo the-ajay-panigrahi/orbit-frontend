@@ -43,3 +43,18 @@
     font-size: 18px;
   }
 }
+
+/* Luxury feature card hover styling - clean and uniform across all themes */
+.spotlight-card {
+  background-color: var(--color-base-100);
+  transition:
+    border-color 0.25s ease,
+    box-shadow 0.25s ease,
+    background-color 0.25s ease;
+}
+
+.spotlight-card:hover {
+  border-color: color-mix(in srgb, var(--color-primary) 45%, var(--color-base-content));
+  box-shadow: 0 20px 35px -10px color-mix(in srgb, var(--color-base-content) 10%, transparent);
+}
+
