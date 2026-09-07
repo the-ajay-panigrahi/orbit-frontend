@@ -461,14 +461,14 @@ export default function LandingPage() {
       {/* ─── 3-Step Visual Story Flow ("How Orbit Works") ───────── */}
       <section id="how-it-works" className="px-4 sm:px-6 lg:px-8 py-20 sm:py-28 max-w-7xl mx-auto w-full">
         <div className="text-center space-y-4 mb-16">
-          <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-base-100 border border-base-content/10 text-xs font-semibold text-base-content/70">
-            <Layers className="w-3.5 h-3.5 text-primary" />
+          <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-base-200 border border-base-content/15 text-xs font-semibold text-base-content">
+            <Layers className="w-3.5 h-3.5 text-base-content/70" />
             <span>The Orbit Experience</span>
           </div>
           <h2 className="text-3xl sm:text-4xl font-extrabold tracking-tight text-base-content">
             Built for how modern creators collaborate
           </h2>
-          <p className="text-sm sm:text-base text-base-content/60 max-w-2xl mx-auto">
+          <p className="text-sm sm:text-base text-base-content/70 max-w-2xl mx-auto">
             Traditional professional networks are cluttered with recruiters and sales pitches.
             Orbit keeps the signal pure and focused on building.
           </p>
@@ -477,20 +477,20 @@ export default function LandingPage() {
         <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
           {/* Step 1 */}
           <motion.div
-            className="card bg-base-100 border border-base-content/10 rounded-2xl p-6 sm:p-8 space-y-4 hover:border-primary/40 hover:shadow-xl transition-all"
+            className="card bg-base-100 border border-base-content/15 rounded-2xl p-6 sm:p-8 space-y-4 hover:border-base-content/30 hover:shadow-xl transition-all"
             whileHover={{ y: -4 }}
             transition={{ duration: 0.2 }}
           >
-            <div className="w-12 h-12 rounded-xl bg-primary/10 text-primary flex items-center justify-center font-bold text-lg">
+            <div className="w-12 h-12 rounded-xl bg-base-200 border border-base-content/15 text-base-content flex items-center justify-center font-bold text-lg shadow-2xs">
               <Code2 className="w-6 h-6 stroke-[2.2]" />
             </div>
-            <div className="space-y-1">
-              <span className="text-[11px] font-mono text-primary font-semibold uppercase tracking-wider">
+            <div className="space-y-1.5">
+              <span className="badge badge-sm badge-neutral font-mono text-[10px] font-bold uppercase tracking-wider">
                 Step 01
               </span>
               <h3 className="text-lg font-bold text-base-content">Signal Over Noise</h3>
             </div>
-            <p className="text-xs sm:text-sm text-base-content/70 leading-relaxed">
+            <p className="text-xs sm:text-sm text-base-content/75 leading-relaxed">
               Every profile highlights concrete technical skills, active repositories, and what the
               builder is currently creating. No inflated resumes.
             </p>
@@ -498,20 +498,20 @@ export default function LandingPage() {
 
           {/* Step 2 */}
           <motion.div
-            className="card bg-base-100 border border-base-content/10 rounded-2xl p-6 sm:p-8 space-y-4 hover:border-primary/40 hover:shadow-xl transition-all"
+            className="card bg-base-100 border border-base-content/15 rounded-2xl p-6 sm:p-8 space-y-4 hover:border-base-content/30 hover:shadow-xl transition-all"
             whileHover={{ y: -4 }}
             transition={{ duration: 0.2 }}
           >
-            <div className="w-12 h-12 rounded-xl bg-secondary/10 text-secondary flex items-center justify-center font-bold text-lg">
+            <div className="w-12 h-12 rounded-xl bg-base-200 border border-base-content/15 text-base-content flex items-center justify-center font-bold text-lg shadow-2xs">
               <Users className="w-6 h-6 stroke-[2.2]" />
             </div>
-            <div className="space-y-1">
-              <span className="text-[11px] font-mono text-secondary font-semibold uppercase tracking-wider">
+            <div className="space-y-1.5">
+              <span className="badge badge-sm badge-neutral font-mono text-[10px] font-bold uppercase tracking-wider">
                 Step 02
               </span>
               <h3 className="text-lg font-bold text-base-content">Mutual-Match Intent</h3>
             </div>
-            <p className="text-xs sm:text-sm text-base-content/70 leading-relaxed">
+            <p className="text-xs sm:text-sm text-base-content/75 leading-relaxed">
               Swipe cards right to express interest, or pass to see the next builder. Connections
               only happen when both builders mutually agree to connect.
             </p>
@@ -519,20 +519,20 @@ export default function LandingPage() {
 
           {/* Step 3 */}
           <motion.div
-            className="card bg-base-100 border border-base-content/10 rounded-2xl p-6 sm:p-8 space-y-4 hover:border-primary/40 hover:shadow-xl transition-all"
+            className="card bg-base-100 border border-base-content/15 rounded-2xl p-6 sm:p-8 space-y-4 hover:border-base-content/30 hover:shadow-xl transition-all"
             whileHover={{ y: -4 }}
             transition={{ duration: 0.2 }}
           >
-            <div className="w-12 h-12 rounded-xl bg-accent/10 text-accent flex items-center justify-center font-bold text-lg">
+            <div className="w-12 h-12 rounded-xl bg-base-200 border border-base-content/15 text-base-content flex items-center justify-center font-bold text-lg shadow-2xs">
               <Rocket className="w-6 h-6 stroke-[2.2]" />
             </div>
-            <div className="space-y-1">
-              <span className="text-[11px] font-mono text-accent font-semibold uppercase tracking-wider">
+            <div className="space-y-1.5">
+              <span className="badge badge-sm badge-neutral font-mono text-[10px] font-bold uppercase tracking-wider">
                 Step 03
               </span>
               <h3 className="text-lg font-bold text-base-content">Collaborate & Ship</h3>
             </div>
-            <p className="text-xs sm:text-sm text-base-content/70 leading-relaxed">
+            <p className="text-xs sm:text-sm text-base-content/75 leading-relaxed">
               Once connected, coordinate projects, exchange repos, and build side projects or
               venture-backed startups together.
             </p>
@@ -547,7 +547,9 @@ export default function LandingPage() {
           <div className="absolute -bottom-24 -left-24 w-72 h-72 bg-secondary/15 rounded-full blur-3xl pointer-events-none" />
 
           <div className="relative space-y-6 max-w-xl mx-auto">
-            <Orbit className="w-10 h-10 text-primary mx-auto stroke-[2.2]" />
+            <div className="w-14 h-14 rounded-2xl bg-primary text-primary-content flex items-center justify-center mx-auto shadow-lg">
+              <Orbit className="w-8 h-8 stroke-[2.2]" />
+            </div>
 
             <h2 className="text-3xl sm:text-4xl font-extrabold tracking-tight text-base-content">
               Ready to find your next co-builder?
