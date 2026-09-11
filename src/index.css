@@ -54,8 +54,13 @@
 }
 
 .spotlight-card:hover {
-  border-color: color-mix(in srgb, var(--color-primary) 45%, var(--color-base-content));
-  box-shadow: 0 20px 35px -10px color-mix(in srgb, var(--color-base-content) 10%, transparent);
+  border-color: color-mix(
+    in srgb,
+    var(--color-primary) 45%,
+    var(--color-base-content)
+  );
+  box-shadow: 0 20px 35px -10px
+    color-mix(in srgb, var(--color-base-content) 10%, transparent);
 }
 
 /* Sleek custom scrollbar utility */
@@ -75,6 +80,10 @@
 }
 .custom-scrollbar {
   scrollbar-width: thin;
-  scrollbar-color: color-mix(in srgb, var(--color-base-content) 20%, transparent) transparent;
+  scrollbar-color: color-mix(
+      in srgb,
+      var(--color-base-content) 20%,
+      transparent
+    )
+    transparent;
 }
-
