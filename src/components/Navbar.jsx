@@ -180,7 +180,7 @@ export default function Navbar({ theme, onSelectTheme, themes }) {
                 </div>
               </div>
 
-              <div className="grid grid-cols-1 sm:grid-cols-2 gap-1.5 max-h-88 sm:max-h-104 overflow-y-auto pr-1">
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-1.5 max-h-88 sm:max-h-104 overflow-y-auto pr-2.5 custom-scrollbar">
                 {filteredThemes.map((t) => {
                   const isActive = theme === t;
                   return (
@@ -304,7 +304,7 @@ export default function Navbar({ theme, onSelectTheme, themes }) {
 
               <ul
                 tabIndex={0}
-                className="dropdown-content menu p-2.5 shadow-2xl bg-base-100 rounded-2xl w-60 sm:w-56 border border-base-content/10 mt-2 z-50 text-xs gap-1"
+                className="dropdown-content menu p-2.5 shadow-2xl bg-base-100 rounded-2xl w-72 sm:w-64 border border-base-content/10 mt-2 z-50 text-xs gap-1"
               >
                 {/* Profile Header with Avatar DP beside Name & Email */}
                 <li className="px-2 py-2 border-b border-base-content/10 pointer-events-none select-none">
@@ -393,7 +393,7 @@ export default function Navbar({ theme, onSelectTheme, themes }) {
                         {theme}
                       </span>
                     </div>
-                    <div className="grid grid-cols-2 gap-1 max-h-32 overflow-y-auto pr-0.5">
+                    <div className="grid grid-cols-2 gap-1.5 max-h-36 overflow-y-auto pr-2.5 pl-0.5 py-1 custom-scrollbar">
                       {themes.map((t) => (
                         <button
                           key={t}
@@ -405,19 +405,19 @@ export default function Navbar({ theme, onSelectTheme, themes }) {
                             }
                           }}
                           aria-label={`Select ${t} theme`}
-                          className={`flex items-center justify-between px-2 py-1 rounded-md text-[10px] capitalize truncate border transition-all text-left cursor-pointer ${
+                          className={`flex items-center justify-between gap-1.5 px-2.5 py-1.5 rounded-lg text-[11px] capitalize border transition-all text-left cursor-pointer min-w-0 ${
                             theme === t
                               ? "bg-primary text-primary-content font-bold border-primary shadow-2xs"
                               : "bg-base-100 hover:bg-base-200 border-base-content/10 text-base-content/80"
                           }`}
                         >
-                          <span className="truncate">{t}</span>
+                          <span className="truncate flex-1 min-w-0 font-medium">{t}</span>
                           <span
                             data-theme={t}
-                            className="flex gap-0.5 p-0.5 bg-base-100 rounded border border-base-content/10 shrink-0"
+                            className="flex gap-0.5 p-0.5 bg-base-100 rounded border border-base-content/10 shrink-0 ml-1"
                           >
-                            <span className="w-1 h-2 rounded-2xs bg-primary" />
-                            <span className="w-1 h-2 rounded-2xs bg-secondary" />
+                            <span className="w-1 h-2.5 rounded-2xs bg-primary" />
+                            <span className="w-1 h-2.5 rounded-2xs bg-secondary" />
                           </span>
                         </button>
                       ))}

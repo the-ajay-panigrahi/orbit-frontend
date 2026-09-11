@@ -58,3 +58,23 @@
   box-shadow: 0 20px 35px -10px color-mix(in srgb, var(--color-base-content) 10%, transparent);
 }
 
+/* Sleek custom scrollbar utility */
+.custom-scrollbar::-webkit-scrollbar {
+  width: 5px;
+  height: 5px;
+}
+.custom-scrollbar::-webkit-scrollbar-track {
+  background: transparent;
+}
+.custom-scrollbar::-webkit-scrollbar-thumb {
+  background: color-mix(in srgb, var(--color-base-content) 20%, transparent);
+  border-radius: 9999px;
+}
+.custom-scrollbar::-webkit-scrollbar-thumb:hover {
+  background: color-mix(in srgb, var(--color-base-content) 40%, transparent);
+}
+.custom-scrollbar {
+  scrollbar-width: thin;
+  scrollbar-color: color-mix(in srgb, var(--color-base-content) 20%, transparent) transparent;
+}
+
