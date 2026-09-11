@@ -143,11 +143,11 @@ export default function Navbar({ theme, onSelectTheme, themes }) {
           <div className={`dropdown dropdown-end ${user ? "hidden sm:inline-block" : "inline-block"}`}>
             <button
               tabIndex={0}
-              className="btn btn-xs sm:btn-sm btn-ghost gap-1 sm:gap-2 border border-base-content/15 rounded-full hover:bg-base-content/5 transition-colors"
+              className="btn btn-xs sm:btn-sm btn-ghost gap-1.5 sm:gap-2 border border-base-content/15 rounded-full hover:bg-base-content/5 transition-colors"
               aria-label={`Theme selector (current theme: ${theme})`}
             >
               <Palette className="w-3.5 h-3.5 sm:w-4 sm:h-4 text-base-content/70 shrink-0" />
-              <span className="text-[11px] sm:text-xs font-semibold capitalize text-base-content max-w-16 sm:max-w-none truncate">
+              <span className="ml-0.5 text-[11px] sm:text-xs font-semibold capitalize text-base-content max-w-20 sm:max-w-none truncate">
                 {theme}
               </span>
               <ChevronDown className="w-3 h-3 sm:w-3.5 sm:h-3.5 text-base-content/50 shrink-0" />
@@ -383,13 +383,13 @@ export default function Navbar({ theme, onSelectTheme, themes }) {
 
                 {/* Mobile Theme Selector inside Profile Dropdown */}
                 <li className="sm:hidden border-t border-base-content/10 pt-1.5">
-                  <div className="flex flex-col gap-1.5 p-1 w-full bg-transparent hover:bg-transparent">
-                    <div className="flex items-center justify-between text-[11px] font-semibold text-base-content/75 px-1">
-                      <span className="flex items-center gap-1.5">
-                        <Palette className="w-3.5 h-3.5 text-primary" />
+                  <div className="flex flex-col gap-1.5 p-1 w-full bg-transparent hover:bg-transparent cursor-default">
+                    <div className="flex items-center justify-between gap-2 w-full text-[11px] font-semibold text-base-content/75 px-1 py-0.5">
+                      <span className="flex items-center gap-1.5 shrink-0">
+                        <Palette className="w-3.5 h-3.5 text-primary shrink-0" />
                         <span>Theme</span>
                       </span>
-                      <span className="text-[10px] uppercase font-mono px-1.5 py-0.5 rounded bg-base-200 border border-base-content/10">
+                      <span className="ml-auto text-[10px] uppercase font-mono px-2 py-0.5 rounded-md bg-base-200 border border-base-content/15 font-bold text-base-content tracking-wide shadow-2xs">
                         {theme}
                       </span>
                     </div>
