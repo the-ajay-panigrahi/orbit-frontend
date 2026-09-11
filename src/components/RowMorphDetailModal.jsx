@@ -1,5 +1,11 @@
 import { useEffect, useRef, useState } from "react";
-import { motion, AnimatePresence, useMotionValue, useTransform, useSpring } from "motion/react";
+import {
+  motion,
+  AnimatePresence,
+  useMotionValue,
+  useTransform,
+  useSpring,
+} from "motion/react";
 import { X } from "lucide-react";
 import UserCard from "./UserCard";
 
@@ -41,7 +47,14 @@ export default function RowMorphDetailModal({
   // Calculate delta coordinates and aspect scale from the clicked row to screen center
   const getTransformOrigin = () => {
     if (!originRect || typeof window === "undefined") {
-      return { deltaX: 0, deltaY: 40, scaleX: 0.9, scaleY: 0.6, rotateX: 25, rotateY: 0 };
+      return {
+        deltaX: 0,
+        deltaY: 40,
+        scaleX: 0.9,
+        scaleY: 0.6,
+        rotateX: 25,
+        rotateY: 0,
+      };
     }
 
     const viewportCenterX = window.innerWidth / 2;
@@ -54,10 +67,13 @@ export default function RowMorphDetailModal({
 
     // Approximate card size is 380px wide by 500px tall
     const cardWidth = Math.min(380, window.innerWidth - 32);
-    const cardHeight = Math.min(520, window.innerHeight - 40);
+    const cardHeight = Math.min(560, window.innerHeight - 40);
 
     const scaleX = Math.min(Math.max(originRect.width / cardWidth, 0.9), 1.15);
-    const scaleY = Math.min(Math.max(originRect.height / cardHeight, 0.35), 0.55);
+    const scaleY = Math.min(
+      Math.max(originRect.height / cardHeight, 0.35),
+      0.55,
+    );
 
     const rotateX = deltaY > 0 ? 30 : -25;
     const rotateY = deltaX !== 0 ? (deltaX > 0 ? -12 : 12) : 0;
@@ -65,14 +81,12 @@ export default function RowMorphDetailModal({
     return { deltaX, deltaY, scaleX, scaleY, rotateX, rotateY };
   };
 
-  const { deltaX, deltaY, scaleX, scaleY, rotateX, rotateY } = getTransformOrigin();
+  const { deltaX, deltaY, scaleX, scaleY, rotateX, rotateY } =
+    getTransformOrigin();
 
   // Close on Escape key
   useEffect(() => {
-    if (!isOpen) {
-      setIsSettled(false);
-      return;
-    }
+    if (!isOpen) return;
 
     const handleKeyDown = (e) => {
       if (e.key === "Escape") {
@@ -144,12 +158,12 @@ export default function RowMorphDetailModal({
             onMouseMove={handleMouseMove}
             onMouseLeave={handleMouseLeave}
             onClick={(e) => e.stopPropagation()}
-            className="relative w-full max-w-sm my-auto select-none origin-center"
+            className="relative w-full max-w-sm my-auto select-none origin-center max-h-[calc(100dvh-2rem)]"
           >
             {/* Close Button floating top-right */}
             <button
               onClick={onClose}
-              className="absolute -top-3 -right-3 z-30 btn btn-circle btn-sm bg-base-100/90 backdrop-blur-sm border border-base-content/20 shadow-xl hover:bg-base-200 text-base-content hover:scale-110 active:scale-95 transition-all cursor-pointer"
+              className="absolute top-2 right-2 sm:-top-3 sm:-right-3 z-30 btn btn-circle btn-sm bg-base-100/90 backdrop-blur-sm border border-base-content/20 shadow-xl hover:bg-base-200 text-base-content hover:scale-110 active:scale-95 transition-all cursor-pointer"
               aria-label="Close user profile"
               title="Close (Esc)"
             >
@@ -158,7 +172,11 @@ export default function RowMorphDetailModal({
 
             {/* Complete UserCard display */}
             <div className="shadow-2xl rounded-2xl overflow-hidden ring-1 ring-base-content/15">
-              <UserCard user={user} showActions={false} customActions={actions} />
+              <UserCard
+                user={user}
+                showActions={false}
+                customActions={actions}
+              />
             </div>
           </motion.div>
         </motion.div>

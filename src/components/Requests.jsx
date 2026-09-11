@@ -139,7 +139,7 @@ export default function Requests() {
   }
 
   return (
-    <div className="flex-1 w-full max-w-3xl mx-auto p-4 sm:p-6 flex flex-col">
+    <div className="flex-1 w-full max-w-3xl mx-auto p-3 sm:p-6 pb-20 md:pb-6 flex flex-col">
       {toastMessage && (
         <div className="toast toast-top toast-center z-50">
           <div className="alert alert-neutral py-2 px-4 shadow-xl border border-base-content/10 text-xs font-medium flex items-center gap-2">
@@ -188,8 +188,9 @@ export default function Requests() {
             All Caught Up!
           </h2>
           <p className="text-xs text-base-content/60 max-w-sm mb-6 leading-relaxed">
-            You don&apos;t have any pending connection requests right now. As you
-            discover more builders in the feed, new requests will appear here.
+            You don&apos;t have any pending connection requests right now. As
+            you discover more builders in the feed, new requests will appear
+            here.
           </p>
           <Link to="/feed" className="btn btn-sm btn-primary gap-2 font-medium">
             <Compass className="w-4 h-4" />
@@ -226,7 +227,11 @@ export default function Requests() {
                       <img
                         src={profilePictureUrl}
                         alt={fullName}
-                        className="w-full h-full object-cover"
+                        width="56"
+                        height="56"
+                        loading="lazy"
+                        decoding="async"
+                        className="w-full h-full object-cover object-top"
                         onError={(e) => {
                           e.target.src = "/default-avatar.svg";
                         }}
@@ -252,7 +257,9 @@ export default function Requests() {
                       {sender.lookingFor ? (
                         <span className="inline-flex items-center gap-1 text-primary font-medium truncate">
                           <Sparkle className="w-3 h-3 shrink-0" />
-                          <span className="truncate">Looking for: {sender.lookingFor}</span>
+                          <span className="truncate">
+                            Looking for: {sender.lookingFor}
+                          </span>
                         </span>
                       ) : sender.about ? (
                         <span className="truncate">{sender.about}</span>

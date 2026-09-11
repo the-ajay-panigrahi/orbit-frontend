@@ -52,6 +52,8 @@ export default function Card3DZoomModal({
     return () => window.removeEventListener("keydown", handleKeyDown);
   }, [isOpen, onClose]);
 
+  const isMobile = typeof window !== "undefined" && window.innerWidth < 640;
+
   return (
     <AnimatePresence>
       {isOpen && user && (
@@ -61,7 +63,7 @@ export default function Card3DZoomModal({
           exit={{ opacity: 0 }}
           transition={{ duration: 0.2 }}
           onClick={onClose}
-          className="fixed inset-0 z-50 bg-black/75 backdrop-blur-md flex items-center justify-center p-6 sm:p-10 overflow-y-auto"
+          className="fixed inset-0 z-50 bg-black/75 backdrop-blur-md flex items-center justify-center p-3 xs:p-4 sm:p-8 overflow-y-auto"
           style={{ perspective: 1200 }}
         >
           {/* Card zooming up uniformly in 3D, keeping exact aspect ratio */}
@@ -69,19 +71,19 @@ export default function Card3DZoomModal({
             ref={cardRef}
             initial={{
               opacity: 0,
-              scale: 0.94,
+              scale: 0.92,
               y: 20,
               rotateX: 12,
             }}
             animate={{
               opacity: 1,
-              scale: 1.15,
+              scale: isMobile ? 1 : 1.08,
               y: 0,
               rotateX: 0,
             }}
             exit={{
               opacity: 0,
-              scale: 0.94,
+              scale: 0.92,
               y: 16,
               rotateX: -10,
             }}
@@ -98,14 +100,14 @@ export default function Card3DZoomModal({
             onMouseMove={handleMouseMove}
             onMouseLeave={handleMouseLeave}
             onClick={(e) => e.stopPropagation()}
-            className="relative w-full max-w-sm my-auto select-none origin-center"
+            className="relative w-full max-w-sm my-auto select-none origin-center max-h-[calc(100dvh-2rem)]"
           >
             {/* Card wrapper maintaining exact aspect ratio with firmly anchored close button */}
             <div className="relative rounded-2xl shadow-2xl ring-1 ring-base-content/20">
               {/* Close Button firmly anchored directly to the card's top-right corner */}
               <button
                 onClick={onClose}
-                className="absolute -top-3 -right-3 z-40 btn btn-circle btn-sm bg-base-100/95 backdrop-blur-md border border-base-content/25 shadow-2xl hover:bg-base-200 text-base-content hover:scale-110 active:scale-95 transition-all cursor-pointer"
+                className="absolute top-2 right-2 sm:-top-3 sm:-right-3 z-40 btn btn-circle btn-sm bg-base-100/95 backdrop-blur-md border border-base-content/25 shadow-2xl hover:bg-base-200 text-base-content hover:scale-110 active:scale-95 transition-all cursor-pointer"
                 aria-label="Close 3D profile inspection"
                 title="Close (Esc)"
               >

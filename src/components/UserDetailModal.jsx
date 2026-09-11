@@ -76,12 +76,12 @@ export default function UserDetailModal({
             onMouseMove={handleMouseMove}
             onMouseLeave={handleMouseLeave}
             onClick={(e) => e.stopPropagation()}
-            className="relative w-full max-w-sm my-auto select-none"
+            className="relative w-full max-w-sm my-auto select-none max-h-[calc(100dvh-2rem)]"
           >
             {/* Close Button floating top-right */}
             <button
               onClick={onClose}
-              className="absolute -top-3 -right-3 z-30 btn btn-circle btn-sm bg-base-100/90 backdrop-blur-sm border border-base-content/20 shadow-xl hover:bg-base-200 text-base-content hover:scale-110 active:scale-95 transition-all cursor-pointer"
+              className="absolute top-2 right-2 sm:-top-3 sm:-right-3 z-30 btn btn-circle btn-sm bg-base-100/90 backdrop-blur-sm border border-base-content/20 shadow-xl hover:bg-base-200 text-base-content hover:scale-110 active:scale-95 transition-all cursor-pointer"
               aria-label="Close user profile"
               title="Close (Esc)"
             >

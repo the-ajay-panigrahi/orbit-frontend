@@ -92,11 +92,12 @@ export default function Feed() {
         ? -28
         : 0;
 
-  const translateX = flyDirection === "right"
-    ? 650
-    : flyDirection === "left"
-      ? -650
-      : dragOffset.x;
+  const translateX =
+    flyDirection === "right"
+      ? 650
+      : flyDirection === "left"
+        ? -650
+        : dragOffset.x;
 
   const translateY = flyDirection ? 40 : dragOffset.y;
 
@@ -122,7 +123,7 @@ export default function Feed() {
       : 0;
 
   return (
-    <div className="flex-1 flex flex-col items-center justify-center p-4 sm:p-6 select-none relative overflow-hidden">
+    <div className="flex-1 flex flex-col items-center justify-center p-3 sm:p-6 pb-20 sm:pb-6 select-none relative overflow-hidden">
       {toastMessage && (
         <div className="toast toast-top toast-center z-50 transition-all duration-300">
           <div className="alert alert-neutral py-2 px-4 shadow-xl border border-base-content/10 text-xs font-medium flex items-center gap-2">
@@ -139,7 +140,7 @@ export default function Feed() {
         </span>
       </div>
 
-      <div className="relative w-full max-w-sm min-h-[490px] sm:min-h-[510px] flex items-center justify-center">
+      <div className="relative w-full max-w-sm min-h-[480px] xs:min-h-[520px] sm:min-h-[540px] flex items-center justify-center">
         {nextUser && (
           <div
             key={nextUser._id}

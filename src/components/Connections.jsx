@@ -81,7 +81,8 @@ export default function Connections() {
   const filteredConnections = (connections || []).filter((user) => {
     if (!searchQuery.trim()) return true;
     const query = searchQuery.toLowerCase();
-    const fullName = `${user.firstName || ""} ${user.lastName || ""}`.toLowerCase();
+    const fullName =
+      `${user.firstName || ""} ${user.lastName || ""}`.toLowerCase();
     const hasMatchingSkill = Array.isArray(user.skills)
       ? user.skills.some((skill) => skill.toLowerCase().includes(query))
       : false;
@@ -132,7 +133,7 @@ export default function Connections() {
   }
 
   return (
-    <div className="flex-1 w-full max-w-4xl mx-auto p-4 sm:p-6 flex flex-col">
+    <div className="flex-1 w-full max-w-4xl mx-auto p-3 sm:p-6 pb-20 md:pb-6 flex flex-col">
       {toastMessage && (
         <div className="toast toast-top toast-center z-50">
           <div className="alert alert-neutral py-2 px-4 shadow-xl border border-base-content/10 text-xs font-medium flex items-center gap-2">
@@ -180,6 +181,7 @@ export default function Connections() {
           <input
             type="text"
             placeholder="Search connections by name, skill, or role..."
+            aria-label="Search connections by name, skill, or role"
             value={searchQuery}
             onChange={(e) => setSearchQuery(e.target.value)}
             className="input input-sm sm:input-md w-full pl-10 rounded-xl bg-base-100 border-base-content/15 text-xs sm:text-sm focus:border-primary focus:outline-none"
@@ -187,7 +189,8 @@ export default function Connections() {
           {searchQuery && (
             <button
               onClick={() => setSearchQuery("")}
-              className="absolute right-3 top-1/2 -translate-y-1/2 text-xs text-base-content/40 hover:text-base-content font-mono px-1.5 py-0.5"
+              aria-label="Clear search query"
+              className="absolute right-3 top-1/2 -translate-y-1/2 text-xs text-base-content/40 hover:text-base-content font-mono px-1.5 py-0.5 cursor-pointer"
             >
               Clear
             </button>
@@ -247,7 +250,11 @@ export default function Connections() {
                       <img
                         src={profilePictureUrl}
                         alt={fullName}
-                        className="w-full h-full object-cover"
+                        width="56"
+                        height="56"
+                        loading="lazy"
+                        decoding="async"
+                        className="w-full h-full object-cover object-top"
                         onError={(e) => {
                           e.target.src = "/default-avatar.svg";
                         }}
@@ -275,7 +282,9 @@ export default function Connections() {
                       {user.lookingFor ? (
                         <span className="inline-flex items-center gap-1 text-primary font-medium truncate">
                           <Sparkle className="w-3 h-3 shrink-0" />
-                          <span className="truncate">Looking for: {user.lookingFor}</span>
+                          <span className="truncate">
+                            Looking for: {user.lookingFor}
+                          </span>
                         </span>
                       ) : user.about ? (
                         <span className="truncate">{user.about}</span>

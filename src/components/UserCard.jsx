@@ -22,14 +22,18 @@ export default function UserCard({
 
   return (
     <div
-      className={`card w-full ${maxWidthClass} min-h-[480px] sm:min-h-[500px] bg-base-100 shadow-xl border border-base-content/10 overflow-hidden transition-all duration-300 hover:shadow-2xl flex flex-col justify-between ${className}`}
+      className={`card w-full ${maxWidthClass} min-h-[480px] xs:min-h-[520px] sm:min-h-[540px] bg-base-100 shadow-xl border border-base-content/10 overflow-hidden transition-all duration-300 hover:shadow-2xl flex flex-col justify-between ${className}`}
     >
-      <figure className="p-4 pb-0">
-        <div className="w-full h-56 sm:h-60 rounded-2xl bg-base-200 text-base-content flex items-center justify-center overflow-hidden border border-base-content/5">
+      <figure className="p-3 sm:p-4 pb-0">
+        <div className="w-full h-56 xs:h-64 sm:h-72 rounded-2xl bg-base-200 text-base-content flex items-center justify-center overflow-hidden border border-base-content/10">
           <img
             src={profilePictureUrl}
             alt={fullName}
-            className="w-full h-full object-cover object-center"
+            width="600"
+            height="480"
+            fetchpriority="high"
+            loading="eager"
+            className="w-full h-full object-cover object-top"
             onError={(e) => {
               e.target.src = "/default-avatar.svg";
             }}
@@ -37,9 +41,9 @@ export default function UserCard({
         </div>
       </figure>
 
-      <div className="card-body p-4 sm:p-5 gap-3 flex-1 flex flex-col justify-between">
+      <div className="card-body p-3.5 sm:p-5 gap-2.5 sm:gap-3 flex-1 flex flex-col justify-between">
         <div className="flex items-center justify-between gap-2">
-          <h2 className="card-title text-lg sm:text-xl font-bold tracking-tight text-base-content truncate">
+          <h2 className="card-title text-base sm:text-lg lg:text-xl font-bold tracking-tight text-base-content truncate">
             {fullName}
           </h2>
           {(age || gender) && (

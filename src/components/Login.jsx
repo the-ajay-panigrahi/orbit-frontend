@@ -1,5 +1,5 @@
 import { useState, useEffect, useRef } from "react";
-import { useNavigate, useSearchParams, Link } from "react-router-dom";
+import { useNavigate, useSearchParams } from "react-router-dom";
 import { useDispatch, useSelector } from "react-redux";
 import axios from "axios";
 import {
@@ -12,7 +12,6 @@ import {
   Eye,
   EyeOff,
   Orbit,
-  Sparkles,
   ShieldCheck,
   Zap,
   Users,
@@ -24,15 +23,7 @@ import { BASE_URL } from "../utils/constants";
 export default function Login() {
   const [searchParams] = useSearchParams();
   const mode = searchParams.get("mode");
-  const [isLoginForm, setIsLoginForm] = useState(mode !== "signup");
-
-  useEffect(() => {
-    if (mode === "signup") {
-      setIsLoginForm(false);
-    } else if (mode === "signin" || mode === "login") {
-      setIsLoginForm(true);
-    }
-  }, [mode]);
+  const isLoginForm = mode !== "signup";
 
   const [firstName, setFirstName] = useState("");
   const [lastName, setLastName] = useState("");
@@ -97,7 +88,6 @@ export default function Login() {
 
   const switchMode = (isLogin) => {
     setError("");
-    setIsLoginForm(isLogin);
     navigate(`/login?mode=${isLogin ? "signin" : "signup"}`, { replace: true });
   };
 
@@ -138,7 +128,12 @@ export default function Login() {
                   <div className="w-9 h-9 rounded-full ring-2 ring-primary/30 overflow-hidden">
                     <img
                       src="https://images.unsplash.com/photo-1573496359142-b8d87734a5a2?q=80&w=200&h=200&fit=crop&crop=faces"
+                      src="https://images.unsplash.com/photo-1573496359142-b8d87734a5a2?q=75&w=120&h=120&auto=format&fit=crop&crop=faces"
                       alt="Sarah Chen"
+                      width="36"
+                      height="36"
+                      loading="lazy"
+                      decoding="async"
                     />
                   </div>
                 </div>

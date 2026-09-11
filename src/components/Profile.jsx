@@ -169,7 +169,7 @@ export default function Profile() {
   };
 
   return (
-    <div className="flex-1 flex flex-col justify-center w-full max-w-5xl mx-auto px-4 py-3 sm:py-5">
+    <div className="flex-1 flex flex-col justify-center w-full max-w-5xl mx-auto px-3 sm:px-4 py-3 sm:py-5 pb-20 md:pb-5">
       <div className="mb-3 text-center sm:text-left">
         <h1 className="text-xl sm:text-2xl font-bold tracking-tight text-base-content flex items-center justify-center sm:justify-start gap-2">
           <User className="w-5 h-5 text-primary stroke-[2.2]" />
