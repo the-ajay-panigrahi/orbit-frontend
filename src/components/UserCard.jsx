@@ -1,4 +1,4 @@
-import { X, Heart, Sparkle } from "lucide-react";
+import { X, Heart, Sparkle, Crown } from "lucide-react";
 
 export default function UserCard({
   user = {},
@@ -17,15 +17,16 @@ export default function UserCard({
   const lookingFor = user?.lookingFor;
   const about = user?.about;
   const skills = Array.isArray(user?.skills) ? user.skills : [];
+  const membershipType = user?.membershipType;
 
   const maxWidthClass = className.includes("max-w-") ? "" : "max-w-sm";
 
   return (
     <div
-      className={`card w-full ${maxWidthClass} min-h-[480px] xs:min-h-[520px] sm:min-h-[540px] bg-base-100 shadow-xl border border-base-content/10 overflow-hidden transition-all duration-300 hover:shadow-2xl flex flex-col justify-between ${className}`}
+      className={`card w-full ${maxWidthClass} min-h-[420px] xs:min-h-[450px] sm:min-h-[470px] bg-base-100 shadow-lg border border-base-content/10 overflow-hidden transition-all duration-300 hover:shadow-xl flex flex-col justify-between ${className}`}
     >
-      <figure className="p-3 sm:p-4 pb-0">
-        <div className="w-full h-56 xs:h-64 sm:h-72 rounded-2xl bg-base-200 text-base-content flex items-center justify-center overflow-hidden border border-base-content/10">
+      <figure className="p-3 sm:p-3.5 pb-0">
+        <div className="w-full h-46 xs:h-52 sm:h-58 rounded-2xl bg-base-200 text-base-content flex items-center justify-center overflow-hidden border border-base-content/10 relative">
           <img
             src={profilePictureUrl}
             alt={fullName}
@@ -33,7 +34,8 @@ export default function UserCard({
             height="480"
             fetchpriority="high"
             loading="eager"
-            className="w-full h-full object-cover object-top"
+            style={{ objectPosition: "center 20%" }}
+            className="w-full h-full object-cover"
             onError={(e) => {
               e.target.src = "/default-avatar.svg";
             }}
@@ -41,13 +43,25 @@ export default function UserCard({
         </div>
       </figure>
 
-      <div className="card-body p-3.5 sm:p-5 gap-2.5 sm:gap-3 flex-1 flex flex-col justify-between">
+      <div className="card-body p-3.5 sm:p-4 gap-2 flex-1 flex flex-col justify-between">
         <div className="flex items-center justify-between gap-2">
-          <h2 className="card-title text-base sm:text-lg lg:text-xl font-bold tracking-tight text-base-content truncate">
-            {fullName}
-          </h2>
+          <div className="flex items-center gap-1.5 min-w-0">
+            <h2 className="card-title text-base sm:text-lg font-bold tracking-tight text-base-content truncate">
+              {fullName}
+            </h2>
+            {membershipType === "pro" && (
+              <span className="badge badge-xs badge-primary font-mono font-bold tracking-wider shrink-0">
+                PRO
+              </span>
+            )}
+            {membershipType === "premium" && (
+              <span className="badge badge-xs badge-warning font-mono font-bold tracking-wider shrink-0 gap-0.5">
+                <Crown className="w-2.5 h-2.5" /> VIP
+              </span>
+            )}
+          </div>
           {(age || gender) && (
-            <span className="text-xs font-semibold text-base-content/70 bg-base-200 px-2.5 py-1 rounded-full shrink-0 capitalize">
+            <span className="text-[11px] font-semibold text-base-content/70 bg-base-200 px-2 py-0.5 rounded-full shrink-0 capitalize">
               {[age, gender].filter(Boolean).join(" • ")}
             </span>
           )}

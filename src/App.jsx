@@ -6,7 +6,12 @@ import Login from "./components/Login";
 import Profile from "./components/Profile";
 import Connections from "./components/Connections";
 import Requests from "./components/Requests";
+import Premium from "./components/Premium";
 import PrivateRoute from "./components/PrivateRoute";
+import Terms from "./components/legal/Terms";
+import Privacy from "./components/legal/Privacy";
+import Refund from "./components/legal/Refund";
+import Contact from "./components/legal/Contact";
 
 const appRouter = createBrowserRouter([
   {
@@ -20,6 +25,22 @@ const appRouter = createBrowserRouter([
       {
         path: "login",
         element: <Login />,
+      },
+      {
+        path: "terms",
+        element: <Terms />,
+      },
+      {
+        path: "privacy",
+        element: <Privacy />,
+      },
+      {
+        path: "refund",
+        element: <Refund />,
+      },
+      {
+        path: "contact",
+        element: <Contact />,
       },
       {
         element: <PrivateRoute />,
@@ -39,6 +60,10 @@ const appRouter = createBrowserRouter([
           {
             path: "requests",
             element: <Requests />,
+          },
+          {
+            path: "premium",
+            element: <Premium />,
           },
         ],
       },

@@ -3,23 +3,24 @@ import { Link, useOutletContext } from "react-router-dom";
 import { useSelector } from "react-redux";
 import { motion, AnimatePresence } from "motion/react";
 import {
-  Orbit,
   Sparkles,
   Zap,
   Users,
   ArrowRight,
   Palette,
   Check,
-  Code2,
-  Rocket,
   ShieldCheck,
-  Layers,
   Play,
   Pause,
   ArrowLeft,
+  Compass,
+  Target,
+  MessageSquare,
 } from "lucide-react";
+import OrbitLogo from "./OrbitLogo";
 import UserCard from "./UserCard";
 import Card3DZoomModal from "./Card3DZoomModal";
+import PlanCards from "./PlanCards";
 
 // Curated showcase themes for quick real-time interaction
 const FEATURED_THEMES = [
@@ -306,13 +307,13 @@ export default function LandingPage() {
             transition={{ duration: 0.6, ease: "easeOut" }}
           >
             {/* Pill Tag */}
-            <div className="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full bg-base-100 border border-base-content/10 shadow-xs text-xs font-semibold text-base-content/80">
+            <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-base-100 border border-base-content/10 shadow-xs text-xs font-semibold text-base-content/80">
               <Sparkles className="w-3.5 h-3.5 text-primary" />
-              <span>Networking for the builder generation</span>
+              <span>Intentional Professional Discovery</span>
             </div>
 
             {/* Main Headline & Tagline */}
-            <h1 className="text-3xl xs:text-4xl sm:text-5xl lg:text-6xl font-extrabold tracking-tight text-base-content leading-[1.14] break-words">
+            <h1 className="text-3xl xs:text-4xl sm:text-5xl lg:text-6xl font-extrabold tracking-tight text-base-content leading-[1.12] break-words">
               Find the people who{" "}
               <span className="text-primary underline decoration-primary/30 decoration-wavy underline-offset-8">
                 move with you.
@@ -320,43 +321,44 @@ export default function LandingPage() {
             </h1>
 
             {/* Description */}
-            <p className="text-sm sm:text-base lg:text-lg text-base-content/70 max-w-xl leading-relaxed">
-              Orbit is a dedicated collaboration platform where founders and
-              builders discover, connect, and collaborate with the right
-              partners to build the next big thing.
+            <p className="text-xs sm:text-sm lg:text-base text-base-content/75 max-w-xl leading-relaxed">
+              Orbit is the professional networking and collaboration network
+              for founders, developers, designers, marketers, and startup operators
+              to discover the right partners to build, connect, and grow with.
             </p>
 
             {/* Primary Action Buttons */}
-            <div className="flex flex-col xs:flex-row items-stretch xs:items-center justify-center lg:justify-start gap-3 sm:gap-4 pt-2 w-full xs:w-auto">
+            <div className="flex flex-col xs:flex-row items-stretch xs:items-center justify-center lg:justify-start gap-3 pt-1 w-full xs:w-auto">
               <Link
                 to={user ? "/feed" : "/login?mode=signup"}
-                className="btn btn-primary btn-md px-7 rounded-xl font-semibold shadow-md hover:shadow-lg transition-all flex items-center justify-center gap-2 group cursor-pointer w-full xs:w-auto"
+                className="btn btn-sm sm:btn-md btn-primary px-5 rounded-xl font-semibold shadow-md hover:shadow-lg transition-all flex items-center justify-center gap-2 group cursor-pointer w-full xs:w-auto"
               >
-                <span>{user ? "Open Your Feed" : "Join Orbit"}</span>
-                <ArrowRight className="w-4 h-4 transition-transform group-hover:translate-x-1" />
+                <span>{user ? "Open Feed" : "Get Started Free"}</span>
+                <ArrowRight className="w-3.5 h-3.5 stroke-[2.2] transition-transform group-hover:translate-x-0.5" />
               </Link>
 
               <a
                 href="#how-it-works"
-                className="btn btn-ghost btn-md px-6 rounded-xl font-medium border border-base-content/15 text-base-content/80 hover:text-base-content transition-all cursor-pointer w-full xs:w-auto text-center"
+                className="btn btn-sm sm:btn-md btn-outline border-base-content/20 hover:bg-base-200 text-base-content px-5 rounded-xl font-semibold transition-all cursor-pointer w-full xs:w-auto text-center flex items-center justify-center gap-1.5"
               >
-                Explore How It Works
+                <Compass className="w-3.5 h-3.5 stroke-[2]" />
+                <span>How It Works</span>
               </a>
             </div>
 
-            {/* Social Proof Mini Bar */}
-            <div className="pt-6 flex flex-wrap items-center justify-center lg:justify-start gap-6 text-xs text-base-content/60 border-t border-base-content/10 w-full max-w-lg">
+            {/* Value Props Bar */}
+            <div className="pt-5 flex flex-wrap items-center justify-center lg:justify-start gap-5 text-xs text-base-content/65 border-t border-base-content/10 w-full max-w-lg">
               <div className="flex items-center gap-2">
-                <ShieldCheck className="w-4 h-4 text-success shrink-0" />
-                <span>Verified Builder Profiles</span>
+                <ShieldCheck className="w-3.5 h-3.5 text-primary stroke-[2] shrink-0" />
+                <span>Double-Opt-In Matches</span>
               </div>
               <div className="flex items-center gap-2">
-                <Zap className="w-4 h-4 text-warning shrink-0" />
+                <Zap className="w-3.5 h-3.5 text-warning stroke-[2] shrink-0" />
                 <span>Zero Cold DM Spam</span>
               </div>
               <div className="flex items-center gap-2">
-                <Users className="w-4 h-4 text-primary shrink-0" />
-                <span>Mutual-Opt-In Matches</span>
+                <Users className="w-3.5 h-3.5 text-primary stroke-[2] shrink-0" />
+                <span>Startup Ecosystem</span>
               </div>
             </div>
           </motion.div>
@@ -414,7 +416,7 @@ export default function LandingPage() {
             </div>
 
             {/* Exact Feed Card Stack */}
-            <div className="relative w-full max-w-sm min-h-[520px] sm:min-h-[540px] flex items-center justify-center">
+            <div className="relative w-full max-w-sm min-h-[440px] sm:min-h-[480px] flex items-center justify-center">
               {/* Peek Card (identical to Feed.jsx nextUser) */}
               {nextUser && (
                 <div
@@ -514,22 +516,24 @@ export default function LandingPage() {
                     transition={{ duration: 0.25 }}
                     className="w-full"
                   >
-                    <div className="alert shadow-xl text-xs py-2.5 px-3.5 rounded-2xl flex items-center justify-between gap-3 border border-success/30 bg-base-100 text-base-content">
+                    <div className="p-2.5 px-3.5 rounded-2xl border border-primary/20 bg-base-100/90 backdrop-blur-md shadow-lg flex items-center justify-between gap-3 text-base-content">
                       <div className="flex items-center gap-2.5 min-w-0">
-                        <span className="text-lg shrink-0">🎉</span>
+                        <div className="w-7 h-7 rounded-xl bg-primary/15 text-primary flex items-center justify-center shrink-0">
+                          <Sparkles className="w-3.5 h-3.5 stroke-[2.2]" />
+                        </div>
                         <div className="truncate">
                           <p className="font-bold text-xs truncate">
                             Mutual Match with {matchCelebration.firstName}!
                           </p>
                           <p className="text-[11px] text-base-content/70 truncate">
                             Looking for{" "}
-                            {matchCelebration.lookingFor || "co-founders"}
+                            {matchCelebration.lookingFor || "collaborators"}
                           </p>
                         </div>
                       </div>
                       <Link
                         to="/login?mode=signup"
-                        className="btn btn-xs btn-primary shrink-0 rounded-lg font-semibold gap-1 cursor-pointer"
+                        className="btn btn-xs btn-primary shrink-0 rounded-lg font-semibold gap-1 cursor-pointer shadow-xs"
                       >
                         <span>Join</span>
                         <ArrowRight className="w-3 h-3" />
@@ -579,7 +583,7 @@ export default function LandingPage() {
                   key={themeName}
                   onClick={() => setTheme && setTheme(themeName)}
                   aria-label={`Select ${themeName} theme`}
-                  className={`flex items-center gap-2.5 px-4 py-2.5 rounded-xl border text-xs font-semibold transition-all cursor-pointer ${
+                  className={`flex items-center gap-2.5 px-3.5 py-2 rounded-xl border text-xs font-semibold transition-all cursor-pointer ${
                     isCurrent
                       ? "bg-primary text-primary-content border-primary shadow-md scale-105"
                       : "bg-base-100 hover:bg-base-200/80 border-base-content/15 text-base-content/80 hover:text-base-content"
@@ -601,7 +605,51 @@ export default function LandingPage() {
             })}
           </div>
 
-          <div className="text-[11px] text-base-content/50 font-mono">
+          {/* Live Interactive Mini Preview Card in Selected Theme */}
+          <div
+            data-theme={theme || "caramellatte"}
+            className="mt-6 max-w-sm mx-auto p-4 rounded-2xl bg-base-100 border border-base-content/15 shadow-xl text-left transition-all duration-300"
+          >
+            <div className="flex items-center gap-3 mb-3">
+              <div className="w-10 h-10 rounded-xl bg-primary/20 text-primary flex items-center justify-center font-bold text-xs">
+                SG
+              </div>
+              <div className="min-w-0 flex-1">
+                <div className="flex items-center gap-2">
+                  <h4 className="font-bold text-xs text-base-content truncate">
+                    Sarah Guo
+                  </h4>
+                  <span className="badge badge-xs badge-primary font-mono font-bold">
+                    PRO
+                  </span>
+                </div>
+                <p className="text-[11px] text-base-content/60 truncate">
+                  Early-stage AI Investor &amp; Builder
+                </p>
+              </div>
+            </div>
+            <div className="flex gap-1.5 mb-3 flex-wrap">
+              <span className="badge badge-xs bg-base-200 text-base-content/80 font-mono">
+                AI Systems
+              </span>
+              <span className="badge badge-xs bg-base-200 text-base-content/80 font-mono">
+                Scale
+              </span>
+              <span className="badge badge-xs bg-base-200 text-base-content/80 font-mono">
+                Founders
+              </span>
+            </div>
+            <div className="flex items-center justify-between pt-2 border-t border-base-content/10">
+              <span className="text-[10px] text-base-content/50 font-mono uppercase">
+                Active Theme: {theme || "caramellatte"}
+              </span>
+              <span className="btn btn-xs btn-primary rounded-lg font-semibold shadow-xs pointer-events-none">
+                Live Contrast
+              </span>
+            </div>
+          </div>
+
+          <div className="text-[11px] text-base-content/50 font-mono pt-2">
             Currently active theme:{" "}
             <span className="font-bold text-primary capitalize">
               {theme || "caramellatte"}
@@ -616,79 +664,97 @@ export default function LandingPage() {
         id="how-it-works"
         className="px-4 sm:px-6 lg:px-8 py-20 sm:py-28 max-w-7xl mx-auto w-full"
       >
-        <div className="text-center space-y-4 mb-16">
+        <div className="text-center space-y-3 mb-16">
           <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-base-200 border border-base-content/15 text-xs font-semibold text-base-content">
-            <Layers className="w-3.5 h-3.5 text-base-content/70" />
-            <span>The Orbit Experience</span>
+            <Target className="w-3.5 h-3.5 text-primary stroke-[2]" />
+            <span>The Orbit Journey</span>
           </div>
           <h2 className="text-3xl sm:text-4xl font-extrabold tracking-tight text-base-content">
-            Built for how modern creators collaborate
+            Discover • Connect • Match • Chat • Collaborate
           </h2>
-          <p className="text-sm sm:text-base text-base-content/70 max-w-2xl mx-auto">
-            Traditional professional networks are cluttered with recruiters and
-            sales pitches. Orbit keeps the signal pure and focused on building.
+          <p className="text-xs sm:text-sm text-base-content/70 max-w-2xl mx-auto leading-relaxed">
+            Orbit is not about collecting passive followers. It is designed to take
+            you from discovering someone relevant to communicating and building in the real world.
           </p>
         </div>
 
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-8 items-stretch">
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-6 lg:gap-8 items-stretch">
           {/* Step 1 */}
-          <div className="spotlight-card group relative overflow-hidden h-full flex flex-col justify-start border border-base-content/15 rounded-2xl p-6 sm:p-8 space-y-4 hover:border-primary/40 hover:shadow-xl transition-all duration-300">
-            <div className="relative z-10 w-12 h-12 rounded-xl bg-base-200 border border-base-content/15 text-base-content flex items-center justify-center font-bold text-lg shadow-2xs group-hover:scale-105 group-hover:border-primary/40 transition-transform duration-300">
-              <Code2 className="w-6 h-6 stroke-[2.2]" />
+          <div className="spotlight-card group relative overflow-hidden h-full flex flex-col justify-start border border-base-content/15 rounded-3xl p-6 sm:p-8 space-y-4 hover:border-primary/40 hover:shadow-xl transition-all duration-300">
+            <div className="relative z-10 w-12 h-12 rounded-2xl bg-base-200 border border-base-content/15 text-primary flex items-center justify-center font-bold text-lg shadow-2xs group-hover:scale-105 group-hover:border-primary/40 transition-transform duration-300">
+              <Compass className="w-6 h-6 stroke-[2]" />
             </div>
             <div className="relative z-10 space-y-1.5">
               <span className="badge badge-sm badge-neutral font-mono text-[10px] font-bold uppercase tracking-wider">
-                Step 01
+                Stage 01
               </span>
               <h3 className="text-lg font-bold text-base-content">
-                Signal Over Noise
+                Intent-Driven Discovery
               </h3>
             </div>
             <p className="relative z-10 text-xs sm:text-sm text-base-content/75 leading-relaxed">
-              Every profile highlights concrete technical skills, active
-              repositories, and what the builder is currently creating. No
-              inflated resumes.
+              Discover founders, developers, designers, and startup operators filtered
+              by concrete skills, active projects, and what you are both looking to build.
             </p>
           </div>
 
           {/* Step 2 */}
-          <div className="spotlight-card group relative overflow-hidden h-full flex flex-col justify-start border border-base-content/15 rounded-2xl p-6 sm:p-8 space-y-4 hover:border-primary/40 hover:shadow-xl transition-all duration-300">
-            <div className="relative z-10 w-12 h-12 rounded-xl bg-base-200 border border-base-content/15 text-base-content flex items-center justify-center font-bold text-lg shadow-2xs group-hover:scale-105 group-hover:border-primary/40 transition-transform duration-300">
-              <Users className="w-6 h-6 stroke-[2.2]" />
+          <div className="spotlight-card group relative overflow-hidden h-full flex flex-col justify-start border border-base-content/15 rounded-3xl p-6 sm:p-8 space-y-4 hover:border-primary/40 hover:shadow-xl transition-all duration-300">
+            <div className="relative z-10 w-12 h-12 rounded-2xl bg-base-200 border border-base-content/15 text-primary flex items-center justify-center font-bold text-lg shadow-2xs group-hover:scale-105 group-hover:border-primary/40 transition-transform duration-300">
+              <Users className="w-6 h-6 stroke-[2]" />
             </div>
             <div className="relative z-10 space-y-1.5">
               <span className="badge badge-sm badge-neutral font-mono text-[10px] font-bold uppercase tracking-wider">
-                Step 02
+                Stage 02
               </span>
               <h3 className="text-lg font-bold text-base-content">
-                Mutual-Match Intent
+                Double-Opt-In Matching
               </h3>
             </div>
             <p className="relative z-10 text-xs sm:text-sm text-base-content/75 leading-relaxed">
-              Swipe cards right to express interest, or pass to see the next
-              builder. Connections only happen when both builders mutually agree
-              to connect.
+              Zero cold DM spam or unwanted sales pitches. Mutual connections only open
+              when both individuals review each other&apos;s goals and agree to connect.
             </p>
           </div>
 
           {/* Step 3 */}
-          <div className="spotlight-card group relative overflow-hidden h-full flex flex-col justify-start border border-base-content/15 rounded-2xl p-6 sm:p-8 space-y-4 hover:border-primary/40 hover:shadow-xl transition-all duration-300">
-            <div className="relative z-10 w-12 h-12 rounded-xl bg-base-200 border border-base-content/15 text-base-content flex items-center justify-center font-bold text-lg shadow-2xs group-hover:scale-105 group-hover:border-primary/40 transition-transform duration-300">
-              <Rocket className="w-6 h-6 stroke-[2.2]" />
+          <div className="spotlight-card group relative overflow-hidden h-full flex flex-col justify-start border border-base-content/15 rounded-3xl p-6 sm:p-8 space-y-4 hover:border-primary/40 hover:shadow-xl transition-all duration-300">
+            <div className="relative z-10 w-12 h-12 rounded-2xl bg-base-200 border border-base-content/15 text-primary flex items-center justify-center font-bold text-lg shadow-2xs group-hover:scale-105 group-hover:border-primary/40 transition-transform duration-300">
+              <MessageSquare className="w-6 h-6 stroke-[2]" />
             </div>
             <div className="relative z-10 space-y-1.5">
               <span className="badge badge-sm badge-neutral font-mono text-[10px] font-bold uppercase tracking-wider">
-                Step 03
+                Stage 03
               </span>
               <h3 className="text-lg font-bold text-base-content">
-                Collaborate & Ship
+                Direct Chat to Action
               </h3>
             </div>
             <p className="relative z-10 text-xs sm:text-sm text-base-content/75 leading-relaxed">
-              Once connected, coordinate projects, exchange repos, and build
-              side projects or venture-backed startups together.
+              Chat serves as the bridge from connection to real-world collaboration.
+              Schedule calls, exchange project ideas, and start shipping together.
             </p>
           </div>
+        </div>
+      </section>
+
+      {/* ─── Membership Tiers Section ───────────────────────────── */}
+      <section id="pricing" className="px-4 sm:px-6 lg:px-8 py-20 bg-base-100/60 border-t border-base-content/10">
+        <div className="max-w-6xl mx-auto space-y-12">
+          <div className="text-center space-y-3 max-w-2xl mx-auto">
+            <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-primary/10 border border-primary/20 text-primary text-[11px] font-bold uppercase tracking-widest">
+              <Sparkles className="w-3.5 h-3.5" />
+              <span>Transparent Membership</span>
+            </div>
+            <h2 className="text-3xl sm:text-4xl font-extrabold tracking-tight text-base-content">
+              Choose your networking pace
+            </h2>
+            <p className="text-xs sm:text-sm text-base-content/70 leading-relaxed">
+              Start free with basic daily discovery, or unlock 1-on-1 chat and unlimited swipes with Pro or Premium.
+            </p>
+          </div>
+
+          <PlanCards isLanding={true} />
         </div>
       </section>
 
@@ -700,7 +766,7 @@ export default function LandingPage() {
 
           <div className="relative space-y-6 max-w-xl mx-auto">
             <div className="w-14 h-14 rounded-2xl bg-primary text-primary-content flex items-center justify-center mx-auto shadow-lg">
-              <Orbit className="w-8 h-8 stroke-[2.2]" />
+              <OrbitLogo className="w-8 h-8 text-primary-content" glow />
             </div>
 
             <h2 className="text-3xl sm:text-4xl font-extrabold tracking-tight text-base-content">

@@ -4,7 +4,6 @@ import { useSelector, useDispatch } from "react-redux";
 import axios from "axios";
 import { motion, AnimatePresence } from "motion/react";
 import {
-  Orbit,
   Palette,
   ChevronDown,
   Check,
@@ -18,7 +17,9 @@ import {
   X,
   LogIn,
   UserPlus,
+  Sparkles,
 } from "lucide-react";
+import OrbitLogo from "./OrbitLogo";
 import { removeUser } from "../utils/userSlice";
 import { removeFeed } from "../utils/feedSlice";
 import { removeConnections } from "../utils/connectionSlice";
@@ -78,7 +79,7 @@ export default function Navbar({ theme, onSelectTheme, themes }) {
             className="flex items-center gap-2 select-none"
             aria-label="Orbit Home"
           >
-            <Orbit className="w-5 h-5 sm:w-6 sm:h-6 text-primary stroke-[2.2] shrink-0" />
+            <OrbitLogo className="w-5 h-5 sm:w-6 sm:h-6" />
             <span className="text-base sm:text-xl font-bold tracking-tight text-base-content whitespace-nowrap">
               Orbit
             </span>
@@ -133,6 +134,18 @@ export default function Navbar({ theme, onSelectTheme, themes }) {
               >
                 <UserCheck className="w-4 h-4" />
                 <span>Requests</span>
+              </Link>
+
+              <Link
+                to="/premium"
+                className={`btn btn-sm gap-2 text-xs rounded-lg transition-all cursor-pointer ${
+                  location.pathname === "/premium"
+                    ? "btn-primary text-primary-content font-bold shadow-xs"
+                    : "btn-ghost text-base-content/75 hover:text-base-content hover:bg-base-content/10"
+                }`}
+              >
+                <Sparkles className="w-4 h-4 text-warning" />
+                <span>Premium</span>
               </Link>
             </nav>
           )}
@@ -380,6 +393,20 @@ export default function Navbar({ theme, onSelectTheme, themes }) {
                     <span>Requests</span>
                   </Link>
                 </li>
+                <li>
+                  <Link
+                    to="/premium"
+                    onClick={() => {
+                      if (document.activeElement) {
+                        document.activeElement.blur();
+                      }
+                    }}
+                    className="flex items-center gap-2 py-2 hover:bg-base-200 rounded-lg transition-colors cursor-pointer text-base-content"
+                  >
+                    <Sparkles className="w-3.5 h-3.5 text-warning" />
+                    <span>Membership Plans</span>
+                  </Link>
+                </li>
 
                 {/* Mobile Theme Selector inside Profile Dropdown */}
                 <li className="sm:hidden border-t border-base-content/10 pt-1.5">
@@ -458,7 +485,7 @@ export default function Navbar({ theme, onSelectTheme, themes }) {
                     onClick={() => setMobileMenuOpen(false)}
                     className="btn btn-sm btn-ghost justify-start text-xs font-semibold text-base-content/85 gap-2 w-full"
                   >
-                    <Orbit className="w-4 h-4 text-primary" />
+                    <OrbitLogo className="w-4 h-4" />
                     <span>Back to Home</span>
                   </Link>
                   <div className="border-t border-base-content/10 my-0.5" />
@@ -563,6 +590,18 @@ export default function Navbar({ theme, onSelectTheme, themes }) {
           >
             <User className="w-5 h-5" />
             <span className="text-[10px]">Profile</span>
+          </Link>
+
+          <Link
+            to="/premium"
+            className={`flex flex-col items-center gap-0.5 py-1 px-3 rounded-xl transition-all ${
+              location.pathname === "/premium"
+                ? "text-primary font-bold"
+                : "text-base-content/65 hover:text-base-content"
+            }`}
+          >
+            <Sparkles className="w-5 h-5 text-warning" />
+            <span className="text-[10px]">Premium</span>
           </Link>
         </nav>
       )}

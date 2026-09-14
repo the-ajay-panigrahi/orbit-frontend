@@ -10,6 +10,7 @@ import {
   RotateCcw,
   Compass,
   Sparkles,
+  Lock,
 } from "lucide-react";
 import { BASE_URL } from "../utils/constants";
 import { addConnections } from "../utils/connectionSlice";
@@ -17,7 +18,10 @@ import RowMorphDetailModal from "./RowMorphDetailModal";
 
 export default function Connections() {
   const connections = useSelector((store) => store.connections);
+  const currentUser = useSelector((store) => store.user);
   const dispatch = useDispatch();
+
+  const canChat = currentUser?.membershipType === "pro" || currentUser?.membershipType === "premium";
 
   const [selectedUser, setSelectedUser] = useState(null);
   const [originRect, setOriginRect] = useState(null);
@@ -72,10 +76,19 @@ export default function Connections() {
   }, [dispatch]);
 
   const handleMessageClick = (connectionName) => {
-    setToastMessage(
-      `Direct messaging with ${connectionName} will be available in Orbit Chat!`,
-    );
-    setTimeout(() => setToastMessage(""), 2800);
+    if (!canChat) {
+      setToastMessage({
+        type: "upgrade",
+        text: "1-on-1 direct chat is unlocked on Pro & Premium plans.",
+      });
+      setTimeout(() => setToastMessage(null), 4000);
+      return;
+    }
+    setToastMessage({
+      type: "info",
+      text: `Direct messaging with ${connectionName} will be available in Orbit Chat!`,
+    });
+    setTimeout(() => setToastMessage(null), 3000);
   };
 
   const filteredConnections = (connections || []).filter((user) => {
@@ -136,9 +149,24 @@ export default function Connections() {
     <div className="flex-1 w-full max-w-4xl mx-auto p-3 sm:p-6 pb-20 md:pb-6 flex flex-col">
       {toastMessage && (
         <div className="toast toast-top toast-center z-50">
-          <div className="alert alert-neutral py-2 px-4 shadow-xl border border-base-content/10 text-xs font-medium flex items-center gap-2">
-            <Sparkles className="w-4 h-4 text-primary shrink-0" />
-            <span>{toastMessage}</span>
+          <div className="alert alert-neutral py-2.5 px-4 shadow-xl border border-primary/25 text-xs font-medium flex items-center gap-2.5">
+            {typeof toastMessage === "object" && toastMessage?.type === "upgrade" ? (
+              <>
+                <Lock className="w-4 h-4 text-warning shrink-0" />
+                <span>{toastMessage.text}</span>
+                <Link
+                  to="/premium"
+                  className="btn btn-xs btn-primary rounded-lg font-semibold ml-1 shadow-xs"
+                >
+                  Upgrade
+                </Link>
+              </>
+            ) : (
+              <>
+                <Sparkles className="w-4 h-4 text-primary shrink-0" />
+                <span>{typeof toastMessage === "object" ? toastMessage.text : toastMessage}</span>
+              </>
+            )}
           </div>
         </div>
       )}
@@ -305,11 +333,25 @@ export default function Connections() {
                       e.stopPropagation();
                       handleMessageClick(user.firstName);
                     }}
-                    className="btn btn-sm btn-primary rounded-xl gap-1.5 font-semibold shadow-xs hover:shadow-md cursor-pointer shrink-0"
-                    title={`Message ${user.firstName}`}
+                    className={`btn btn-sm rounded-xl gap-1.5 font-semibold shadow-xs hover:shadow-md cursor-pointer shrink-0 ${
+                      canChat
+                        ? "btn-primary"
+                        : "btn-outline border-base-content/20 hover:bg-base-200 text-base-content"
+                    }`}
+                    title={
+                      canChat
+                        ? `Message ${user.firstName}`
+                        : "Unlock 1-on-1 Chat with Pro or Premium"
+                    }
                   >
-                    <MessageSquare className="w-3.5 h-3.5" />
-                    <span className="hidden xs:inline sm:inline">Message</span>
+                    {canChat ? (
+                      <MessageSquare className="w-3.5 h-3.5" />
+                    ) : (
+                      <Lock className="w-3.5 h-3.5 text-warning" />
+                    )}
+                    <span className="hidden xs:inline sm:inline">
+                      {canChat ? "Message" : "Chat (Pro)"}
+                    </span>
                   </button>
                 </div>
               </div>
@@ -335,10 +377,20 @@ export default function Connections() {
                 setSelectedUser(null);
                 setOriginRect(null);
               }}
-              className="btn btn-sm btn-primary w-full rounded-xl gap-2 font-semibold shadow-md cursor-pointer"
+              className={`btn btn-sm w-full rounded-xl gap-2 font-semibold shadow-md cursor-pointer ${
+                canChat ? "btn-primary" : "btn-outline border-base-content/25 text-base-content"
+              }`}
             >
-              <MessageSquare className="w-4 h-4" />
-              <span>Message {selectedUser.firstName}</span>
+              {canChat ? (
+                <MessageSquare className="w-4 h-4" />
+              ) : (
+                <Lock className="w-4 h-4 text-warning" />
+              )}
+              <span>
+                {canChat
+                  ? `Message ${selectedUser.firstName}`
+                  : `Unlock Chat with ${selectedUser.firstName} (Pro)`}
+              </span>
             </button>
           )
         }
