@@ -32,7 +32,6 @@ export default function Connections() {
   const [selectedUser, setSelectedUser] = useState(null);
   const [originRect, setOriginRect] = useState(null);
   const [searchQuery, setSearchQuery] = useState("");
-  const [roleFilter, setRoleFilter] = useState("all");
   const [error, setError] = useState("");
   const [toastMessage, setToastMessage] = useState("");
   const [isLoading, setIsLoading] = useState(true);
@@ -100,11 +99,6 @@ export default function Connections() {
   };
 
   const filteredConnections = (connections || []).filter((user) => {
-    if (roleFilter !== "all") {
-      const searchTarget = `${user.lookingFor || ""} ${user.about || ""} ${(user.skills || []).join(" ")}`.toLowerCase();
-      if (!searchTarget.includes(roleFilter)) return false;
-    }
-
     if (!searchQuery.trim()) return true;
     const query = searchQuery.toLowerCase();
     const fullName =
@@ -239,30 +233,6 @@ export default function Connections() {
                 Clear
               </button>
             )}
-          </div>
-
-          {/* Quick Role Filter Pills */}
-          <div className="flex items-center gap-1.5 overflow-x-auto pb-1 scrollbar-none">
-            {[
-              { id: "all", label: "All Network" },
-              { id: "founder", label: "Founders" },
-              { id: "engineer", label: "Engineers" },
-              { id: "designer", label: "Designers" },
-              { id: "ai", label: "AI / ML" },
-            ].map((r) => (
-              <button
-                key={r.id}
-                type="button"
-                onClick={() => setRoleFilter(r.id)}
-                className={`badge badge-sm py-2 px-3 text-xs transition-all cursor-pointer ${
-                  roleFilter === r.id
-                    ? "badge-primary font-bold shadow-xs"
-                    : "badge-ghost bg-base-100 hover:bg-base-200 border border-base-content/10 text-base-content/70"
-                }`}
-              >
-                {r.label}
-              </button>
-            ))}
           </div>
         </div>
       )}

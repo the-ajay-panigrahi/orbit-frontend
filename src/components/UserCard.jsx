@@ -38,17 +38,17 @@ export default function UserCard({
             height="480"
             fetchpriority="high"
             loading="eager"
-            style={{ objectPosition: "center 20%" }}
+            style={{ objectPosition: "center 18%" }}
             className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-[1.02]"
             onError={(e) => {
               e.target.src = "/default-avatar.svg";
             }}
           />
 
-          {/* Builder Status Pill */}
+          {/* Orbit Builder Badge */}
           <div className="absolute top-2.5 left-2.5 px-2.5 py-1 rounded-full bg-black/60 backdrop-blur-md border border-white/20 text-[11px] font-semibold text-white flex items-center gap-1.5 shadow-md">
-            <span className="w-1.5 h-1.5 rounded-full bg-emerald-400 animate-pulse" />
-            <span>Open to Build</span>
+            <span className="w-1.5 h-1.5 rounded-full bg-primary animate-pulse" />
+            <span>Orbit Builder</span>
           </div>
 
           {/* Membership / Plan Badge */}

@@ -1,13 +1,52 @@
-import { Link } from "react-router-dom";
+import { Link, useLocation } from "react-router-dom";
 import { useSelector } from "react-redux";
 import { ArrowRight, ShieldCheck, Heart } from "lucide-react";
 import OrbitLogo from "./OrbitLogo";
 
 export default function Footer() {
   const user = useSelector((store) => store.user);
+  const location = useLocation();
+  const isLanding = location.pathname === "/";
+
+  // Sleek, minimal footer on app/auth pages so it doesn't crowd workspace
+  if (!isLanding) {
+    return (
+      <footer className="w-full bg-base-100/80 backdrop-blur-md border-t border-base-content/8 py-3.5 px-4 sm:px-8 text-xs text-base-content/50 transition-colors">
+        <div className="max-w-6xl mx-auto flex flex-col sm:flex-row items-center justify-between gap-3">
+          <div className="flex items-center gap-2.5">
+            <Link to="/" className="flex items-center gap-1.5 font-bold text-base-content/80 hover:text-primary transition-colors">
+              <OrbitLogo className="w-4 h-4 text-primary" />
+              <span>Orbit</span>
+            </Link>
+            <span className="opacity-30">•</span>
+            <span className="text-[11px] font-mono">&copy; {new Date().getFullYear()} Orbit Network</span>
+          </div>
+
+          <div className="flex items-center gap-4 text-[11px]">
+            <Link to="/terms" className="hover:text-primary transition-colors">
+              Terms
+            </Link>
+            <Link to="/privacy" className="hover:text-primary transition-colors">
+              Privacy
+            </Link>
+            <Link to="/refund" className="hover:text-primary transition-colors">
+              Refunds
+            </Link>
+            <Link to="/contact" className="hover:text-primary transition-colors">
+              Support
+            </Link>
+            <span className="hidden sm:inline opacity-30">•</span>
+            <span className="hidden sm:inline text-base-content/40">
+              Find the people who move with you.
+            </span>
+          </div>
+        </div>
+      </footer>
+    );
+  }
 
   return (
-    <footer className="bg-base-100 border-t border-base-content/8 text-base-content/75 pt-14 pb-24 md:pb-12 px-4 sm:px-8 transition-colors">
+    <footer className="bg-base-100 border-t border-base-content/8 rounded-t-3xl sm:rounded-t-[2.5rem] shadow-2xl text-base-content/75 pt-14 pb-24 md:pb-12 px-4 sm:px-8 transition-colors">
       <div className="max-w-6xl mx-auto">
         {/* Meetup-style Top Action Banner */}
         <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-6 pb-12 border-b border-base-content/8">

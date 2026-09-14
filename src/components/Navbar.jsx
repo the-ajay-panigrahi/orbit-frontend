@@ -72,8 +72,9 @@ export default function Navbar({ theme, onSelectTheme, themes }) {
 
   return (
     <>
-      <header className="navbar bg-base-100/80 backdrop-blur-md sticky top-0 z-40 border-b border-base-content/8 px-3 sm:px-8 transition-colors duration-200">
-        <div className="flex-1 flex items-center">
+      <header className="navbar bg-base-100/80 backdrop-blur-md sticky top-0 z-40 border-b border-base-content/8 px-4 sm:px-6 lg:px-8 transition-colors duration-200">
+        <div className="max-w-6xl mx-auto w-full flex items-center justify-between">
+          <div className="flex-1 flex items-center">
           <Link
             to={user ? "/feed" : "/"}
             className="flex items-center gap-2 select-none"
@@ -465,7 +466,8 @@ export default function Navbar({ theme, onSelectTheme, themes }) {
             </div>
           )}
         </div>
-      </header>
+      </div>
+    </header>
 
       {/* Mobile Hamburger Dropdown Menu for Logged Out / Landing / Login */}
       <AnimatePresence>

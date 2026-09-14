@@ -5,21 +5,21 @@ export default function HandDrawnArrow({
 }) {
   return (
     <div
-      className={`hidden md:flex flex-col items-center justify-center relative select-none pointer-events-none ${className}`}
+      className={`hidden md:flex flex-col items-center justify-center relative select-none pointer-events-none px-2 py-1 ${className}`}
     >
       {label && (
-        <span className="font-handwriting text-primary text-base lg:text-lg font-bold tracking-wide -rotate-3 mb-1 drop-shadow-xs">
+        <span className="font-handwriting text-primary text-base lg:text-lg font-bold tracking-wide -rotate-3 mb-1 drop-shadow-xs whitespace-nowrap">
           {label}
         </span>
       )}
       {variant === "top-to-bottom" ? (
         <svg
-          width="130"
-          height="64"
-          viewBox="0 0 130 64"
+          width="136"
+          height="68"
+          viewBox="-4 -4 140 72"
           fill="none"
           xmlns="http://www.w3.org/2000/svg"
-          className="text-primary/70 overflow-visible"
+          className="text-primary/80 overflow-visible drop-shadow-xs"
         >
           {/* Thick organic bezier curve swooping from top to bottom */}
           <path
@@ -43,12 +43,12 @@ export default function HandDrawnArrow({
         </svg>
       ) : (
         <svg
-          width="130"
-          height="64"
-          viewBox="0 0 130 64"
+          width="136"
+          height="68"
+          viewBox="-4 -4 140 72"
           fill="none"
           xmlns="http://www.w3.org/2000/svg"
-          className="text-primary/70 overflow-visible"
+          className="text-primary/80 overflow-visible drop-shadow-xs"
         >
           {/* Second connector with organic looping curve */}
           <path

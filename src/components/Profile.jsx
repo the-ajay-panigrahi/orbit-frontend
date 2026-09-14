@@ -1,4 +1,4 @@
-import { useState, useEffect, useMemo } from "react";
+import { useState, useEffect } from "react";
 import { useLocation } from "react-router-dom";
 import { useSelector, useDispatch } from "react-redux";
 import axios from "axios";
@@ -14,8 +14,6 @@ import {
   FileText,
   Plus,
   Maximize2,
-  CheckCircle2,
-  Circle,
 } from "lucide-react";
 import { BASE_URL } from "../utils/constants";
 import { addUser } from "../utils/userSlice";
@@ -89,20 +87,6 @@ export default function Profile() {
       return () => clearTimeout(timer);
     }
   }, [location.state]);
-
-  // Profile completeness calculation
-  const completionStats = useMemo(() => {
-    const checks = [
-      { label: "Name", done: Boolean(firstName.trim() && lastName.trim()) },
-      { label: "Photo", done: Boolean(profilePictureUrl.trim()) },
-      { label: "Intent", done: Boolean(lookingFor.trim()) },
-      { label: "Bio", done: Boolean(about.trim().length >= 10) },
-      { label: "Skills (3+)", done: skills.length >= 3 },
-    ];
-    const completedCount = checks.filter((c) => c.done).length;
-    const percentage = Math.round((completedCount / checks.length) * 100);
-    return { checks, percentage };
-  }, [firstName, lastName, profilePictureUrl, lookingFor, about, skills]);
 
   const handleAddSkill = (rawSkill) => {
     const trimmed = rawSkill.trim().replace(/,/g, "");
@@ -222,8 +206,8 @@ export default function Profile() {
 
   return (
     <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 py-8 sm:py-12">
-      {/* Header with Completeness Meter & Quick Actions */}
-      <div className="flex flex-col md:flex-row items-start md:items-center justify-between gap-4 pb-8 border-b border-base-content/8 mb-8">
+      {/* Header */}
+      <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 pb-6 border-b border-base-content/8 mb-8">
         <div>
           <div className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-primary/10 text-primary text-xs font-bold mb-2">
             <Sparkles className="w-3.5 h-3.5 stroke-[2.5]" />
@@ -235,45 +219,6 @@ export default function Profile() {
           <p className="text-sm text-base-content/65 max-w-lg mt-1">
             Keep your profile fresh. Changes update the live discovery card in real time.
           </p>
-        </div>
-
-        {/* Progress & Quick Save */}
-        <div className="flex items-center gap-4 w-full md:w-auto justify-between md:justify-end">
-          <div className="flex items-center gap-2.5">
-            <div className="text-right">
-              <p className="text-xs font-bold text-base-content font-mono">
-                {completionStats.percentage}% Complete
-              </p>
-              <p className="text-[11px] text-base-content/50">Profile Strength</p>
-            </div>
-            <div className="w-16 bg-base-200 rounded-full h-2 overflow-hidden border border-base-content/10">
-              <div
-                className="bg-primary h-full transition-all duration-500 rounded-full"
-                style={{ width: `${completionStats.percentage}%` }}
-              />
-            </div>
-          </div>
-
-          <motion.button
-            onClick={handleSaveProfile}
-            disabled={isSaving}
-            whileHover={{ y: -1 }}
-            whileTap={{ scale: 0.97 }}
-            transition={springTap}
-            className="btn btn-sm btn-primary gap-2 text-xs shadow-md shadow-primary/20 min-w-[130px] cursor-pointer"
-          >
-            {isSaving ? (
-              <>
-                <span className="loading loading-spinner loading-xs" />
-                <span>Saving...</span>
-              </>
-            ) : (
-              <>
-                <Save className="w-4 h-4 stroke-[2.5]" />
-                <span>Save Changes</span>
-              </>
-            )}
-          </motion.button>
         </div>
       </div>
 
@@ -328,7 +273,7 @@ export default function Profile() {
                 initial={{ opacity: 0, x: -10 }}
                 animate={{ opacity: 1, x: 0 }}
                 transition={{ duration: 0.2 }}
-                className="space-y-4"
+                className="space-y-4 min-h-[360px]"
               >
                 <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                   <div>
@@ -409,23 +354,23 @@ export default function Profile() {
               </motion.div>
             )}
 
-            {/* Tab 2: Vision & Role */}
+            {/* Tab 2: Role & Vision */}
             {activeTab === "vision" && (
               <motion.div
                 initial={{ opacity: 0, x: -10 }}
                 animate={{ opacity: 1, x: 0 }}
                 transition={{ duration: 0.2 }}
-                className="space-y-4"
+                className="space-y-4 min-h-[360px]"
               >
                 <div>
                   <label className="text-xs font-bold text-base-content/80 mb-1.5 block">
-                    Collaboration Intent (Looking For)
+                    What are you looking to build?
                   </label>
                   <input
                     type="text"
                     value={lookingFor}
                     onChange={(e) => setLookingFor(e.target.value)}
-                    placeholder="e.g. Technical Co-founder, Founding Engineer"
+                    placeholder="e.g. Co-founders for AI DevTools, Early Engineers"
                     maxLength={100}
                     className="input input-sm input-bordered w-full rounded-xl focus:input-primary text-sm font-medium"
                   />
@@ -470,7 +415,7 @@ export default function Profile() {
                 initial={{ opacity: 0, x: -10 }}
                 animate={{ opacity: 1, x: 0 }}
                 transition={{ duration: 0.2 }}
-                className="space-y-4"
+                className="space-y-4 min-h-[360px]"
               >
                 <div>
                   <div className="flex items-center justify-between mb-1.5">
@@ -616,28 +561,6 @@ export default function Profile() {
             <div className="absolute top-6 right-6 opacity-0 group-hover:opacity-100 transition-opacity bg-base-100/90 backdrop-blur-md px-3 py-1.5 rounded-full text-xs font-semibold text-primary shadow-xl border border-base-content/10 pointer-events-none flex items-center gap-1.5">
               <Maximize2 className="w-3.5 h-3.5 stroke-[2.3]" />
               <span>Tap to Zoom 3D</span>
-            </div>
-          </div>
-
-          {/* Profile Strength Checklist */}
-          <div className="w-full max-w-sm p-4 rounded-2xl bg-base-100 border border-base-content/10 shadow-xs space-y-2.5">
-            <p className="text-xs font-bold text-base-content flex items-center justify-between">
-              <span>Discovery Readiness</span>
-              <span className="font-mono text-primary">{completionStats.percentage}%</span>
-            </p>
-            <div className="grid grid-cols-2 gap-2 text-xs">
-              {completionStats.checks.map((c) => (
-                <div key={c.label} className="flex items-center gap-1.5 text-base-content/75">
-                  {c.done ? (
-                    <CheckCircle2 className="w-3.5 h-3.5 text-success stroke-[2.5]" />
-                  ) : (
-                    <Circle className="w-3.5 h-3.5 text-base-content/30 stroke-[2]" />
-                  )}
-                  <span className={c.done ? "font-medium" : "text-base-content/50"}>
-                    {c.label}
-                  </span>
-                </div>
-              ))}
             </div>
           </div>
         </div>

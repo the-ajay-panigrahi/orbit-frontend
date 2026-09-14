@@ -17,6 +17,9 @@ import {
   MessageSquare,
   Maximize2,
   Heart,
+  CheckCircle2,
+  ChevronDown,
+  HelpCircle,
 } from "lucide-react";
 import OrbitLogo from "./OrbitLogo";
 import UserCard from "./UserCard";
@@ -25,14 +28,17 @@ import PlanCards from "./PlanCards";
 import HandDrawnArrow from "./HandDrawnArrow";
 
 const FEATURED_THEMES = [
-  "bumblebee",
-  "dracula",
-  "synthwave",
-  "nord",
-  "cyberpunk",
+  "night",
   "retro",
+  "dark",
+  "dracula",
+  "black",
+  "lofi",
+  "aqua",
   "luxury",
-  "dim",
+  "coffee",
+  "nord",
+  "winter",
 ];
 
 const MOCK_FOUNDERS = [
@@ -101,6 +107,25 @@ const JOURNEY_STEPS = [
   },
 ];
 
+const FAQS = [
+  {
+    q: "How do the daily swipe limits work?",
+    a: "Limits reset automatically every 24 hours from your first interaction. Basic members get 10 requests/day, Pro gets 50, and Premium has no limits.",
+  },
+  {
+    q: "When can I start chatting with my connections?",
+    a: "Chatting unlocks as soon as you have a mutual match and are on either the Pro or Premium plan.",
+  },
+  {
+    q: "How does payment through Razorpay work?",
+    a: "All transactions are processed securely via Razorpay with support for UPI, Credit/Debit cards, NetBanking, and Wallets. Upgrades apply instantly.",
+  },
+  {
+    q: "Can I upgrade or cancel my plan at any time?",
+    a: "Yes. You can upgrade from Basic to Pro or Premium whenever you need higher quotas. Changes take effect immediately.",
+  },
+];
+
 export default function LandingPage() {
   const user = useSelector((store) => store.user);
   const { theme, setTheme } = useOutletContext() || {};
@@ -109,6 +134,11 @@ export default function LandingPage() {
   const [isHovered, setIsHovered] = useState(false);
   const [matchCelebration, setMatchCelebration] = useState(null);
   const [isZoomOpen, setIsZoomOpen] = useState(false);
+  const [openFaqIndex, setOpenFaqIndex] = useState(null);
+
+  const toggleFaq = (index) => {
+    setOpenFaqIndex(openFaqIndex === index ? null : index);
+  };
 
   const [dragOffset, setDragOffset] = useState({ x: 0, y: 0 });
   const [isDragging, setIsDragging] = useState(false);
@@ -288,7 +318,62 @@ export default function LandingPage() {
       : 0;
 
   return (
-    <div className="flex flex-col w-full overflow-hidden">
+    <div className="flex flex-col w-full overflow-hidden relative">
+      {/* Floating Match Celebration Toast */}
+      <AnimatePresence>
+        {matchCelebration && (
+          <motion.div
+            initial={{ opacity: 0, y: -24, scale: 0.92 }}
+            animate={{ opacity: 1, y: 0, scale: 1 }}
+            exit={{ opacity: 0, y: -20, scale: 0.94 }}
+            transition={{ type: "spring", stiffness: 400, damping: 26 }}
+            className="fixed top-20 left-1/2 -translate-x-1/2 z-50 w-full max-w-sm px-4 pointer-events-auto"
+          >
+            <div className="relative overflow-hidden p-3 px-3.5 rounded-2xl border border-primary/40 bg-base-100/95 backdrop-blur-xl shadow-2xl shadow-primary/20 flex items-center justify-between gap-3 text-base-content">
+              <div className="absolute -top-10 -right-10 w-24 h-24 bg-primary/15 rounded-full blur-xl pointer-events-none" />
+              <div className="flex items-center gap-3 min-w-0">
+                <div className="relative flex items-center shrink-0">
+                  <div className="w-9 h-9 rounded-full ring-2 ring-base-100 overflow-hidden bg-base-300">
+                    <img
+                      src="https://images.unsplash.com/photo-1534528741775-53994a69daeb?q=75&w=120&auto=format&fit=crop"
+                      alt="You"
+                      className="w-full h-full object-cover"
+                    />
+                  </div>
+                  <div className="w-9 h-9 rounded-full ring-2 ring-primary overflow-hidden bg-base-300 -ml-3">
+                    <img
+                      src={matchCelebration.profilePictureUrl || "/default-avatar.svg"}
+                      alt={matchCelebration.firstName}
+                      className="w-full h-full object-cover"
+                    />
+                  </div>
+                  <div className="absolute -bottom-1 left-3.5 w-4.5 h-4.5 rounded-full bg-primary text-primary-content flex items-center justify-center shadow-xs">
+                    <Heart className="w-2.5 h-2.5 fill-current stroke-0" />
+                  </div>
+                </div>
+                <div className="truncate">
+                  <div className="flex items-center gap-1.5">
+                    <span className="font-handwriting text-primary text-lg font-bold leading-none">
+                      It&apos;s a Match!
+                    </span>
+                  </div>
+                  <p className="text-xs text-base-content/75 truncate mt-0.5">
+                    You &amp; {matchCelebration.firstName} want to collaborate
+                  </p>
+                </div>
+              </div>
+              <Link
+                to="/login?mode=signup"
+                className="btn btn-xs sm:btn-sm btn-primary shrink-0 rounded-xl font-semibold gap-1 cursor-pointer shadow-xs"
+              >
+                <span>Say Hi</span>
+                <ArrowRight className="w-3.5 h-3.5 stroke-[2.5]" />
+              </Link>
+            </div>
+          </motion.div>
+        )}
+      </AnimatePresence>
+
       {/* ─── Hero Section ────────────────────────────────────────── */}
       <section className="relative px-4 sm:px-6 lg:px-8 pt-12 pb-20 sm:pt-16 sm:pb-28 max-w-6xl mx-auto w-full">
         <div className="absolute inset-0 bg-grid-subtle opacity-40 pointer-events-none -z-10" />
@@ -506,63 +591,6 @@ export default function LandingPage() {
                 <span>3D Zoom</span>
               </button>
             </div>
-
-            {/* Bespoke Mutual Match Celebration Popup */}
-            <div className="min-h-16 mt-2 w-full max-w-sm flex items-center justify-center">
-              <AnimatePresence>
-                {matchCelebration && (
-                  <motion.div
-                    initial={{ opacity: 0, y: 14, scale: 0.92 }}
-                    animate={{ opacity: 1, y: 0, scale: 1 }}
-                    exit={{ opacity: 0, y: -10, scale: 0.94 }}
-                    transition={{ type: "spring", stiffness: 350, damping: 24 }}
-                    className="w-full"
-                  >
-                    <div className="relative overflow-hidden p-3 px-3.5 rounded-2xl border border-primary/30 bg-base-100/95 backdrop-blur-xl shadow-xl shadow-primary/10 flex items-center justify-between gap-3 text-base-content">
-                      <div className="absolute -top-10 -right-10 w-24 h-24 bg-primary/15 rounded-full blur-xl pointer-events-none" />
-                      <div className="flex items-center gap-3 min-w-0">
-                        <div className="relative flex items-center shrink-0">
-                          <div className="w-9 h-9 rounded-full ring-2 ring-base-100 overflow-hidden bg-base-300">
-                            <img
-                              src="https://images.unsplash.com/photo-1534528741775-53994a69daeb?q=75&w=120&auto=format&fit=crop"
-                              alt="You"
-                              className="w-full h-full object-cover"
-                            />
-                          </div>
-                          <div className="w-9 h-9 rounded-full ring-2 ring-primary overflow-hidden bg-base-300 -ml-3">
-                            <img
-                              src={matchCelebration.profilePictureUrl || "/default-avatar.svg"}
-                              alt={matchCelebration.firstName}
-                              className="w-full h-full object-cover"
-                            />
-                          </div>
-                          <div className="absolute -bottom-1 left-3.5 w-4.5 h-4.5 rounded-full bg-primary text-primary-content flex items-center justify-center shadow-xs">
-                            <Heart className="w-2.5 h-2.5 fill-current stroke-0" />
-                          </div>
-                        </div>
-                        <div className="truncate">
-                          <div className="flex items-center gap-1.5">
-                            <span className="font-handwriting text-primary text-lg font-bold leading-none">
-                              It&apos;s a Match!
-                            </span>
-                          </div>
-                          <p className="text-xs text-base-content/75 truncate mt-0.5">
-                            You &amp; {matchCelebration.firstName} want to collaborate
-                          </p>
-                        </div>
-                      </div>
-                      <Link
-                        to="/login?mode=signup"
-                        className="btn btn-xs sm:btn-sm btn-primary shrink-0 rounded-xl font-semibold gap-1 cursor-pointer shadow-xs"
-                      >
-                        <span>Say Hi</span>
-                        <ArrowRight className="w-3.5 h-3.5 stroke-[2.5]" />
-                      </Link>
-                    </div>
-                  </motion.div>
-                )}
-              </AnimatePresence>
-            </div>
           </motion.div>
         </div>
 
@@ -574,107 +602,6 @@ export default function LandingPage() {
           onConnect={() => triggerSwipeAction("right", currentUser)}
           showActions={true}
         />
-      </section>
-
-      {/* ─── Live Theme Studio ───────────────────────────────────── */}
-      <section className="px-4 sm:px-6 lg:px-8 py-16 sm:py-20 bg-base-200/30 border-y border-base-content/8">
-        <div className="max-w-4xl mx-auto text-center space-y-8">
-          <div className="space-y-3">
-            <div className="inline-flex items-center gap-2 px-3 py-1.5 rounded-full bg-base-100 border border-base-content/10 text-xs font-semibold text-base-content/70 shadow-xs">
-              <Palette className="w-3.5 h-3.5 text-primary" />
-              <span>Instant Personalization</span>
-            </div>
-            <h2 className="text-2xl sm:text-3xl font-extrabold tracking-tight text-base-content">
-              Your vibe, your palette
-            </h2>
-            <p className="text-sm text-base-content/60 max-w-md mx-auto">
-              Orbit adapts to your workflow. Click any theme below to instantly
-              transform the entire interface.
-            </p>
-          </div>
-
-          <div className="flex flex-wrap items-center justify-center gap-2 max-w-2xl mx-auto">
-            {FEATURED_THEMES.map((themeName) => {
-              const isCurrent = theme === themeName;
-              return (
-                <motion.button
-                  key={themeName}
-                  onClick={() => setTheme && setTheme(themeName)}
-                  aria-label={`Select ${themeName} theme`}
-                  whileHover={{ y: -2 }}
-                  whileTap={{ scale: 0.96 }}
-                  transition={{ type: "spring", stiffness: 400, damping: 26 }}
-                  className={`relative flex items-center gap-2 px-3.5 py-2 rounded-xl border text-xs font-semibold transition-all cursor-pointer ${
-                    isCurrent
-                      ? "bg-primary text-primary-content border-primary shadow-md"
-                      : "bg-base-100 hover:bg-base-200/80 border-base-content/12 text-base-content/80 hover:text-base-content hover:border-base-content/25"
-                  }`}
-                >
-                  <span className="capitalize">{themeName}</span>
-                  <span
-                    data-theme={themeName}
-                    className="flex gap-0.5 p-0.5 rounded-md bg-base-100/90 border border-base-content/10"
-                  >
-                    <span className="w-1.5 h-3 rounded-sm bg-primary" />
-                    <span className="w-1.5 h-3 rounded-sm bg-secondary" />
-                    <span className="w-1.5 h-3 rounded-sm bg-accent" />
-                  </span>
-                  {isCurrent && <Check className="w-3.5 h-3.5 stroke-[2.5]" />}
-                </motion.button>
-              );
-            })}
-          </div>
-
-          <div
-            data-theme={theme || "caramellatte"}
-            className="mt-4 max-w-xs mx-auto p-4 rounded-2xl bg-base-100 border border-base-content/12 shadow-lg text-left transition-all duration-300"
-          >
-            <div className="flex items-center gap-3 mb-3">
-              <div className="w-10 h-10 rounded-xl bg-primary/15 text-primary flex items-center justify-center font-bold text-xs">
-                SG
-              </div>
-              <div className="min-w-0 flex-1">
-                <div className="flex items-center gap-2">
-                  <h4 className="font-bold text-sm text-base-content truncate">
-                    Sarah Guo
-                  </h4>
-                  <span className="badge badge-xs badge-primary font-mono font-bold">
-                    PRO
-                  </span>
-                </div>
-                <p className="text-xs text-base-content/60 truncate">
-                  Early-stage AI Investor &amp; Builder
-                </p>
-              </div>
-            </div>
-            <div className="flex gap-1.5 mb-3 flex-wrap">
-              {["AI Systems", "Scale", "Founders"].map((s) => (
-                <span
-                  key={s}
-                  className="badge badge-xs bg-base-200 text-base-content/80 font-mono"
-                >
-                  {s}
-                </span>
-              ))}
-            </div>
-            <div className="flex items-center justify-between pt-2 border-t border-base-content/10">
-              <span className="text-[11px] text-base-content/50 font-mono uppercase">
-                {theme || "caramellatte"}
-              </span>
-              <span className="btn btn-xs btn-primary rounded-lg font-semibold shadow-xs pointer-events-none">
-                Live Preview
-              </span>
-            </div>
-          </div>
-
-          <p className="text-xs text-base-content/45 font-mono">
-            Active:{" "}
-            <span className="font-bold text-primary capitalize">
-              {theme || "caramellatte"}
-            </span>{" "}
-            • 30+ more themes in navigation
-          </p>
-        </div>
       </section>
 
       {/* ─── 3-Step Journey with Hand-Drawn Arrows ─────────────── */}
@@ -728,7 +655,7 @@ export default function LandingPage() {
 
                 {idx < JOURNEY_STEPS.length - 1 && (
                   <>
-                    <div className="hidden md:flex items-center justify-center px-1 -mx-3 z-10">
+                    <div className="hidden md:flex items-center justify-center px-3 z-10 shrink-0 self-center">
                       <HandDrawnArrow
                         variant={idx === 0 ? "top-to-bottom" : "bottom-to-top"}
                         label={
@@ -770,7 +697,7 @@ export default function LandingPage() {
         </div>
       </section>
 
-      {/* ─── Membership Tiers ────────────────────────────────────── */}
+      {/* ─── Membership Tiers & Rich Pricing ──────────────────────── */}
       <section
         id="pricing"
         className="px-4 sm:px-6 lg:px-8 py-20 bg-base-200/30 border-t border-base-content/8"
@@ -789,7 +716,132 @@ export default function LandingPage() {
               unlimited swipes with Pro or Premium.
             </p>
           </div>
+
           <PlanCards isLanding={true} />
+
+          {/* Trust Badges */}
+          <div className="pt-8 border-t border-base-content/10 flex flex-wrap items-center justify-center gap-6 sm:gap-8 text-xs sm:text-sm text-base-content/75 font-medium">
+            <div className="flex items-center gap-2.5">
+              <ShieldCheck className="w-5 h-5 text-primary stroke-[2.2]" />
+              <span>256-Bit SSL Encrypted Checkout</span>
+            </div>
+            <div className="flex items-center gap-2.5">
+              <Sparkles className="w-5 h-5 text-primary stroke-[2.2]" />
+              <span>Instant Membership Activation</span>
+            </div>
+            <div className="flex items-center gap-2.5">
+              <CheckCircle2 className="w-5 h-5 text-primary stroke-[2.2]" />
+              <span>Official Razorpay Gateway</span>
+            </div>
+          </div>
+
+          {/* FAQs Accordion */}
+          <div className="pt-6 max-w-2xl mx-auto">
+            <div className="flex items-center justify-center gap-2 mb-6">
+              <HelpCircle className="w-5 h-5 text-primary stroke-[2]" />
+              <h3 className="text-lg sm:text-xl font-bold text-base-content tracking-tight">
+                Frequently Asked Questions
+              </h3>
+            </div>
+
+            <div className="space-y-3">
+              {FAQS.map((faq, index) => {
+                const isOpen = openFaqIndex === index;
+                return (
+                  <div
+                    key={faq.q}
+                    className="rounded-2xl border border-base-content/15 bg-base-100 overflow-hidden transition-colors"
+                  >
+                    <button
+                      type="button"
+                      onClick={() => toggleFaq(index)}
+                      className="w-full flex items-center justify-between p-4 sm:p-4.5 text-left text-xs sm:text-sm font-semibold text-base-content hover:bg-base-200/50 transition-colors cursor-pointer"
+                    >
+                      <span>{faq.q}</span>
+                      <ChevronDown
+                        className={`w-4 h-4 text-base-content/50 transition-transform duration-200 shrink-0 ${
+                          isOpen ? "rotate-180 text-primary" : ""
+                        }`}
+                      />
+                    </button>
+                    <AnimatePresence initial={false}>
+                      {isOpen && (
+                        <motion.div
+                          initial={{ height: 0, opacity: 0 }}
+                          animate={{ height: "auto", opacity: 1 }}
+                          exit={{ height: 0, opacity: 0 }}
+                          transition={{ duration: 0.2, ease: "easeOut" }}
+                        >
+                          <p className="px-4 sm:px-4.5 pb-4 pt-1 text-xs sm:text-sm text-base-content/75 leading-relaxed border-t border-base-content/10">
+                            {faq.a}
+                          </p>
+                        </motion.div>
+                      )}
+                    </AnimatePresence>
+                  </div>
+                );
+              })}
+            </div>
+          </div>
+        </div>
+      </section>
+
+      {/* ─── Live Theme Studio ───────────────────────────────────── */}
+      <section className="px-4 sm:px-6 lg:px-8 py-16 sm:py-20 bg-base-200/30 border-y border-base-content/8">
+        <div className="max-w-4xl mx-auto text-center space-y-8">
+          <div className="space-y-3">
+            <div className="inline-flex items-center gap-2 px-3 py-1.5 rounded-full bg-base-100 border border-base-content/10 text-xs font-semibold text-base-content/70 shadow-xs">
+              <Palette className="w-3.5 h-3.5 text-primary" />
+              <span>Instant Personalization</span>
+            </div>
+            <h2 className="text-2xl sm:text-3xl font-extrabold tracking-tight text-base-content">
+              Your vibe, your palette
+            </h2>
+            <p className="text-sm text-base-content/60 max-w-md mx-auto">
+              Orbit adapts to your workflow. Click any theme below to instantly
+              transform the entire interface.
+            </p>
+          </div>
+
+          <div className="flex flex-wrap items-center justify-center gap-2 max-w-2xl mx-auto">
+            {FEATURED_THEMES.map((themeName) => {
+              const isCurrent = theme === themeName;
+              return (
+                <motion.button
+                  key={themeName}
+                  onClick={() => setTheme && setTheme(themeName)}
+                  aria-label={`Select ${themeName} theme`}
+                  whileHover={{ y: -2 }}
+                  whileTap={{ scale: 0.96 }}
+                  transition={{ type: "spring", stiffness: 400, damping: 26 }}
+                  className={`relative flex items-center gap-2 px-3.5 py-2 rounded-xl border text-xs font-semibold transition-all cursor-pointer ${
+                    isCurrent
+                      ? "bg-primary text-primary-content border-primary shadow-md"
+                      : "bg-base-100 hover:bg-base-200/80 border-base-content/12 text-base-content/80 hover:text-base-content hover:border-base-content/25"
+                  }`}
+                >
+                  <span className="capitalize">{themeName}</span>
+                  <span
+                    data-theme={themeName}
+                    className="flex gap-0.5 p-0.5 rounded-md bg-base-100/90 border border-base-content/10"
+                  >
+                    <span className="w-1.5 h-3 rounded-sm bg-primary" />
+                    <span className="w-1.5 h-3 rounded-sm bg-secondary" />
+                    <span className="w-1.5 h-3 rounded-sm bg-accent" />
+                  </span>
+                  {isCurrent && <Check className="w-3.5 h-3.5 stroke-[2.5]" />}
+                </motion.button>
+              );
+            })}
+          </div>
+
+          <p className="text-xs text-base-content/45 font-mono">
+            Active:{" "}
+            <span className="font-bold text-primary capitalize">
+              {theme || "caramellatte"}
+            </span>{" "}
+            • 30+ more themes in navigation
+          </p>
         </div>
       </section>
 
