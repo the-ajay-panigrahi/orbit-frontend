@@ -16,7 +16,6 @@
   -moz-osx-font-smoothing: grayscale;
 }
 
-/* Theme-adaptive text selection highlight across all 36 themes */
 ::selection {
   background-color: var(--color-primary);
   color: var(--color-primary-content);
@@ -31,7 +30,14 @@
   font-family: "JetBrains Mono", monospace;
 }
 
-/* Proportional root scaling for large displays (e.g. 27" 2K / 1440p / 4K) */
+.font-handwriting {
+  font-family: "Caveat", "Comic Sans MS", cursive;
+}
+
+.font-editorial {
+  font-family: "Instrument Serif", Georgia, serif;
+}
+
 @media (min-width: 1920px) {
   :root {
     font-size: 17px;
@@ -44,23 +50,33 @@
   }
 }
 
-/* Luxury feature card hover styling - clean and uniform across all themes */
+/* Aceternity-inspired subtle ambient dot grid for hero/section backgrounds */
+.bg-grid-subtle {
+  background-image: radial-gradient(
+    color-mix(in srgb, var(--color-base-content) 6%, transparent) 1px,
+    transparent 1px
+  );
+  background-size: 24px 24px;
+}
+
+/* Feature card hover styling — clean and uniform across all themes */
 .spotlight-card {
   background-color: var(--color-base-100);
   transition:
-    border-color 0.25s ease,
-    box-shadow 0.25s ease,
-    background-color 0.25s ease;
+    border-color 0.3s ease,
+    box-shadow 0.3s ease,
+    background-color 0.3s ease;
 }
 
 .spotlight-card:hover {
   border-color: color-mix(
     in srgb,
-    var(--color-primary) 45%,
-    var(--color-base-content)
+    var(--color-primary) 50%,
+    var(--color-base-content) 10%
   );
-  box-shadow: 0 20px 35px -10px
-    color-mix(in srgb, var(--color-base-content) 10%, transparent);
+  box-shadow:
+    0 0 0 1px color-mix(in srgb, var(--color-primary) 15%, transparent),
+    0 20px 40px -12px color-mix(in srgb, var(--color-base-content) 10%, transparent);
 }
 
 /* Sleek custom scrollbar utility */
@@ -86,4 +102,17 @@
       transparent
     )
     transparent;
+}
+
+/* Smooth sketchy hand-drawn arrow stroke animation */
+@keyframes draw-stroke {
+  from {
+    stroke-dashoffset: 200;
+  }
+  to {
+    stroke-dashoffset: 0;
+  }
+}
+.animate-draw {
+  animation: draw-stroke 1.2s ease-out forwards;
 }

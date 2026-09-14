@@ -1,4 +1,6 @@
 import { motion } from "motion/react";
+
+const springHover = { type: "spring", stiffness: 300, damping: 26 };
 import { Check, Sparkles, Zap, Crown, ArrowRight } from "lucide-react";
 import { Link } from "react-router-dom";
 
@@ -67,7 +69,7 @@ export default function PlanCards({
   onSelectPlan,
 }) {
   return (
-    <div className="grid grid-cols-1 lg:grid-cols-3 gap-6 lg:gap-8 max-w-5xl mx-auto items-stretch py-4">
+    <div className="grid grid-cols-1 lg:grid-cols-3 gap-6 lg:gap-7 max-w-5xl mx-auto items-stretch py-4">
       {PLANS.map((plan) => {
         const Icon = plan.icon;
         const isCurrent = !isLanding && currentPlan === plan.id;
@@ -76,12 +78,12 @@ export default function PlanCards({
         return (
           <motion.div
             key={plan.id}
-            whileHover={{ y: -4 }}
-            transition={{ duration: 0.2, ease: "easeOut" }}
+            whileHover={{ y: -5 }}
+            transition={springHover}
             className={`relative flex flex-col justify-between rounded-3xl p-6 sm:p-8 transition-all ${
               isPopular
                 ? "bg-base-100 border-2 border-primary shadow-2xl lg:scale-105 z-10"
-                : "bg-base-100/90 border border-base-content/15 shadow-md"
+                : "bg-base-100/90 border-2 border-base-content/10 shadow-md hover:shadow-lg hover:border-base-content/25"
             }`}
           >
             {isPopular && (
@@ -108,7 +110,7 @@ export default function PlanCards({
                     <h3 className="font-extrabold text-lg text-base-content tracking-tight">
                       {plan.name}
                     </h3>
-                    <p className="text-[11px] text-base-content/60 font-medium">
+                    <p className="text-xs text-base-content/55 font-medium">
                       {plan.badge}
                     </p>
                   </div>
@@ -133,19 +135,19 @@ export default function PlanCards({
                 </span>
               </div>
 
-              <p className="text-xs text-base-content/75 leading-relaxed min-h-8 mb-6">
+              <p className="text-sm text-base-content/70 leading-relaxed min-h-8 mb-6">
                 {plan.tagline}
               </p>
 
               <div className="border-t border-base-content/10 pt-5 mb-6">
-                <p className="text-[11px] font-bold uppercase tracking-wider text-base-content/50 mb-3">
+                <p className="text-xs font-bold uppercase tracking-wider text-base-content/45 mb-3">
                   Included Features
                 </p>
                 <ul className="space-y-3">
                   {plan.features.map((feature) => (
                     <li
                       key={feature}
-                      className="flex items-start gap-2.5 text-xs text-base-content/85 leading-tight"
+                      className="flex items-start gap-2.5 text-sm text-base-content/80 leading-snug"
                     >
                       <Check className="w-4 h-4 text-primary shrink-0 stroke-[2.5]" />
                       <span>{feature}</span>

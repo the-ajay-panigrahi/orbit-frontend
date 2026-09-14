@@ -2,6 +2,7 @@ import { useState, useEffect } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { Link } from "react-router-dom";
 import axios from "axios";
+import { motion } from "motion/react";
 import {
   Users,
   Search,
@@ -11,21 +12,27 @@ import {
   Compass,
   Sparkles,
   Lock,
+  Share2,
 } from "lucide-react";
 import { BASE_URL } from "../utils/constants";
 import { addConnections } from "../utils/connectionSlice";
 import RowMorphDetailModal from "./RowMorphDetailModal";
+
+const springTap = { type: "spring", stiffness: 400, damping: 22 };
 
 export default function Connections() {
   const connections = useSelector((store) => store.connections);
   const currentUser = useSelector((store) => store.user);
   const dispatch = useDispatch();
 
-  const canChat = currentUser?.membershipType === "pro" || currentUser?.membershipType === "premium";
+  const canChat =
+    currentUser?.membershipType === "pro" ||
+    currentUser?.membershipType === "premium";
 
   const [selectedUser, setSelectedUser] = useState(null);
   const [originRect, setOriginRect] = useState(null);
   const [searchQuery, setSearchQuery] = useState("");
+  const [roleFilter, setRoleFilter] = useState("all");
   const [error, setError] = useState("");
   const [toastMessage, setToastMessage] = useState("");
   const [isLoading, setIsLoading] = useState(true);
@@ -35,43 +42,32 @@ export default function Connections() {
     setIsLoading(true);
     axios
       .get(`${BASE_URL}/user/connections`, { withCredentials: true })
-      .then((res) => {
-        dispatch(addConnections(res?.data?.data || []));
-      })
-      .catch((err) => {
+      .then((res) => dispatch(addConnections(res?.data?.data || [])))
+      .catch((err) =>
         setError(
           err?.response?.data?.error ||
             "Failed to load connections. Please try again.",
-        );
-      })
-      .finally(() => {
-        setIsLoading(false);
-      });
+        ),
+      )
+      .finally(() => setIsLoading(false));
   };
 
   useEffect(() => {
     const controller = new AbortController();
-
     axios
       .get(`${BASE_URL}/user/connections`, {
         withCredentials: true,
         signal: controller.signal,
       })
-      .then((res) => {
-        dispatch(addConnections(res?.data?.data || []));
-      })
+      .then((res) => dispatch(addConnections(res?.data?.data || [])))
       .catch((err) => {
-        if (!axios.isCancel(err)) {
+        if (!axios.isCancel(err))
           setError(
             err?.response?.data?.error ||
               "Failed to load connections. Please try again.",
           );
-        }
       })
-      .finally(() => {
-        setIsLoading(false);
-      });
-
+      .finally(() => setIsLoading(false));
     return () => controller.abort();
   }, [dispatch]);
 
@@ -91,7 +87,24 @@ export default function Connections() {
     setTimeout(() => setToastMessage(null), 3000);
   };
 
+  const handleCopyProfileLink = (e, targetUser) => {
+    e.stopPropagation();
+    if (navigator.clipboard) {
+      navigator.clipboard.writeText(`${window.location.origin}/feed`);
+      setToastMessage({
+        type: "info",
+        text: `Copied ${targetUser.firstName}'s Orbit link!`,
+      });
+      setTimeout(() => setToastMessage(""), 2500);
+    }
+  };
+
   const filteredConnections = (connections || []).filter((user) => {
+    if (roleFilter !== "all") {
+      const searchTarget = `${user.lookingFor || ""} ${user.about || ""} ${(user.skills || []).join(" ")}`.toLowerCase();
+      if (!searchTarget.includes(roleFilter)) return false;
+    }
+
     if (!searchQuery.trim()) return true;
     const query = searchQuery.toLowerCase();
     const fullName =
@@ -102,7 +115,6 @@ export default function Connections() {
     const hasMatchingLookingFor = (user.lookingFor || "")
       .toLowerCase()
       .includes(query);
-
     return (
       fullName.includes(query) || hasMatchingSkill || hasMatchingLookingFor
     );
@@ -149,10 +161,11 @@ export default function Connections() {
     <div className="flex-1 w-full max-w-4xl mx-auto p-3 sm:p-6 pb-20 md:pb-6 flex flex-col">
       {toastMessage && (
         <div className="toast toast-top toast-center z-50">
-          <div className="alert alert-neutral py-2.5 px-4 shadow-xl border border-primary/25 text-xs font-medium flex items-center gap-2.5">
-            {typeof toastMessage === "object" && toastMessage?.type === "upgrade" ? (
+          <div className="alert alert-neutral py-2.5 px-4 shadow-xl border border-primary/20 text-xs font-medium flex items-center gap-2.5">
+            {typeof toastMessage === "object" &&
+            toastMessage?.type === "upgrade" ? (
               <>
-                <Lock className="w-4 h-4 text-warning shrink-0" />
+                <Lock className="w-4 h-4 text-primary shrink-0" />
                 <span>{toastMessage.text}</span>
                 <Link
                   to="/premium"
@@ -164,91 +177,128 @@ export default function Connections() {
             ) : (
               <>
                 <Sparkles className="w-4 h-4 text-primary shrink-0" />
-                <span>{typeof toastMessage === "object" ? toastMessage.text : toastMessage}</span>
+                <span>
+                  {typeof toastMessage === "object"
+                    ? toastMessage.text
+                    : toastMessage}
+                </span>
               </>
             )}
           </div>
         </div>
       )}
 
-      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 mb-6 pb-4 border-b border-base-content/10">
+      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 mb-6 pb-4 border-b border-base-content/8">
         <div className="flex items-center gap-3">
           <div className="w-10 h-10 rounded-xl bg-primary/10 text-primary flex items-center justify-center shrink-0">
             <Users className="w-5 h-5" />
           </div>
           <div>
-            <h1 className="text-lg sm:text-xl font-bold text-base-content flex items-center gap-2">
+            <h1 className="text-xl font-bold text-base-content flex items-center gap-2">
               My Orbit Network
               {connections && (
-                <span className="badge badge-sm badge-primary font-mono text-[11px]">
+                <span className="badge badge-sm badge-primary font-mono text-xs">
                   {connections.length}
                 </span>
               )}
             </h1>
-            <p className="text-xs text-base-content/60">
+            <p className="text-xs text-base-content/55">
               Founders, engineers, and creators you are connected with
             </p>
           </div>
         </div>
 
-        <div className="flex items-center gap-2 self-end sm:self-center">
-          <button
-            onClick={handleRefresh}
-            className="btn btn-ghost btn-circle btn-sm text-base-content/60 hover:text-base-content"
-            title="Refresh network"
-            aria-label="Refresh network"
-          >
-            <RotateCcw className="w-4 h-4" />
-          </button>
-        </div>
+        <button
+          onClick={handleRefresh}
+          className="btn btn-ghost btn-circle btn-sm text-base-content/50 hover:text-base-content self-end sm:self-center"
+          title="Refresh network"
+          aria-label="Refresh network"
+        >
+          <RotateCcw className="w-4 h-4" />
+        </button>
       </div>
 
       {connections.length > 0 && (
-        <div className="relative mb-6">
-          <Search className="w-4 h-4 text-base-content/40 absolute left-3.5 top-1/2 -translate-y-1/2 pointer-events-none" />
-          <input
-            type="text"
-            placeholder="Search connections by name, skill, or role..."
-            aria-label="Search connections by name, skill, or role"
-            value={searchQuery}
-            onChange={(e) => setSearchQuery(e.target.value)}
-            className="input input-sm sm:input-md w-full pl-10 rounded-xl bg-base-100 border-base-content/15 text-xs sm:text-sm focus:border-primary focus:outline-none"
-          />
-          {searchQuery && (
-            <button
-              onClick={() => setSearchQuery("")}
-              aria-label="Clear search query"
-              className="absolute right-3 top-1/2 -translate-y-1/2 text-xs text-base-content/40 hover:text-base-content font-mono px-1.5 py-0.5 cursor-pointer"
-            >
-              Clear
-            </button>
-          )}
+        <div className="space-y-3 mb-6">
+          <div className="relative">
+            <Search className="w-4 h-4 text-base-content/35 absolute left-3.5 top-1/2 -translate-y-1/2 pointer-events-none stroke-[2.3]" />
+            <input
+              type="text"
+              placeholder="Search by name, skill, or role..."
+              aria-label="Search connections by name, skill, or role"
+              value={searchQuery}
+              onChange={(e) => setSearchQuery(e.target.value)}
+              className="input input-sm sm:input-md w-full pl-10 rounded-xl bg-base-100 border-base-content/12 text-sm focus:border-primary focus:outline-none"
+            />
+            {searchQuery && (
+              <button
+                onClick={() => setSearchQuery("")}
+                aria-label="Clear search query"
+                className="absolute right-3 top-1/2 -translate-y-1/2 text-xs text-base-content/40 hover:text-base-content font-mono px-1.5 py-0.5 cursor-pointer"
+              >
+                Clear
+              </button>
+            )}
+          </div>
+
+          {/* Quick Role Filter Pills */}
+          <div className="flex items-center gap-1.5 overflow-x-auto pb-1 scrollbar-none">
+            {[
+              { id: "all", label: "All Network" },
+              { id: "founder", label: "Founders" },
+              { id: "engineer", label: "Engineers" },
+              { id: "designer", label: "Designers" },
+              { id: "ai", label: "AI / ML" },
+            ].map((r) => (
+              <button
+                key={r.id}
+                type="button"
+                onClick={() => setRoleFilter(r.id)}
+                className={`badge badge-sm py-2 px-3 text-xs transition-all cursor-pointer ${
+                  roleFilter === r.id
+                    ? "badge-primary font-bold shadow-xs"
+                    : "badge-ghost bg-base-100 hover:bg-base-200 border border-base-content/10 text-base-content/70"
+                }`}
+              >
+                {r.label}
+              </button>
+            ))}
+          </div>
         </div>
       )}
 
       {connections.length === 0 ? (
         <div className="flex-1 flex flex-col items-center justify-center p-8 text-center my-auto">
-          <div className="w-16 h-16 rounded-2xl bg-base-200 border border-base-content/10 flex items-center justify-center text-base-content/40 mb-4">
+          <div className="relative w-16 h-16 rounded-2xl bg-base-200 border border-base-content/10 flex items-center justify-center text-base-content/40 mb-4">
             <Users className="w-8 h-8 stroke-[1.4]" />
           </div>
-          <h2 className="text-lg font-bold text-base-content mb-1">
+          <h2 className="text-xl font-bold text-base-content mb-1">
             No Connections Yet
           </h2>
-          <p className="text-xs text-base-content/60 max-w-sm mb-6 leading-relaxed">
+          <p className="text-sm text-base-content/55 max-w-sm mb-6 leading-relaxed">
             Your Orbit is waiting to expand! Connect with founders, CTOs, and
             creators in your feed to start building your network.
           </p>
-          <Link to="/feed" className="btn btn-sm btn-primary gap-2 font-medium">
-            <Compass className="w-4 h-4" />
-            Discover Builders in Feed
-          </Link>
+          <motion.div
+            whileHover={{ y: -2 }}
+            whileTap={{ scale: 0.96 }}
+            transition={springTap}
+          >
+            <Link
+              to="/feed"
+              className="btn btn-sm btn-primary gap-2 font-medium cursor-pointer"
+            >
+              <Compass className="w-4 h-4" />
+              Discover Builders in Feed
+            </Link>
+          </motion.div>
         </div>
       ) : filteredConnections.length === 0 ? (
         <div className="p-8 text-center bg-base-100 rounded-2xl border border-base-content/10">
           <p className="text-sm font-semibold text-base-content">
             No connections found matching &quot;{searchQuery}&quot;
           </p>
-          <p className="text-xs text-base-content/60 mt-1">
+          <p className="text-xs text-base-content/55 mt-1">
             Try searching for a different name, role, or tech stack.
           </p>
         </div>
@@ -263,18 +313,20 @@ export default function Connections() {
             const skills = Array.isArray(user.skills) ? user.skills : [];
 
             return (
-              <div
+              <motion.div
                 key={user._id}
+                whileHover={{ y: -1 }}
+                transition={{ duration: 0.15 }}
                 onClick={(e) => {
                   const rect = e.currentTarget.getBoundingClientRect();
                   setOriginRect(rect);
                   setSelectedUser(user);
                 }}
-                className="group p-2.5 sm:p-3 rounded-2xl bg-base-100/90 backdrop-blur-sm border border-base-content/15 shadow-xs hover:shadow-lg hover:border-primary/45 transition-all duration-200 flex items-center justify-between gap-3 sm:gap-4 cursor-pointer"
+                className="group p-2.5 sm:p-3 rounded-2xl bg-base-100/90 backdrop-blur-sm border border-base-content/12 shadow-xs hover:shadow-md hover:border-primary/30 transition-all duration-200 flex items-center justify-between gap-3 sm:gap-4 cursor-pointer"
               >
                 <div className="flex items-center gap-3 sm:gap-3.5 min-w-0 flex-1">
                   <div className="avatar shrink-0 relative">
-                    <div className="w-12 h-12 sm:w-14 sm:h-14 rounded-2xl border border-base-content/15 overflow-hidden bg-base-200 shadow-2xs group-hover:scale-105 transition-transform duration-200">
+                    <div className="w-12 h-12 sm:w-14 sm:h-14 rounded-2xl border border-base-content/12 overflow-hidden bg-base-200 shadow-2xs group-hover:scale-105 transition-transform duration-200">
                       <img
                         src={profilePictureUrl}
                         alt={fullName}
@@ -300,13 +352,12 @@ export default function Connections() {
                         {fullName}
                       </h3>
                       {(user.age || user.gender) && (
-                        <span className="text-[10px] sm:text-[11px] font-semibold text-base-content/70 bg-base-200/80 border border-base-content/10 px-2 py-0.5 rounded-md shrink-0 capitalize">
+                        <span className="text-[11px] font-semibold text-base-content/65 bg-base-200/80 border border-base-content/8 px-2 py-0.5 rounded-md shrink-0 capitalize">
                           {[user.age, user.gender].filter(Boolean).join(" • ")}
                         </span>
                       )}
                     </div>
-
-                    <div className="flex items-center gap-2 text-xs text-base-content/60 truncate">
+                    <div className="flex items-center gap-2 text-xs text-base-content/55 truncate">
                       {user.lookingFor ? (
                         <span className="inline-flex items-center gap-1 text-primary font-medium truncate">
                           <Sparkle className="w-3 h-3 shrink-0" />
@@ -317,7 +368,7 @@ export default function Connections() {
                       ) : user.about ? (
                         <span className="truncate">{user.about}</span>
                       ) : skills.length > 0 ? (
-                        <span className="font-mono text-[11px] text-base-content/70 truncate">
+                        <span className="font-mono text-xs text-base-content/65 truncate">
                           {skills.slice(0, 3).join(" • ")}
                         </span>
                       ) : (
@@ -327,16 +378,28 @@ export default function Connections() {
                   </div>
                 </div>
 
-                <div className="flex items-center gap-2 shrink-0">
+                <div className="flex items-center gap-1.5 shrink-0">
                   <button
+                    type="button"
+                    onClick={(e) => handleCopyProfileLink(e, user)}
+                    className="btn btn-ghost btn-circle btn-sm text-base-content/50 hover:text-primary hover:bg-primary/10 transition-colors cursor-pointer"
+                    title={`Share ${user.firstName}'s Orbit profile link`}
+                  >
+                    <Share2 className="w-3.5 h-3.5 stroke-[2.3]" />
+                  </button>
+
+                  <motion.button
                     onClick={(e) => {
                       e.stopPropagation();
                       handleMessageClick(user.firstName);
                     }}
-                    className={`btn btn-sm rounded-xl gap-1.5 font-semibold shadow-xs hover:shadow-md cursor-pointer shrink-0 ${
+                    whileHover={{ scale: 1.04 }}
+                    whileTap={{ scale: 0.95 }}
+                    transition={springTap}
+                    className={`btn btn-sm rounded-xl gap-1.5 font-semibold shadow-xs cursor-pointer ${
                       canChat
                         ? "btn-primary"
-                        : "btn-outline border-base-content/20 hover:bg-base-200 text-base-content"
+                        : "btn-outline border-base-content/15 hover:bg-base-200 text-base-content"
                     }`}
                     title={
                       canChat
@@ -345,22 +408,21 @@ export default function Connections() {
                     }
                   >
                     {canChat ? (
-                      <MessageSquare className="w-3.5 h-3.5" />
+                      <MessageSquare className="w-3.5 h-3.5 stroke-[2.3]" />
                     ) : (
-                      <Lock className="w-3.5 h-3.5 text-warning" />
+                      <Lock className="w-3.5 h-3.5 text-primary stroke-[2.3]" />
                     )}
                     <span className="hidden xs:inline sm:inline">
                       {canChat ? "Message" : "Chat (Pro)"}
                     </span>
-                  </button>
+                  </motion.button>
                 </div>
-              </div>
+              </motion.div>
             );
           })}
         </div>
       )}
 
-      {/* 3D Row-to-Card Morphing Profile Modal */}
       <RowMorphDetailModal
         isOpen={Boolean(selectedUser)}
         onClose={() => {
@@ -378,13 +440,15 @@ export default function Connections() {
                 setOriginRect(null);
               }}
               className={`btn btn-sm w-full rounded-xl gap-2 font-semibold shadow-md cursor-pointer ${
-                canChat ? "btn-primary" : "btn-outline border-base-content/25 text-base-content"
+                canChat
+                  ? "btn-primary"
+                  : "btn-outline border-base-content/20 text-base-content"
               }`}
             >
               {canChat ? (
                 <MessageSquare className="w-4 h-4" />
               ) : (
-                <Lock className="w-4 h-4 text-warning" />
+                <Lock className="w-4 h-4 text-primary" />
               )}
               <span>
                 {canChat

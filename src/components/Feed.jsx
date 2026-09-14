@@ -1,12 +1,6 @@
 import { useState } from "react";
-import {
-  UserCheck,
-  RotateCcw,
-  Sparkles,
-  ArrowLeft,
-  ArrowRight,
-  Zap,
-} from "lucide-react";
+import { RotateCcw, Sparkles, Compass, Maximize2 } from "lucide-react";
+import { motion } from "motion/react";
 import { useFeed } from "../hooks/useFeed";
 import UserCard from "./UserCard";
 import Card3DZoomModal from "./Card3DZoomModal";
@@ -61,24 +55,29 @@ export default function Feed() {
   if (!feed || feed.length === 0) {
     return (
       <div className="flex-1 flex flex-col items-center justify-center p-4 sm:p-6 text-center">
-        <div className="card w-full max-w-sm bg-base-100 shadow-xl border border-base-content/10 p-8 flex flex-col items-center gap-4 relative overflow-hidden">
-          <div className="w-16 h-16 rounded-full bg-primary/10 flex items-center justify-center text-primary">
-            <UserCheck className="w-8 h-8 stroke-[1.5]" />
+        <div className="card w-full max-w-sm bg-base-100 shadow-xl border border-base-content/10 p-8 flex flex-col items-center gap-5 relative overflow-hidden">
+          <div className="absolute inset-0 bg-grid-subtle opacity-30 pointer-events-none" />
+          <div className="relative w-20 h-20 rounded-full bg-primary/8 flex items-center justify-center">
+            <div className="absolute inset-0 rounded-full border-2 border-primary/15 animate-ping" />
+            <Compass className="w-9 h-9 text-primary stroke-[1.5]" />
           </div>
-          <h2 className="text-xl font-bold text-base-content">
+          <h2 className="text-xl font-bold text-base-content relative">
             Orbit Queue Cleared
           </h2>
-          <p className="text-xs text-base-content/60 leading-relaxed">
+          <p className="text-sm text-base-content/60 leading-relaxed relative">
             You&apos;ve reviewed all active founders and builders in your Orbit.
             Refresh whenever you&apos;re ready to explore new arrivals.
           </p>
-          <button
+          <motion.button
             onClick={handleRefresh}
-            className="btn btn-sm btn-outline gap-2 mt-2 font-mono text-xs"
+            whileHover={{ y: -2 }}
+            whileTap={{ scale: 0.96 }}
+            transition={{ type: "spring", stiffness: 400, damping: 26 }}
+            className="btn btn-sm btn-outline gap-2 font-mono text-xs relative cursor-pointer"
           >
             <RotateCcw className="w-3.5 h-3.5" />
             Check for New Profiles
-          </button>
+          </motion.button>
         </div>
       </div>
     );
@@ -133,10 +132,13 @@ export default function Feed() {
         </div>
       )}
 
-      <div className="mb-4 flex items-center gap-2 text-xs font-mono text-base-content/60">
-        <Zap className="w-3.5 h-3.5 text-primary" />
+      <div className="mb-4 flex items-center gap-2 px-3.5 py-1.5 rounded-full bg-base-100 border border-base-content/10 shadow-2xs text-xs font-mono text-base-content/75">
+        <span className="relative flex h-2 w-2">
+          <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-primary opacity-75" />
+          <span className="relative inline-flex rounded-full h-2 w-2 bg-primary" />
+        </span>
         <span>
-          {feed.length} {feed.length === 1 ? "builder" : "builders"} in queue
+          {feed.length} {feed.length === 1 ? "builder" : "builders"} in your Orbit
         </span>
       </div>
 
@@ -159,7 +161,6 @@ export default function Feed() {
           </div>
         )}
 
-        {/* Key ensures fresh DOM node per user to prevent transition bounce */}
         <div
           key={currentUser._id}
           ref={cardRef}
@@ -194,22 +195,28 @@ export default function Feed() {
         </div>
       </div>
 
-      <div className="hidden sm:flex items-center gap-6 mt-4 text-[11px] font-mono text-base-content/40">
-        <span className="flex items-center gap-1">
-          <kbd className="kbd kbd-xs">
-            <ArrowLeft className="w-3 h-3" />
-          </kbd>
+      {/* Floating Glass Controls Dock */}
+      <div className="hidden sm:flex items-center gap-2 mt-4 p-1 px-3.5 rounded-full bg-base-100/90 backdrop-blur-md border border-base-content/10 shadow-xs text-xs font-mono text-base-content/65">
+        <div className="flex items-center gap-1">
+          <kbd className="kbd kbd-xs bg-base-200 text-base-content font-bold">←</kbd>
           <span>Pass</span>
-        </span>
-        <span className="flex items-center gap-1">
-          <kbd className="kbd kbd-xs">
-            <ArrowRight className="w-3 h-3" />
-          </kbd>
+        </div>
+        <span className="opacity-25">•</span>
+        <div className="flex items-center gap-1">
+          <kbd className="kbd kbd-xs bg-base-200 text-base-content font-bold">→</kbd>
           <span>Connect</span>
-        </span>
+        </div>
+        <span className="opacity-25">•</span>
+        <button
+          onClick={() => setIsZoomOpen(true)}
+          className="flex items-center gap-1 text-primary hover:text-primary/80 font-sans font-semibold cursor-pointer transition-colors"
+          title="Inspect in 3D Modal"
+        >
+          <Maximize2 className="w-3 h-3 stroke-[2.5]" />
+          <span>3D Zoom</span>
+        </button>
       </div>
 
-      {/* 3D Elevated Zoom Inspection Modal */}
       <Card3DZoomModal
         isOpen={isZoomOpen}
         onClose={() => setIsZoomOpen(false)}

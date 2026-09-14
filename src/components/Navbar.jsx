@@ -72,7 +72,7 @@ export default function Navbar({ theme, onSelectTheme, themes }) {
 
   return (
     <>
-      <header className="navbar bg-base-100/80 backdrop-blur-md sticky top-0 z-40 border-b border-base-content/10 px-3 sm:px-8 transition-colors duration-200">
+      <header className="navbar bg-base-100/80 backdrop-blur-md sticky top-0 z-40 border-b border-base-content/8 px-3 sm:px-8 transition-colors duration-200">
         <div className="flex-1 flex items-center">
           <Link
             to={user ? "/feed" : "/"}
@@ -96,7 +96,7 @@ export default function Navbar({ theme, onSelectTheme, themes }) {
                     : "btn-ghost text-base-content/75 hover:text-base-content hover:bg-base-content/10"
                 }`}
               >
-                <Compass className="w-4 h-4" />
+                <Compass className="w-4 h-4 stroke-[2.3]" />
                 <span>Feed</span>
               </Link>
 
@@ -108,7 +108,7 @@ export default function Navbar({ theme, onSelectTheme, themes }) {
                     : "btn-ghost text-base-content/75 hover:text-base-content hover:bg-base-content/10"
                 }`}
               >
-                <User className="w-4 h-4" />
+                <User className="w-4 h-4 stroke-[2.3]" />
                 <span>Profile</span>
               </Link>
 
@@ -120,7 +120,7 @@ export default function Navbar({ theme, onSelectTheme, themes }) {
                     : "btn-ghost text-base-content/75 hover:text-base-content hover:bg-base-content/10"
                 }`}
               >
-                <Users className="w-4 h-4" />
+                <Users className="w-4 h-4 stroke-[2.3]" />
                 <span>Connections</span>
               </Link>
 
@@ -132,7 +132,7 @@ export default function Navbar({ theme, onSelectTheme, themes }) {
                     : "btn-ghost text-base-content/75 hover:text-base-content hover:bg-base-content/10"
                 }`}
               >
-                <UserCheck className="w-4 h-4" />
+                <UserCheck className="w-4 h-4 stroke-[2.3]" />
                 <span>Requests</span>
               </Link>
 
@@ -144,7 +144,7 @@ export default function Navbar({ theme, onSelectTheme, themes }) {
                     : "btn-ghost text-base-content/75 hover:text-base-content hover:bg-base-content/10"
                 }`}
               >
-                <Sparkles className="w-4 h-4 text-primary" />
+                <Sparkles className="w-4 h-4 text-primary stroke-[2.3]" />
                 <span>Premium</span>
               </Link>
             </nav>
@@ -159,11 +159,11 @@ export default function Navbar({ theme, onSelectTheme, themes }) {
               className="btn btn-xs sm:btn-sm btn-ghost gap-1.5 sm:gap-2 border border-base-content/15 rounded-full hover:bg-base-content/5 transition-colors"
               aria-label={`Theme selector (current theme: ${theme})`}
             >
-              <Palette className="w-3.5 h-3.5 sm:w-4 sm:h-4 text-base-content/70 shrink-0" />
+              <Palette className="w-3.5 h-3.5 sm:w-4 sm:h-4 text-base-content/70 shrink-0 stroke-[2.3]" />
               <span className="ml-0.5 text-[11px] sm:text-xs font-semibold capitalize text-base-content max-w-20 sm:max-w-none truncate">
                 {theme}
               </span>
-              <ChevronDown className="w-3 h-3 sm:w-3.5 sm:h-3.5 text-base-content/50 shrink-0" />
+              <ChevronDown className="w-3 h-3 sm:w-3.5 sm:h-3.5 text-base-content/50 shrink-0 stroke-[2.3]" />
             </button>
 
             <div
@@ -403,7 +403,7 @@ export default function Navbar({ theme, onSelectTheme, themes }) {
                     }}
                     className="flex items-center gap-2 py-2 hover:bg-base-200 rounded-lg transition-colors cursor-pointer text-base-content"
                   >
-                    <Sparkles className="w-3.5 h-3.5 text-warning" />
+                    <Sparkles className="w-3.5 h-3.5 text-primary" />
                     <span>Membership Plans</span>
                   </Link>
                 </li>
@@ -600,7 +600,7 @@ export default function Navbar({ theme, onSelectTheme, themes }) {
                 : "text-base-content/65 hover:text-base-content"
             }`}
           >
-            <Sparkles className="w-5 h-5 text-warning" />
+            <Sparkles className="w-5 h-5 text-primary" />
             <span className="text-[10px]">Premium</span>
           </Link>
         </nav>

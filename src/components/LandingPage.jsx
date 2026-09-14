@@ -12,17 +12,18 @@ import {
   ShieldCheck,
   Play,
   Pause,
-  ArrowLeft,
   Compass,
   Target,
   MessageSquare,
+  Maximize2,
+  Heart,
 } from "lucide-react";
 import OrbitLogo from "./OrbitLogo";
 import UserCard from "./UserCard";
 import Card3DZoomModal from "./Card3DZoomModal";
 import PlanCards from "./PlanCards";
+import HandDrawnArrow from "./HandDrawnArrow";
 
-// Curated showcase themes for quick real-time interaction
 const FEATURED_THEMES = [
   "bumblebee",
   "dracula",
@@ -34,7 +35,6 @@ const FEATURED_THEMES = [
   "dim",
 ];
 
-// Realistic builder profiles using Orbit's exact UserCard schema
 const MOCK_FOUNDERS = [
   {
     _id: "demo-founder-1",
@@ -80,6 +80,27 @@ const MOCK_FOUNDERS = [
   },
 ];
 
+const JOURNEY_STEPS = [
+  {
+    icon: Compass,
+    stage: "01",
+    title: "Intent-Driven Discovery",
+    desc: "Discover founders, developers, designers, and operators filtered by skills, projects, and what you are both looking to build.",
+  },
+  {
+    icon: Users,
+    stage: "02",
+    title: "Double-Opt-In Matching",
+    desc: "No cold DMs or unwanted pitches. Mutual connections only open when both individuals review goals and agree to connect.",
+  },
+  {
+    icon: MessageSquare,
+    stage: "03",
+    title: "Direct Chat to Action",
+    desc: "Chat bridges connection to collaboration. Schedule calls, exchange project ideas, and start shipping together.",
+  },
+];
+
 export default function LandingPage() {
   const user = useSelector((store) => store.user);
   const { theme, setTheme } = useOutletContext() || {};
@@ -89,7 +110,6 @@ export default function LandingPage() {
   const [matchCelebration, setMatchCelebration] = useState(null);
   const [isZoomOpen, setIsZoomOpen] = useState(false);
 
-  // Gesture and fly-out states (exact same architecture as Feed.jsx)
   const [dragOffset, setDragOffset] = useState({ x: 0, y: 0 });
   const [isDragging, setIsDragging] = useState(false);
   const [flyDirection, setFlyDirection] = useState(null);
@@ -101,20 +121,14 @@ export default function LandingPage() {
   const currentUser = deck[0];
   const nextUser = deck.length > 1 ? deck[1] : null;
 
-  // Exact swipe trigger from Feed.jsx with celebratory match teaser
   const triggerSwipeAction = useCallback(
     (direction, targetUser) => {
       if (!targetUser || isActionPending) return;
-
       setIsActionPending(true);
       setFlyDirection(direction);
-
-      if (direction === "right") {
-        setMatchCelebration(targetUser);
-      }
+      if (direction === "right") setMatchCelebration(targetUser);
 
       setTimeout(() => {
-        // Rotate deck: move top card to end of deck so demo loops smoothly
         setDeck((prev) => {
           if (prev.length <= 1) return prev;
           const [first, ...rest] = prev;
@@ -128,24 +142,19 @@ export default function LandingPage() {
     [isActionPending],
   );
 
-  // Auto-dismiss match celebration after 4.5s
   useEffect(() => {
     if (!matchCelebration) return;
-    const timer = setTimeout(() => {
-      setMatchCelebration(null);
-    }, 4500);
+    const timer = setTimeout(() => setMatchCelebration(null), 4500);
     return () => clearTimeout(timer);
   }, [matchCelebration]);
 
-  // Keyboard navigation for card deck (ArrowLeft: Pass, ArrowRight: Connect, Space: Play/Pause)
   useEffect(() => {
     const handleKeyDown = (e) => {
       if (
         ["INPUT", "TEXTAREA", "SELECT"].includes(e.target?.tagName) ||
         e.target?.isContentEditable
-      ) {
+      )
         return;
-      }
 
       if (e.key === "ArrowLeft") {
         e.preventDefault();
@@ -158,12 +167,10 @@ export default function LandingPage() {
         setIsAutoplay((prev) => !prev);
       }
     };
-
     window.addEventListener("keydown", handleKeyDown);
     return () => window.removeEventListener("keydown", handleKeyDown);
   }, [currentUser, triggerSwipeAction]);
 
-  // Autoplay Swiping Timer (starts after 7.5s initial delay to prevent CLS, then every 5s)
   const hasMountedRef = useRef(false);
   useEffect(() => {
     if (
@@ -173,18 +180,15 @@ export default function LandingPage() {
       isActionPending ||
       isZoomOpen ||
       !currentUser
-    ) {
+    )
       return;
-    }
 
     const initialDelay = hasMountedRef.current ? 5000 : 7500;
     hasMountedRef.current = true;
 
     const timer = setTimeout(() => {
-      const direction = currentUser.defaultAction || "right";
-      triggerSwipeAction(direction, currentUser);
+      triggerSwipeAction(currentUser.defaultAction || "right", currentUser);
     }, initialDelay);
-
     return () => clearTimeout(timer);
   }, [
     isAutoplay,
@@ -196,11 +200,9 @@ export default function LandingPage() {
     triggerSwipeAction,
   ]);
 
-  // Pointer event handlers (exact same as Feed.jsx / useFeed.js)
   const handlePointerDown = (e) => {
     if (isActionPending || !currentUser) return;
     if (e.target.closest("button")) return;
-
     dragStartRef.current = { x: e.clientX, y: e.clientY };
     setIsDragging(true);
     e.currentTarget.setPointerCapture(e.pointerId);
@@ -208,41 +210,36 @@ export default function LandingPage() {
 
   const handlePointerMove = (e) => {
     if (!isDragging) return;
-    const deltaX = e.clientX - dragStartRef.current.x;
-    const deltaY = (e.clientY - dragStartRef.current.y) * 0.4;
-    setDragOffset({ x: deltaX, y: deltaY });
+    setDragOffset({
+      x: e.clientX - dragStartRef.current.x,
+      y: (e.clientY - dragStartRef.current.y) * 0.4,
+    });
   };
 
   const handlePointerUp = (e) => {
     if (!isDragging) return;
     setIsDragging(false);
-
     try {
-      if (e.currentTarget.hasPointerCapture(e.pointerId)) {
+      if (e.currentTarget.hasPointerCapture(e.pointerId))
         e.currentTarget.releasePointerCapture(e.pointerId);
-      }
     } catch {
-      // Ignore if pointer capture already released
+      // Pointer capture may already be released
     }
 
     const threshold = 110;
     const deltaX = Math.abs(dragOffset.x);
     const deltaY = Math.abs(dragOffset.y);
 
-    // Tap detection: if movement was minimal, open enlarged 3D zoom modal
     if (deltaX < 8 && deltaY < 8) {
       setIsZoomOpen(true);
       setDragOffset({ x: 0, y: 0 });
       return;
     }
 
-    if (dragOffset.x > threshold) {
-      triggerSwipeAction("right", currentUser);
-    } else if (dragOffset.x < -threshold) {
+    if (dragOffset.x > threshold) triggerSwipeAction("right", currentUser);
+    else if (dragOffset.x < -threshold)
       triggerSwipeAction("left", currentUser);
-    } else {
-      setDragOffset({ x: 0, y: 0 });
-    }
+    else setDragOffset({ x: 0, y: 0 });
   };
 
   const handlePointerCancel = () => {
@@ -252,7 +249,6 @@ export default function LandingPage() {
     }
   };
 
-  // Exact card styling and stamp opacity math from Feed.jsx
   const rotationDeg = isDragging
     ? dragOffset.x * 0.08
     : flyDirection === "right"
@@ -294,86 +290,99 @@ export default function LandingPage() {
   return (
     <div className="flex flex-col w-full overflow-hidden">
       {/* ─── Hero Section ────────────────────────────────────────── */}
-      <section className="relative px-4 sm:px-6 lg:px-8 pt-10 pb-20 sm:pt-14 sm:pb-28 max-w-7xl mx-auto w-full">
-        {/* Subtle decorative background glow */}
-        <div className="absolute top-1/4 left-1/2 -translate-x-1/2 -translate-y-1/2 w-96 sm:w-[600px] h-96 sm:h-[600px] bg-primary/10 rounded-full blur-3xl pointer-events-none -z-10" />
+      <section className="relative px-4 sm:px-6 lg:px-8 pt-12 pb-20 sm:pt-16 sm:pb-28 max-w-6xl mx-auto w-full">
+        <div className="absolute inset-0 bg-grid-subtle opacity-40 pointer-events-none -z-10" />
+        <div className="absolute top-1/3 left-1/2 -translate-x-1/2 -translate-y-1/2 w-80 sm:w-[500px] h-80 sm:h-[500px] bg-primary/8 rounded-full blur-3xl pointer-events-none -z-10" />
 
         <div className="grid grid-cols-1 lg:grid-cols-12 gap-12 lg:gap-8 items-center">
-          {/* Left Column: Headline, Positioning, CTAs */}
+          {/* Left Column: Headline + CTAs */}
           <motion.div
             className="lg:col-span-7 flex flex-col items-center lg:items-start text-center lg:text-left space-y-6"
-            initial={{ opacity: 0, y: 24 }}
+            initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.6, ease: "easeOut" }}
+            transition={{ duration: 0.5, ease: "easeOut" }}
           >
-            {/* Pill Tag */}
-            <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-base-100 border border-base-content/10 shadow-xs text-xs font-semibold text-base-content/80">
-              <Sparkles className="w-3.5 h-3.5 text-primary" />
+            <div className="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full bg-base-100 border border-base-content/10 shadow-xs text-xs font-semibold text-base-content/80">
+              <Sparkles className="w-4 h-4 text-primary stroke-[2.3]" />
               <span>Intentional Professional Discovery</span>
             </div>
 
-            {/* Main Headline & Tagline */}
-            <h1 className="text-3xl xs:text-4xl sm:text-5xl lg:text-6xl font-extrabold tracking-tight text-base-content leading-[1.12] break-words">
+            <h1 className="text-4xl sm:text-5xl lg:text-6xl font-extrabold tracking-tight text-base-content leading-[1.15]">
               Find the people who{" "}
-              <span className="text-primary underline decoration-primary/30 decoration-wavy underline-offset-8">
+              <span className="font-handwriting text-primary text-5xl sm:text-6xl lg:text-7xl font-bold not-italic inline-block tracking-wide relative px-1 rotate-[-1deg]">
                 move with you.
+                <svg
+                  className="absolute -bottom-2 left-0 w-full h-3.5 text-primary/50 overflow-visible"
+                  viewBox="0 0 200 12"
+                  fill="none"
+                  preserveAspectRatio="none"
+                >
+                  <path
+                    d="M 3 9 C 55 2, 130 11, 197 5"
+                    stroke="currentColor"
+                    strokeWidth="3.5"
+                    strokeLinecap="round"
+                  />
+                </svg>
               </span>
             </h1>
 
-            {/* Description */}
-            <p className="text-xs sm:text-sm lg:text-base text-base-content/75 max-w-xl leading-relaxed">
-              Orbit is the professional networking and collaboration network
-              for founders, developers, designers, marketers, and startup operators
+            <p className="text-sm sm:text-base text-base-content/70 max-w-lg leading-relaxed">
+              Orbit is the professional networking and collaboration platform for
+              founders, developers, designers, marketers, and startup operators
               to discover the right partners to build, connect, and grow with.
             </p>
 
-            {/* Primary Action Buttons */}
             <div className="flex flex-col xs:flex-row items-stretch xs:items-center justify-center lg:justify-start gap-3 pt-1 w-full xs:w-auto">
-              <Link
-                to={user ? "/feed" : "/login?mode=signup"}
-                className="btn btn-sm sm:btn-md btn-primary px-5 rounded-xl font-semibold shadow-md hover:shadow-lg transition-all flex items-center justify-center gap-2 group cursor-pointer w-full xs:w-auto"
+              <motion.div
+                whileHover={{ y: -2 }}
+                whileTap={{ scale: 0.97 }}
+                transition={{ type: "spring", stiffness: 400, damping: 26 }}
               >
-                <span>{user ? "Open Feed" : "Get Started Free"}</span>
-                <ArrowRight className="w-3.5 h-3.5 stroke-[2.2] transition-transform group-hover:translate-x-0.5" />
-              </Link>
+                <Link
+                  to={user ? "/feed" : "/login?mode=signup"}
+                  className="btn btn-primary btn-md px-6 rounded-xl font-semibold shadow-md hover:shadow-lg transition-shadow flex items-center justify-center gap-2 group cursor-pointer w-full xs:w-auto"
+                >
+                  <span>{user ? "Open Feed" : "Get Started Free"}</span>
+                  <ArrowRight className="w-4 h-4 stroke-[2.5] transition-transform group-hover:translate-x-0.5" />
+                </Link>
+              </motion.div>
 
               <a
                 href="#how-it-works"
-                className="btn btn-sm sm:btn-md btn-outline border-base-content/20 hover:bg-base-200 text-base-content px-5 rounded-xl font-semibold transition-all cursor-pointer w-full xs:w-auto text-center flex items-center justify-center gap-1.5"
+                className="btn btn-outline btn-md border-base-content/20 hover:bg-base-200 text-base-content px-6 rounded-xl font-semibold transition-all cursor-pointer w-full xs:w-auto text-center flex items-center justify-center gap-2"
               >
-                <Compass className="w-3.5 h-3.5 stroke-[2]" />
+                <Compass className="w-4 h-4 stroke-[2.3]" />
                 <span>How It Works</span>
               </a>
             </div>
 
-            {/* Value Props Bar */}
-            <div className="pt-5 flex flex-wrap items-center justify-center lg:justify-start gap-5 text-xs text-base-content/65 border-t border-base-content/10 w-full max-w-lg">
+            <div className="pt-5 flex flex-wrap items-center justify-center lg:justify-start gap-x-6 gap-y-2 text-xs text-base-content/60 border-t border-base-content/10 w-full max-w-lg">
               <div className="flex items-center gap-2">
-                <ShieldCheck className="w-3.5 h-3.5 text-primary stroke-[2] shrink-0" />
+                <ShieldCheck className="w-4 h-4 text-primary stroke-[2.3] shrink-0" />
                 <span>Double-Opt-In Matches</span>
               </div>
               <div className="flex items-center gap-2">
-                <Zap className="w-3.5 h-3.5 text-warning stroke-[2] shrink-0" />
+                <Zap className="w-4 h-4 text-primary stroke-[2.3] shrink-0" />
                 <span>Zero Cold DM Spam</span>
               </div>
               <div className="flex items-center gap-2">
-                <Users className="w-3.5 h-3.5 text-primary stroke-[2] shrink-0" />
+                <Users className="w-4 h-4 text-primary stroke-[2.3] shrink-0" />
                 <span>Startup Ecosystem</span>
               </div>
             </div>
           </motion.div>
 
-          {/* Right Column: Exact Feed Card Stack with UserCard & Swipe Gestures */}
+          {/* Right Column: Interactive Card Deck */}
           <motion.div
-            className="lg:col-span-5 flex flex-col items-center justify-center select-none"
-            initial={{ opacity: 0, scale: 0.94 }}
+            className="lg:col-span-5 flex flex-col items-center justify-center select-none w-full max-w-md mx-auto"
+            initial={{ opacity: 0, scale: 0.95 }}
             animate={{ opacity: 1, scale: 1 }}
-            transition={{ duration: 0.7, delay: 0.15, ease: "easeOut" }}
+            transition={{ duration: 0.6, delay: 0.1, ease: "easeOut" }}
             onMouseEnter={() => setIsHovered(true)}
             onMouseLeave={() => setIsHovered(false)}
           >
-            {/* Deck Controls & Status Header */}
-            <div className="w-full max-w-sm flex items-center justify-between px-2 mb-3 text-xs font-mono text-base-content/60">
+            <div className="w-full max-w-sm flex items-center justify-between px-2 mb-3 text-xs font-mono text-base-content/50">
               <span className="flex items-center gap-1.5">
                 <span className="relative flex h-2 w-2">
                   {isAutoplay && !isHovered ? (
@@ -395,9 +404,9 @@ export default function LandingPage() {
               </span>
 
               <div className="flex items-center gap-2">
-                <span className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full bg-base-200/90 text-base-content border border-base-content/20 text-xs font-semibold tracking-wide shadow-2xs select-none">
+                <span className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full bg-base-200/80 text-base-content border border-base-content/15 text-xs font-semibold tracking-wide shadow-2xs select-none">
                   <span className="w-1.5 h-1.5 rounded-full bg-primary shrink-0" />
-                  <span>Demo Profile</span>
+                  <span>Demo</span>
                 </span>
                 <span>•</span>
                 <button
@@ -415,9 +424,7 @@ export default function LandingPage() {
               </div>
             </div>
 
-            {/* Exact Feed Card Stack */}
             <div className="relative w-full max-w-sm min-h-[440px] sm:min-h-[480px] flex items-center justify-center">
-              {/* Peek Card (identical to Feed.jsx nextUser) */}
               {nextUser && (
                 <div
                   key={nextUser._id}
@@ -436,7 +443,6 @@ export default function LandingPage() {
                 </div>
               )}
 
-              {/* Foreground Interactive Card (identical to Feed.jsx currentUser) */}
               {currentUser && (
                 <div
                   key={currentUser._id}
@@ -448,7 +454,6 @@ export default function LandingPage() {
                   style={cardStyle}
                   className="relative w-full z-20 touch-none flex justify-center"
                 >
-                  {/* Exact CONNECT Stamp from Feed.jsx */}
                   {connectStampOpacity > 0 && (
                     <div
                       style={{ opacity: connectStampOpacity }}
@@ -457,8 +462,6 @@ export default function LandingPage() {
                       CONNECT
                     </div>
                   )}
-
-                  {/* Exact PASS Stamp from Feed.jsx */}
                   {passStampOpacity > 0 && (
                     <div
                       style={{ opacity: passStampOpacity }}
@@ -467,8 +470,6 @@ export default function LandingPage() {
                       PASS
                     </div>
                   )}
-
-                  {/* Reusable UserCard directly rendered */}
                   <UserCard
                     user={currentUser}
                     showActions={true}
@@ -479,64 +480,83 @@ export default function LandingPage() {
               )}
             </div>
 
-            {/* Micro hint below cards with keyboard shortcuts & 3D zoom hint */}
-            <div className="hidden sm:flex items-center gap-3 mt-4 text-[11px] font-mono text-base-content/50">
-              <span className="flex items-center gap-1">
-                <kbd className="kbd kbd-xs bg-base-200">
-                  <ArrowLeft className="w-3 h-3" />
-                </kbd>
+            {/* Floating Glass Controls Dock */}
+            <div className="hidden sm:flex items-center gap-1.5 mt-3 p-1 px-3.5 rounded-full bg-base-100/90 backdrop-blur-md border border-base-content/10 shadow-xs text-xs font-mono text-base-content/65">
+              <div className="flex items-center gap-1 px-1">
+                <kbd className="kbd kbd-xs bg-base-200 text-base-content font-bold">←</kbd>
                 <span>Pass</span>
-              </span>
-              <span>•</span>
-              <span className="flex items-center gap-1">
-                <kbd className="kbd kbd-xs bg-base-200">
-                  <ArrowRight className="w-3 h-3" />
-                </kbd>
+              </div>
+              <span className="opacity-25">•</span>
+              <div className="flex items-center gap-1 px-1">
+                <kbd className="kbd kbd-xs bg-base-200 text-base-content font-bold">→</kbd>
                 <span>Connect</span>
-              </span>
-              <span>•</span>
-              <span className="flex items-center gap-1">
-                <kbd className="kbd kbd-xs bg-base-200">Space</kbd>
+              </div>
+              <span className="opacity-25">•</span>
+              <div className="flex items-center gap-1 px-1">
+                <kbd className="kbd kbd-xs bg-base-200 text-base-content font-bold">Space</kbd>
                 <span>{isAutoplay ? "Pause" : "Play"}</span>
-              </span>
-              <span>•</span>
-              <span className="text-primary font-sans font-medium text-[11px]">
-                Tap card to zoom
-              </span>
+              </div>
+              <span className="opacity-25">•</span>
+              <button
+                onClick={() => setIsZoomOpen(true)}
+                className="flex items-center gap-1 px-1 text-primary hover:text-primary/80 font-sans font-semibold cursor-pointer transition-colors"
+                title="Inspect in 3D Modal"
+              >
+                <Maximize2 className="w-3 h-3 stroke-[2.5]" />
+                <span>3D Zoom</span>
+              </button>
             </div>
 
-            {/* Celebratory "It's a Match!" Teaser Toast (reserved container prevents CLS) */}
-            <div className="min-h-14 mt-2 w-full max-w-sm flex items-center justify-center">
+            {/* Bespoke Mutual Match Celebration Popup */}
+            <div className="min-h-16 mt-2 w-full max-w-sm flex items-center justify-center">
               <AnimatePresence>
                 {matchCelebration && (
                   <motion.div
-                    initial={{ opacity: 0, y: 10, scale: 0.95 }}
+                    initial={{ opacity: 0, y: 14, scale: 0.92 }}
                     animate={{ opacity: 1, y: 0, scale: 1 }}
-                    exit={{ opacity: 0, y: -8, scale: 0.95 }}
-                    transition={{ duration: 0.25 }}
+                    exit={{ opacity: 0, y: -10, scale: 0.94 }}
+                    transition={{ type: "spring", stiffness: 350, damping: 24 }}
                     className="w-full"
                   >
-                    <div className="p-2.5 px-3.5 rounded-2xl border border-primary/20 bg-base-100/90 backdrop-blur-md shadow-lg flex items-center justify-between gap-3 text-base-content">
-                      <div className="flex items-center gap-2.5 min-w-0">
-                        <div className="w-7 h-7 rounded-xl bg-primary/15 text-primary flex items-center justify-center shrink-0">
-                          <Sparkles className="w-3.5 h-3.5 stroke-[2.2]" />
+                    <div className="relative overflow-hidden p-3 px-3.5 rounded-2xl border border-primary/30 bg-base-100/95 backdrop-blur-xl shadow-xl shadow-primary/10 flex items-center justify-between gap-3 text-base-content">
+                      <div className="absolute -top-10 -right-10 w-24 h-24 bg-primary/15 rounded-full blur-xl pointer-events-none" />
+                      <div className="flex items-center gap-3 min-w-0">
+                        <div className="relative flex items-center shrink-0">
+                          <div className="w-9 h-9 rounded-full ring-2 ring-base-100 overflow-hidden bg-base-300">
+                            <img
+                              src="https://images.unsplash.com/photo-1534528741775-53994a69daeb?q=75&w=120&auto=format&fit=crop"
+                              alt="You"
+                              className="w-full h-full object-cover"
+                            />
+                          </div>
+                          <div className="w-9 h-9 rounded-full ring-2 ring-primary overflow-hidden bg-base-300 -ml-3">
+                            <img
+                              src={matchCelebration.profilePictureUrl || "/default-avatar.svg"}
+                              alt={matchCelebration.firstName}
+                              className="w-full h-full object-cover"
+                            />
+                          </div>
+                          <div className="absolute -bottom-1 left-3.5 w-4.5 h-4.5 rounded-full bg-primary text-primary-content flex items-center justify-center shadow-xs">
+                            <Heart className="w-2.5 h-2.5 fill-current stroke-0" />
+                          </div>
                         </div>
                         <div className="truncate">
-                          <p className="font-bold text-xs truncate">
-                            Mutual Match with {matchCelebration.firstName}!
-                          </p>
-                          <p className="text-[11px] text-base-content/70 truncate">
-                            Looking for{" "}
-                            {matchCelebration.lookingFor || "collaborators"}
+                          <div className="flex items-center gap-1.5">
+                            <span className="font-handwriting text-primary text-lg font-bold leading-none">
+                              It&apos;s a Match!
+                            </span>
+                          </div>
+                          <p className="text-xs text-base-content/75 truncate mt-0.5">
+                            You &amp; {matchCelebration.firstName} want to collaborate
                           </p>
                         </div>
                       </div>
                       <Link
                         to="/login?mode=signup"
-                        className="btn btn-xs btn-primary shrink-0 rounded-lg font-semibold gap-1 cursor-pointer shadow-xs"
+                        className="btn btn-xs sm:btn-sm btn-primary shrink-0 rounded-xl font-semibold gap-1 cursor-pointer shadow-xs"
                       >
-                        <span>Join</span>
-                        <ArrowRight className="w-3 h-3" />
+                        <span>Say Hi</span>
+                        <ArrowRight className="w-3.5 h-3.5 stroke-[2.5]" />
                       </Link>
                     </div>
                   </motion.div>
@@ -546,7 +566,6 @@ export default function LandingPage() {
           </motion.div>
         </div>
 
-        {/* 3D Elevated Zoom Inspection Modal for Landing Page */}
         <Card3DZoomModal
           isOpen={isZoomOpen}
           onClose={() => setIsZoomOpen(false)}
@@ -557,236 +576,258 @@ export default function LandingPage() {
         />
       </section>
 
-      {/* ─── Live In-Page Theme Switcher Showcase ───────────────── */}
-      <section className="px-4 sm:px-6 lg:px-8 py-16 bg-base-100/50 border-y border-base-content/10">
-        <div className="max-w-5xl mx-auto text-center space-y-8">
+      {/* ─── Live Theme Studio ───────────────────────────────────── */}
+      <section className="px-4 sm:px-6 lg:px-8 py-16 sm:py-20 bg-base-200/30 border-y border-base-content/8">
+        <div className="max-w-4xl mx-auto text-center space-y-8">
           <div className="space-y-3">
-            <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-base-200 border border-base-content/10 text-xs font-semibold text-base-content/70">
+            <div className="inline-flex items-center gap-2 px-3 py-1.5 rounded-full bg-base-100 border border-base-content/10 text-xs font-semibold text-base-content/70 shadow-xs">
               <Palette className="w-3.5 h-3.5 text-primary" />
               <span>Instant Personalization</span>
             </div>
-            <h2 className="text-2xl sm:text-3xl font-bold tracking-tight text-base-content">
-              Your vibe, your palette. Choose a theme in real time.
+            <h2 className="text-2xl sm:text-3xl font-extrabold tracking-tight text-base-content">
+              Your vibe, your palette
             </h2>
-            <p className="text-xs sm:text-sm text-base-content/60 max-w-lg mx-auto">
+            <p className="text-sm text-base-content/60 max-w-md mx-auto">
               Orbit adapts to your workflow. Click any theme below to instantly
               transform the entire interface.
             </p>
           </div>
 
-          {/* Real-time Theme Chips */}
-          <div className="flex flex-wrap items-center justify-center gap-2.5 sm:gap-3 max-w-3xl mx-auto">
+          <div className="flex flex-wrap items-center justify-center gap-2 max-w-2xl mx-auto">
             {FEATURED_THEMES.map((themeName) => {
               const isCurrent = theme === themeName;
               return (
-                <button
+                <motion.button
                   key={themeName}
                   onClick={() => setTheme && setTheme(themeName)}
                   aria-label={`Select ${themeName} theme`}
-                  className={`flex items-center gap-2.5 px-3.5 py-2 rounded-xl border text-xs font-semibold transition-all cursor-pointer ${
+                  whileHover={{ y: -2 }}
+                  whileTap={{ scale: 0.96 }}
+                  transition={{ type: "spring", stiffness: 400, damping: 26 }}
+                  className={`relative flex items-center gap-2 px-3.5 py-2 rounded-xl border text-xs font-semibold transition-all cursor-pointer ${
                     isCurrent
-                      ? "bg-primary text-primary-content border-primary shadow-md scale-105"
-                      : "bg-base-100 hover:bg-base-200/80 border-base-content/15 text-base-content/80 hover:text-base-content"
+                      ? "bg-primary text-primary-content border-primary shadow-md"
+                      : "bg-base-100 hover:bg-base-200/80 border-base-content/12 text-base-content/80 hover:text-base-content hover:border-base-content/25"
                   }`}
                 >
                   <span className="capitalize">{themeName}</span>
-                  {/* DaisyUI theme color palette dots */}
                   <span
                     data-theme={themeName}
-                    className="flex gap-1 p-0.5 rounded-md bg-base-100/90 border border-base-content/10 shadow-2xs"
+                    className="flex gap-0.5 p-0.5 rounded-md bg-base-100/90 border border-base-content/10"
                   >
-                    <span className="w-1.5 h-3 rounded-2xs bg-primary" />
-                    <span className="w-1.5 h-3 rounded-2xs bg-secondary" />
-                    <span className="w-1.5 h-3 rounded-2xs bg-accent" />
+                    <span className="w-1.5 h-3 rounded-sm bg-primary" />
+                    <span className="w-1.5 h-3 rounded-sm bg-secondary" />
+                    <span className="w-1.5 h-3 rounded-sm bg-accent" />
                   </span>
                   {isCurrent && <Check className="w-3.5 h-3.5 stroke-[2.5]" />}
-                </button>
+                </motion.button>
               );
             })}
           </div>
 
-          {/* Live Interactive Mini Preview Card in Selected Theme */}
           <div
             data-theme={theme || "caramellatte"}
-            className="mt-6 max-w-sm mx-auto p-4 rounded-2xl bg-base-100 border border-base-content/15 shadow-xl text-left transition-all duration-300"
+            className="mt-4 max-w-xs mx-auto p-4 rounded-2xl bg-base-100 border border-base-content/12 shadow-lg text-left transition-all duration-300"
           >
             <div className="flex items-center gap-3 mb-3">
-              <div className="w-10 h-10 rounded-xl bg-primary/20 text-primary flex items-center justify-center font-bold text-xs">
+              <div className="w-10 h-10 rounded-xl bg-primary/15 text-primary flex items-center justify-center font-bold text-xs">
                 SG
               </div>
               <div className="min-w-0 flex-1">
                 <div className="flex items-center gap-2">
-                  <h4 className="font-bold text-xs text-base-content truncate">
+                  <h4 className="font-bold text-sm text-base-content truncate">
                     Sarah Guo
                   </h4>
                   <span className="badge badge-xs badge-primary font-mono font-bold">
                     PRO
                   </span>
                 </div>
-                <p className="text-[11px] text-base-content/60 truncate">
+                <p className="text-xs text-base-content/60 truncate">
                   Early-stage AI Investor &amp; Builder
                 </p>
               </div>
             </div>
             <div className="flex gap-1.5 mb-3 flex-wrap">
-              <span className="badge badge-xs bg-base-200 text-base-content/80 font-mono">
-                AI Systems
-              </span>
-              <span className="badge badge-xs bg-base-200 text-base-content/80 font-mono">
-                Scale
-              </span>
-              <span className="badge badge-xs bg-base-200 text-base-content/80 font-mono">
-                Founders
-              </span>
+              {["AI Systems", "Scale", "Founders"].map((s) => (
+                <span
+                  key={s}
+                  className="badge badge-xs bg-base-200 text-base-content/80 font-mono"
+                >
+                  {s}
+                </span>
+              ))}
             </div>
             <div className="flex items-center justify-between pt-2 border-t border-base-content/10">
-              <span className="text-[10px] text-base-content/50 font-mono uppercase">
-                Active Theme: {theme || "caramellatte"}
+              <span className="text-[11px] text-base-content/50 font-mono uppercase">
+                {theme || "caramellatte"}
               </span>
               <span className="btn btn-xs btn-primary rounded-lg font-semibold shadow-xs pointer-events-none">
-                Live Contrast
+                Live Preview
               </span>
             </div>
           </div>
 
-          <div className="text-[11px] text-base-content/50 font-mono pt-2">
-            Currently active theme:{" "}
+          <p className="text-xs text-base-content/45 font-mono">
+            Active:{" "}
             <span className="font-bold text-primary capitalize">
               {theme || "caramellatte"}
             </span>{" "}
-            • 30+ more themes in top navigation
-          </div>
+            • 30+ more themes in navigation
+          </p>
         </div>
       </section>
 
-      {/* ─── 3-Step Visual Story Flow ("How Orbit Works") ───────── */}
+      {/* ─── 3-Step Journey with Hand-Drawn Arrows ─────────────── */}
       <section
         id="how-it-works"
-        className="px-4 sm:px-6 lg:px-8 py-20 sm:py-28 max-w-7xl mx-auto w-full"
+        className="relative px-4 sm:px-6 lg:px-8 py-20 sm:py-28 max-w-6xl mx-auto w-full"
       >
+        <div className="absolute inset-0 bg-grid-subtle opacity-25 pointer-events-none -z-10" />
+
         <div className="text-center space-y-3 mb-16">
-          <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-base-200 border border-base-content/15 text-xs font-semibold text-base-content">
+          <div className="inline-flex items-center gap-2 px-3 py-1.5 rounded-full bg-base-200 border border-base-content/12 text-xs font-semibold text-base-content shadow-xs">
             <Target className="w-3.5 h-3.5 text-primary stroke-[2]" />
             <span>The Orbit Journey</span>
           </div>
           <h2 className="text-3xl sm:text-4xl font-extrabold tracking-tight text-base-content">
-            Discover • Connect • Match • Chat • Collaborate
+            Discover · Connect · Collaborate
           </h2>
-          <p className="text-xs sm:text-sm text-base-content/70 max-w-2xl mx-auto leading-relaxed">
-            Orbit is not about collecting passive followers. It is designed to take
-            you from discovering someone relevant to communicating and building in the real world.
+          <p className="text-sm text-base-content/65 max-w-xl mx-auto leading-relaxed">
+            Orbit takes you from discovering someone relevant to communicating
+            and building in the real world. No vanity followers, no noise.
           </p>
         </div>
 
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-6 lg:gap-8 items-stretch">
-          {/* Step 1 */}
-          <div className="spotlight-card group relative overflow-hidden h-full flex flex-col justify-start border border-base-content/15 rounded-3xl p-6 sm:p-8 space-y-4 hover:border-primary/40 hover:shadow-xl transition-all duration-300">
-            <div className="relative z-10 w-12 h-12 rounded-2xl bg-base-200 border border-base-content/15 text-primary flex items-center justify-center font-bold text-lg shadow-2xs group-hover:scale-105 group-hover:border-primary/40 transition-transform duration-300">
-              <Compass className="w-6 h-6 stroke-[2]" />
-            </div>
-            <div className="relative z-10 space-y-1.5">
-              <span className="badge badge-sm badge-neutral font-mono text-[10px] font-bold uppercase tracking-wider">
-                Stage 01
-              </span>
-              <h3 className="text-lg font-bold text-base-content">
-                Intent-Driven Discovery
-              </h3>
-            </div>
-            <p className="relative z-10 text-xs sm:text-sm text-base-content/75 leading-relaxed">
-              Discover founders, developers, designers, and startup operators filtered
-              by concrete skills, active projects, and what you are both looking to build.
-            </p>
-          </div>
+        <div className="flex flex-col md:flex-row items-stretch justify-center gap-0 md:gap-0">
+          {JOURNEY_STEPS.map((step, idx) => {
+            const Icon = step.icon;
+            return (
+              <div key={step.stage} className="flex flex-col md:flex-row items-center">
+                <motion.div
+                  initial={{ opacity: 0, y: 20 }}
+                  whileInView={{ opacity: 1, y: 0 }}
+                  viewport={{ once: true, margin: "-40px" }}
+                  transition={{ duration: 0.4, delay: idx * 0.12 }}
+                  className="spotlight-card group relative overflow-hidden flex flex-col justify-start border border-base-content/12 rounded-3xl p-6 sm:p-8 space-y-4 w-full md:w-72 lg:w-80 shrink-0"
+                >
+                  <div className="w-12 h-12 rounded-2xl bg-primary/10 border border-primary/20 text-primary flex items-center justify-center shadow-2xs group-hover:scale-105 group-hover:border-primary/40 transition-transform duration-300">
+                    <Icon className="w-6 h-6 stroke-[2.5]" />
+                  </div>
+                  <div className="space-y-1.5">
+                    <span className="badge badge-sm badge-neutral font-mono text-[11px] font-bold uppercase tracking-wider">
+                      Stage {step.stage}
+                    </span>
+                    <h3 className="text-lg font-bold text-base-content">
+                      {step.title}
+                    </h3>
+                  </div>
+                  <p className="text-sm text-base-content/70 leading-relaxed">
+                    {step.desc}
+                  </p>
+                </motion.div>
 
-          {/* Step 2 */}
-          <div className="spotlight-card group relative overflow-hidden h-full flex flex-col justify-start border border-base-content/15 rounded-3xl p-6 sm:p-8 space-y-4 hover:border-primary/40 hover:shadow-xl transition-all duration-300">
-            <div className="relative z-10 w-12 h-12 rounded-2xl bg-base-200 border border-base-content/15 text-primary flex items-center justify-center font-bold text-lg shadow-2xs group-hover:scale-105 group-hover:border-primary/40 transition-transform duration-300">
-              <Users className="w-6 h-6 stroke-[2]" />
-            </div>
-            <div className="relative z-10 space-y-1.5">
-              <span className="badge badge-sm badge-neutral font-mono text-[10px] font-bold uppercase tracking-wider">
-                Stage 02
-              </span>
-              <h3 className="text-lg font-bold text-base-content">
-                Double-Opt-In Matching
-              </h3>
-            </div>
-            <p className="relative z-10 text-xs sm:text-sm text-base-content/75 leading-relaxed">
-              Zero cold DM spam or unwanted sales pitches. Mutual connections only open
-              when both individuals review each other&apos;s goals and agree to connect.
-            </p>
-          </div>
-
-          {/* Step 3 */}
-          <div className="spotlight-card group relative overflow-hidden h-full flex flex-col justify-start border border-base-content/15 rounded-3xl p-6 sm:p-8 space-y-4 hover:border-primary/40 hover:shadow-xl transition-all duration-300">
-            <div className="relative z-10 w-12 h-12 rounded-2xl bg-base-200 border border-base-content/15 text-primary flex items-center justify-center font-bold text-lg shadow-2xs group-hover:scale-105 group-hover:border-primary/40 transition-transform duration-300">
-              <MessageSquare className="w-6 h-6 stroke-[2]" />
-            </div>
-            <div className="relative z-10 space-y-1.5">
-              <span className="badge badge-sm badge-neutral font-mono text-[10px] font-bold uppercase tracking-wider">
-                Stage 03
-              </span>
-              <h3 className="text-lg font-bold text-base-content">
-                Direct Chat to Action
-              </h3>
-            </div>
-            <p className="relative z-10 text-xs sm:text-sm text-base-content/75 leading-relaxed">
-              Chat serves as the bridge from connection to real-world collaboration.
-              Schedule calls, exchange project ideas, and start shipping together.
-            </p>
-          </div>
+                {idx < JOURNEY_STEPS.length - 1 && (
+                  <>
+                    <div className="hidden md:flex items-center justify-center px-1 -mx-3 z-10">
+                      <HandDrawnArrow
+                        variant={idx === 0 ? "top-to-bottom" : "bottom-to-top"}
+                        label={
+                          idx === 0 ? "Mutual match! ⚡" : "Start building! 🚀"
+                        }
+                      />
+                    </div>
+                    <div className="md:hidden flex flex-col items-center justify-center py-3 gap-1">
+                      <span className="font-handwriting text-primary text-sm font-bold">
+                        {idx === 0 ? "Mutual match! ⚡" : "Start building! 🚀"}
+                      </span>
+                      <svg
+                        width="24"
+                        height="36"
+                        viewBox="0 0 24 36"
+                        fill="none"
+                        className="text-primary/70"
+                      >
+                        <path
+                          d="M 12 2 C 18 12, 6 22, 12 30"
+                          stroke="currentColor"
+                          strokeWidth="3.5"
+                          strokeLinecap="round"
+                        />
+                        <polyline
+                          points="6,24 12,32 18,24"
+                          stroke="currentColor"
+                          strokeWidth="3.5"
+                          strokeLinecap="round"
+                          strokeLinejoin="round"
+                        />
+                      </svg>
+                    </div>
+                  </>
+                )}
+              </div>
+            );
+          })}
         </div>
       </section>
 
-      {/* ─── Membership Tiers Section ───────────────────────────── */}
-      <section id="pricing" className="px-4 sm:px-6 lg:px-8 py-20 bg-base-100/60 border-t border-base-content/10">
-        <div className="max-w-6xl mx-auto space-y-12">
-          <div className="text-center space-y-3 max-w-2xl mx-auto">
-            <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-primary/10 border border-primary/20 text-primary text-[11px] font-bold uppercase tracking-widest">
-              <Sparkles className="w-3.5 h-3.5" />
+      {/* ─── Membership Tiers ────────────────────────────────────── */}
+      <section
+        id="pricing"
+        className="px-4 sm:px-6 lg:px-8 py-20 bg-base-200/30 border-t border-base-content/8"
+      >
+        <div className="max-w-5xl mx-auto space-y-12">
+          <div className="text-center space-y-3 max-w-xl mx-auto">
+            <div className="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full bg-primary/10 border border-primary/20 text-primary text-xs font-bold uppercase tracking-widest">
+              <Sparkles className="w-4 h-4 stroke-[2.3]" />
               <span>Transparent Membership</span>
             </div>
             <h2 className="text-3xl sm:text-4xl font-extrabold tracking-tight text-base-content">
               Choose your networking pace
             </h2>
-            <p className="text-xs sm:text-sm text-base-content/70 leading-relaxed">
-              Start free with basic daily discovery, or unlock 1-on-1 chat and unlimited swipes with Pro or Premium.
+            <p className="text-sm text-base-content/65 leading-relaxed">
+              Start free with basic daily discovery, or unlock 1-on-1 chat and
+              unlimited swipes with Pro or Premium.
             </p>
           </div>
-
           <PlanCards isLanding={true} />
         </div>
       </section>
 
-      {/* ─── Final CTA Banner ───────────────────────────────────── */}
-      <section className="px-4 sm:px-6 lg:px-8 pb-20 sm:pb-28 max-w-5xl mx-auto w-full">
+      {/* ─── Final CTA ───────────────────────────────────────────── */}
+      <section className="px-4 sm:px-6 lg:px-8 pb-20 sm:pb-28 pt-8 max-w-4xl mx-auto w-full">
         <div className="relative rounded-3xl bg-gradient-to-br from-base-100 via-base-100 to-base-200 border border-base-content/10 p-8 sm:p-14 text-center overflow-hidden shadow-2xl">
-          <div className="absolute -top-24 -right-24 w-72 h-72 bg-primary/15 rounded-full blur-3xl pointer-events-none" />
-          <div className="absolute -bottom-24 -left-24 w-72 h-72 bg-secondary/15 rounded-full blur-3xl pointer-events-none" />
+          <div className="absolute -top-24 -right-24 w-72 h-72 bg-primary/12 rounded-full blur-3xl pointer-events-none" />
+          <div className="absolute -bottom-24 -left-24 w-72 h-72 bg-secondary/12 rounded-full blur-3xl pointer-events-none" />
 
-          <div className="relative space-y-6 max-w-xl mx-auto">
-            <div className="w-14 h-14 rounded-2xl bg-primary text-primary-content flex items-center justify-center mx-auto shadow-lg">
-              <OrbitLogo className="w-8 h-8 text-primary-content" glow />
+          <div className="relative space-y-6 max-w-lg mx-auto">
+            <div className="w-16 h-16 rounded-2xl bg-base-100 text-primary border border-base-content/12 shadow-xl flex items-center justify-center mx-auto">
+              <OrbitLogo className="w-9 h-9" glow />
             </div>
 
             <h2 className="text-3xl sm:text-4xl font-extrabold tracking-tight text-base-content">
-              Ready to find your next co-builder?
+              Ready to find your next{" "}
+              <span className="whitespace-nowrap">co-builder?</span>
             </h2>
 
-            <p className="text-xs sm:text-sm text-base-content/70 leading-relaxed">
+            <p className="text-sm text-base-content/65 leading-relaxed">
               Join founders, engineers, and product designers discovering
               partnerships on Orbit.
             </p>
 
-            <div className="pt-2">
+            <motion.div
+              whileHover={{ y: -2 }}
+              whileTap={{ scale: 0.97 }}
+              transition={{ type: "spring", stiffness: 400, damping: 26 }}
+              className="pt-2 inline-block"
+            >
               <Link
                 to={user ? "/feed" : "/login?mode=signup"}
-                className="btn btn-primary btn-md px-8 rounded-xl font-semibold shadow-md hover:shadow-lg transition-all inline-flex items-center gap-2 group cursor-pointer"
+                className="btn btn-primary btn-md px-8 rounded-xl font-semibold shadow-md hover:shadow-lg transition-shadow inline-flex items-center gap-2 group cursor-pointer"
               >
                 <span>{user ? "Go to Feed" : "Get Started Now"}</span>
-                <ArrowRight className="w-4 h-4 transition-transform group-hover:translate-x-1" />
+                <ArrowRight className="w-4 h-4 stroke-[2.5] transition-transform group-hover:translate-x-1" />
               </Link>
-            </div>
+            </motion.div>
           </div>
         </div>
       </section>

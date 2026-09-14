@@ -2,6 +2,7 @@ import { useState, useEffect } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { Link } from "react-router-dom";
 import axios from "axios";
+import { motion } from "motion/react";
 import {
   UserCheck,
   Check,
@@ -14,6 +15,8 @@ import {
 import { BASE_URL } from "../utils/constants";
 import { addRequests, removeRequest } from "../utils/requestSlice";
 import RowMorphDetailModal from "./RowMorphDetailModal";
+
+const springTap = { type: "spring", stiffness: 400, damping: 22 };
 
 export default function Requests() {
   const requests = useSelector((store) => store.requests);
@@ -31,57 +34,44 @@ export default function Requests() {
     setIsLoading(true);
     axios
       .get(`${BASE_URL}/user/requests/received`, { withCredentials: true })
-      .then((res) => {
-        dispatch(addRequests(res?.data?.data || []));
-      })
-      .catch((err) => {
+      .then((res) => dispatch(addRequests(res?.data?.data || [])))
+      .catch((err) =>
         setError(
           err?.response?.data?.error ||
             "Failed to load requests. Please try again.",
-        );
-      })
-      .finally(() => {
-        setIsLoading(false);
-      });
+        ),
+      )
+      .finally(() => setIsLoading(false));
   };
 
   useEffect(() => {
     const controller = new AbortController();
-
     axios
       .get(`${BASE_URL}/user/requests/received`, {
         withCredentials: true,
         signal: controller.signal,
       })
-      .then((res) => {
-        dispatch(addRequests(res?.data?.data || []));
-      })
+      .then((res) => dispatch(addRequests(res?.data?.data || [])))
       .catch((err) => {
-        if (!axios.isCancel(err)) {
+        if (!axios.isCancel(err))
           setError(
             err?.response?.data?.error ||
               "Failed to load requests. Please try again.",
           );
-        }
       })
-      .finally(() => {
-        setIsLoading(false);
-      });
-
+      .finally(() => setIsLoading(false));
     return () => controller.abort();
   }, [dispatch]);
 
   const handleReviewRequest = async (status, requestId, senderName) => {
     if (processingId) return;
     setProcessingId(requestId);
-
     try {
       await axios.post(
         `${BASE_URL}/request/review/${status}/${requestId}`,
         {},
         { withCredentials: true },
       );
-
       dispatch(removeRequest(requestId));
       setToastMessage(
         status === "accepted"
@@ -149,21 +139,21 @@ export default function Requests() {
         </div>
       )}
 
-      <div className="flex items-center justify-between mb-6 pb-4 border-b border-base-content/10">
+      <div className="flex items-center justify-between mb-6 pb-4 border-b border-base-content/8">
         <div className="flex items-center gap-3">
           <div className="w-10 h-10 rounded-xl bg-primary/10 text-primary flex items-center justify-center">
             <UserCheck className="w-5 h-5" />
           </div>
           <div>
-            <h1 className="text-lg sm:text-xl font-bold text-base-content flex items-center gap-2">
+            <h1 className="text-xl font-bold text-base-content flex items-center gap-2">
               Connection Requests
               {requests && requests.length > 0 && (
-                <span className="badge badge-sm badge-primary font-mono text-[11px]">
+                <span className="badge badge-sm badge-primary font-mono text-xs animate-pulse">
                   {requests.length}
                 </span>
               )}
             </h1>
-            <p className="text-xs text-base-content/60">
+            <p className="text-xs text-base-content/55">
               Founders and builders requesting to enter your Orbit
             </p>
           </div>
@@ -171,7 +161,7 @@ export default function Requests() {
 
         <button
           onClick={handleRefresh}
-          className="btn btn-ghost btn-circle btn-sm text-base-content/60 hover:text-base-content"
+          className="btn btn-ghost btn-circle btn-sm text-base-content/50 hover:text-base-content"
           title="Refresh requests"
           aria-label="Refresh requests"
         >
@@ -181,21 +171,29 @@ export default function Requests() {
 
       {requests.length === 0 ? (
         <div className="flex-1 flex flex-col items-center justify-center p-8 text-center my-auto">
-          <div className="w-16 h-16 rounded-2xl bg-base-200 border border-base-content/10 flex items-center justify-center text-base-content/40 mb-4">
+          <div className="relative w-16 h-16 rounded-2xl bg-base-200 border border-base-content/10 flex items-center justify-center text-base-content/40 mb-4">
             <UserCheck className="w-8 h-8 stroke-[1.4]" />
           </div>
-          <h2 className="text-lg font-bold text-base-content mb-1">
+          <h2 className="text-xl font-bold text-base-content mb-1">
             All Caught Up!
           </h2>
-          <p className="text-xs text-base-content/60 max-w-sm mb-6 leading-relaxed">
-            You don&apos;t have any pending connection requests right now. As
-            you discover more builders in the feed, new requests will appear
-            here.
+          <p className="text-sm text-base-content/55 max-w-sm mb-6 leading-relaxed">
+            You don&apos;t have any pending connection requests right now. As you
+            discover more builders in the feed, new requests will appear here.
           </p>
-          <Link to="/feed" className="btn btn-sm btn-primary gap-2 font-medium">
-            <Compass className="w-4 h-4" />
-            Discover Builders in Feed
-          </Link>
+          <motion.div
+            whileHover={{ y: -2 }}
+            whileTap={{ scale: 0.96 }}
+            transition={springTap}
+          >
+            <Link
+              to="/feed"
+              className="btn btn-sm btn-primary gap-2 font-medium cursor-pointer"
+            >
+              <Compass className="w-4 h-4" />
+              Discover Builders in Feed
+            </Link>
+          </motion.div>
         </div>
       ) : (
         <div className="flex flex-col gap-2.5">
@@ -212,18 +210,20 @@ export default function Requests() {
             const isProcessing = processingId === request._id;
 
             return (
-              <div
+              <motion.div
                 key={request._id}
+                whileHover={{ y: -1 }}
+                transition={{ duration: 0.15 }}
                 onClick={(e) => {
                   const rect = e.currentTarget.getBoundingClientRect();
                   setOriginRect(rect);
                   setSelectedRequest(request);
                 }}
-                className="group p-2.5 sm:p-3 rounded-2xl bg-base-100/90 backdrop-blur-sm border border-base-content/15 shadow-xs hover:shadow-lg hover:border-primary/45 transition-all duration-200 flex items-center justify-between gap-3 sm:gap-4 cursor-pointer"
+                className="group p-2.5 sm:p-3 rounded-2xl bg-base-100/90 backdrop-blur-sm border border-base-content/12 shadow-xs hover:shadow-md hover:border-primary/30 transition-all duration-200 flex items-center justify-between gap-3 sm:gap-4 cursor-pointer"
               >
                 <div className="flex items-center gap-3 sm:gap-3.5 min-w-0 flex-1">
                   <div className="avatar shrink-0">
-                    <div className="w-12 h-12 sm:w-14 sm:h-14 rounded-2xl border border-base-content/15 overflow-hidden bg-base-200 shadow-2xs group-hover:scale-105 transition-transform duration-200">
+                    <div className="w-12 h-12 sm:w-14 sm:h-14 rounded-2xl border border-base-content/12 overflow-hidden bg-base-200 shadow-2xs group-hover:scale-105 transition-transform duration-200">
                       <img
                         src={profilePictureUrl}
                         alt={fullName}
@@ -245,15 +245,14 @@ export default function Requests() {
                         {fullName}
                       </h3>
                       {(sender.age || sender.gender) && (
-                        <span className="text-[10px] sm:text-[11px] font-semibold text-base-content/70 bg-base-200/80 border border-base-content/10 px-2 py-0.5 rounded-md shrink-0 capitalize">
+                        <span className="text-[11px] font-semibold text-base-content/65 bg-base-200/80 border border-base-content/8 px-2 py-0.5 rounded-md shrink-0 capitalize">
                           {[sender.age, sender.gender]
                             .filter(Boolean)
                             .join(" • ")}
                         </span>
                       )}
                     </div>
-
-                    <div className="flex items-center gap-2 text-xs text-base-content/60 truncate">
+                    <div className="flex items-center gap-2 text-xs text-base-content/55 truncate">
                       {sender.lookingFor ? (
                         <span className="inline-flex items-center gap-1 text-primary font-medium truncate">
                           <Sparkle className="w-3 h-3 shrink-0" />
@@ -264,7 +263,7 @@ export default function Requests() {
                       ) : sender.about ? (
                         <span className="truncate">{sender.about}</span>
                       ) : skills.length > 0 ? (
-                        <span className="font-mono text-[11px] text-base-content/70 truncate">
+                        <span className="font-mono text-xs text-base-content/65 truncate">
                           {skills.slice(0, 3).join(" • ")}
                         </span>
                       ) : (
@@ -275,7 +274,7 @@ export default function Requests() {
                 </div>
 
                 <div className="flex items-center gap-2 shrink-0">
-                  <button
+                  <motion.button
                     disabled={isProcessing}
                     onClick={(e) => {
                       e.stopPropagation();
@@ -285,14 +284,17 @@ export default function Requests() {
                         sender.firstName,
                       );
                     }}
-                    className="btn btn-sm btn-ghost hover:bg-error/15 hover:text-error border border-base-content/15 rounded-xl gap-1 font-medium cursor-pointer"
+                    whileHover={{ scale: 1.06 }}
+                    whileTap={{ scale: 0.92 }}
+                    transition={springTap}
+                    className="btn btn-sm btn-ghost hover:bg-error/12 hover:text-error border border-base-content/12 rounded-xl gap-1 font-medium cursor-pointer"
                     title="Decline request"
                   >
-                    <X className="w-3.5 h-3.5" />
+                    <X className="w-3.5 h-3.5 stroke-[2.5]" />
                     <span className="hidden sm:inline">Decline</span>
-                  </button>
+                  </motion.button>
 
-                  <button
+                  <motion.button
                     disabled={isProcessing}
                     onClick={(e) => {
                       e.stopPropagation();
@@ -302,20 +304,22 @@ export default function Requests() {
                         sender.firstName,
                       );
                     }}
+                    whileHover={{ scale: 1.06 }}
+                    whileTap={{ scale: 0.92 }}
+                    transition={springTap}
                     className="btn btn-sm btn-primary rounded-xl gap-1 font-semibold shadow-xs hover:shadow-md cursor-pointer"
-                    title="Accept request"
+                    title="Accept request & connect"
                   >
                     <Check className="w-3.5 h-3.5 stroke-[2.5]" />
                     <span className="hidden sm:inline">Accept</span>
-                  </button>
+                  </motion.button>
                 </div>
-              </div>
+              </motion.div>
             );
           })}
         </div>
       )}
 
-      {/* 3D Row-to-Card Morphing Profile Modal */}
       <RowMorphDetailModal
         isOpen={Boolean(selectedRequest)}
         onClose={() => {
@@ -338,7 +342,7 @@ export default function Requests() {
                   setSelectedRequest(null);
                   setOriginRect(null);
                 }}
-                className="btn btn-sm btn-ghost hover:bg-error/15 hover:text-error border border-base-content/15 rounded-xl flex-1 gap-1.5 font-medium cursor-pointer"
+                className="btn btn-sm btn-ghost hover:bg-error/12 hover:text-error border border-base-content/12 rounded-xl flex-1 gap-1.5 font-medium cursor-pointer"
               >
                 <X className="w-4 h-4" />
                 <span>Decline</span>

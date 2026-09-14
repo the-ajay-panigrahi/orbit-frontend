@@ -107,46 +107,46 @@ export default function Premium() {
         />
 
         {/* Trust Badges */}
-        <div className="mt-12 pt-8 border-t border-base-content/10 flex flex-wrap items-center justify-center gap-6 text-xs text-base-content/60">
-          <div className="flex items-center gap-2">
-            <ShieldCheck className="w-4 h-4 text-primary" />
+        <div className="mt-14 pt-8 border-t border-base-content/10 flex flex-wrap items-center justify-center gap-6 sm:gap-8 text-xs sm:text-sm text-base-content/75 font-medium">
+          <div className="flex items-center gap-2.5">
+            <ShieldCheck className="w-5 h-5 text-primary stroke-[2.2]" />
             <span>256-Bit SSL Encrypted Checkout</span>
           </div>
-          <div className="flex items-center gap-2">
-            <Sparkles className="w-4 h-4 text-primary" />
+          <div className="flex items-center gap-2.5">
+            <Sparkles className="w-5 h-5 text-primary stroke-[2.2]" />
             <span>Instant Membership Activation</span>
           </div>
-          <div className="flex items-center gap-2">
-            <CheckCircle2 className="w-4 h-4 text-primary" />
+          <div className="flex items-center gap-2.5">
+            <CheckCircle2 className="w-5 h-5 text-primary stroke-[2.2]" />
             <span>Official Razorpay Gateway</span>
           </div>
         </div>
 
         {/* Frequently Asked Questions */}
-        <div className="mt-14 max-w-2xl mx-auto">
+        <div className="mt-16 max-w-2xl mx-auto">
           <div className="flex items-center justify-center gap-2 mb-6">
-            <HelpCircle className="w-4 h-4 text-base-content/60" />
-            <h2 className="text-base sm:text-lg font-bold text-base-content tracking-tight">
+            <HelpCircle className="w-5 h-5 text-primary stroke-[2]" />
+            <h2 className="text-lg sm:text-xl font-bold text-base-content tracking-tight">
               Frequently Asked Questions
             </h2>
           </div>
 
-          <div className="space-y-2.5">
+          <div className="space-y-3">
             {FAQS.map((faq, index) => {
               const isOpen = openFaqIndex === index;
               return (
                 <div
                   key={faq.q}
-                  className="rounded-xl border border-base-content/10 bg-base-100 overflow-hidden transition-colors"
+                  className="rounded-2xl border border-base-content/15 bg-base-100 overflow-hidden transition-colors"
                 >
                   <button
                     type="button"
                     onClick={() => toggleFaq(index)}
-                    className="w-full flex items-center justify-between p-4 text-left text-xs font-semibold text-base-content hover:bg-base-200/50 transition-colors cursor-pointer"
+                    className="w-full flex items-center justify-between p-4 sm:p-4.5 text-left text-xs sm:text-sm font-semibold text-base-content hover:bg-base-200/50 transition-colors cursor-pointer"
                   >
                     <span>{faq.q}</span>
                     <ChevronDown
-                      className={`w-3.5 h-3.5 text-base-content/50 transition-transform duration-200 shrink-0 ${
+                      className={`w-4 h-4 text-base-content/50 transition-transform duration-200 shrink-0 ${
                         isOpen ? "rotate-180 text-primary" : ""
                       }`}
                     />
@@ -159,7 +159,7 @@ export default function Premium() {
                         exit={{ height: 0, opacity: 0 }}
                         transition={{ duration: 0.2, ease: "easeOut" }}
                       >
-                        <p className="px-4 pb-4 pt-1 text-xs text-base-content/70 leading-relaxed border-t border-base-content/5">
+                        <p className="px-4 sm:px-4.5 pb-4 pt-1 text-xs sm:text-sm text-base-content/75 leading-relaxed border-t border-base-content/10">
                           {faq.a}
                         </p>
                       </motion.div>

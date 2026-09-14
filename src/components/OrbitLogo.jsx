@@ -8,7 +8,7 @@ export default function OrbitLogo({ className = "w-6 h-6", glow = false }) {
         viewBox="0 0 32 32"
         fill="none"
         xmlns="http://www.w3.org/2000/svg"
-        className="w-full h-full text-primary"
+        className="w-full h-full text-current"
       >
         {/* Outer Orbital Ellipse */}
         <ellipse
