@@ -144,7 +144,7 @@ export default function Navbar({ theme, onSelectTheme, themes }) {
                     : "btn-ghost text-base-content/75 hover:text-base-content hover:bg-base-content/10"
                 }`}
               >
-                <Sparkles className="w-4 h-4 text-warning" />
+                <Sparkles className="w-4 h-4 text-primary" />
                 <span>Premium</span>
               </Link>
             </nav>

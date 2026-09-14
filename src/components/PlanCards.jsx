@@ -17,7 +17,10 @@ const PLANS = [
       "Mutual match connections",
       "Public profile & skill tags",
     ],
-    disabledFeatures: ["Direct 1-on-1 chat messaging"],
+    disabledFeatures: [
+      "Direct 1-on-1 chat messaging",
+      "Member profile badge",
+    ],
     isPopular: false,
     ctaText: "Current Plan",
   },
