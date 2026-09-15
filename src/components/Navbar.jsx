@@ -18,6 +18,8 @@ import {
   LogIn,
   UserPlus,
   Sparkles,
+  Crown,
+  Zap,
 } from "lucide-react";
 import OrbitLogo from "./OrbitLogo";
 import { removeUser } from "../utils/userSlice";
@@ -342,9 +344,17 @@ export default function Navbar({ theme, onSelectTheme, themes }) {
                       </div>
                     </div>
                     <div className="flex flex-col min-w-0 flex-1">
-                      <span className="font-bold text-xs text-base-content truncate">
-                        {user.firstName} {user.lastName || ""}
-                      </span>
+                      <div className="flex items-center gap-1.5 truncate">
+                        <span className="font-bold text-xs text-base-content truncate">
+                          {user.firstName} {user.lastName || ""}
+                        </span>
+                        {user?.membershipType === "premium" && (
+                          <Crown className="w-3 h-3 text-amber-500 fill-amber-500/20 stroke-[2.5] shrink-0" />
+                        )}
+                        {user?.membershipType === "pro" && (
+                          <Zap className="w-3 h-3 text-primary stroke-[2.5] shrink-0" />
+                        )}
+                      </div>
                       <span className="text-[11px] text-base-content/60 truncate">
                         {user.email}
                       </span>
@@ -402,10 +412,25 @@ export default function Navbar({ theme, onSelectTheme, themes }) {
                         document.activeElement.blur();
                       }
                     }}
-                    className="flex items-center gap-2 py-2 hover:bg-base-200 rounded-lg transition-colors cursor-pointer text-base-content"
+                    className="flex items-center justify-between py-2 hover:bg-base-200 rounded-lg transition-colors cursor-pointer text-base-content"
                   >
-                    <Sparkles className="w-3.5 h-3.5 text-primary" />
-                    <span>Membership Plans</span>
+                    <div className="flex items-center gap-2">
+                      <Sparkles className="w-3.5 h-3.5 text-primary" />
+                      <span>Membership Plans</span>
+                    </div>
+                    {user?.membershipType === "premium" ? (
+                      <span className="badge badge-xs bg-gradient-to-r from-amber-500 to-yellow-400 text-black font-bold uppercase font-mono text-[9px] gap-0.5 px-1.5 py-1">
+                        <Crown className="w-2.5 h-2.5 stroke-[2.5]" /> VIP
+                      </span>
+                    ) : user?.membershipType === "pro" ? (
+                      <span className="badge badge-xs badge-primary font-bold uppercase font-mono text-[9px] gap-0.5 px-1.5 py-1">
+                        <Zap className="w-2.5 h-2.5 stroke-[2.5]" /> PRO
+                      </span>
+                    ) : (
+                      <span className="badge badge-xs badge-ghost text-base-content/60 font-medium uppercase font-mono text-[9px] px-1.5 py-1">
+                        Basic
+                      </span>
+                    )}
                   </Link>
                 </li>
 

@@ -1,5 +1,6 @@
 import { useState } from "react";
-import { useSelector } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
+import { Link } from "react-router-dom";
 import axios from "axios";
 import { motion, AnimatePresence } from "motion/react";
 import {
@@ -9,9 +10,11 @@ import {
   ChevronDown,
   CheckCircle2,
   AlertCircle,
+  ArrowRight,
 } from "lucide-react";
 import PlanCards from "./PlanCards";
 import { BASE_URL } from "../utils/constants";
+import { addUser } from "../utils/userSlice";
 
 const FAQS = [
   {
@@ -33,12 +36,14 @@ const FAQS = [
 ];
 
 export default function Premium() {
+  const dispatch = useDispatch();
   const user = useSelector((store) => store.user);
   const currentPlan = user?.membershipType || "basic";
   const [selectedPlan, setSelectedPlan] = useState(null);
   const [openFaqIndex, setOpenFaqIndex] = useState(null);
   const [loadingPlanId, setLoadingPlanId] = useState(null);
   const [errorMessage, setErrorMessage] = useState("");
+  const [successPlan, setSuccessPlan] = useState(null);
 
   const toggleFaq = (index) => {
     setOpenFaqIndex(openFaqIndex === index ? null : index);
@@ -82,6 +87,38 @@ export default function Premium() {
         },
         theme: {
           color: "#1e1815",
+        },
+        handler: async function (razorpayResponse) {
+          try {
+            setLoadingPlanId(plan.id);
+            setErrorMessage("");
+
+            // Verify payment signature on backend
+            const verifyRes = await axios.post(
+              `${BASE_URL}/payment/verify`,
+              {
+                orderId: razorpayResponse.razorpay_order_id,
+                paymentId: razorpayResponse.razorpay_payment_id,
+                signature: razorpayResponse.razorpay_signature,
+              },
+              { withCredentials: true },
+            );
+
+            // Update user in Redux
+            if (verifyRes?.data?.data?.user) {
+              dispatch(addUser(verifyRes.data.data.user));
+            }
+
+            setSuccessPlan(plan);
+          } catch (verifyErr) {
+            console.error("Payment verification failed:", verifyErr);
+            setErrorMessage(
+              verifyErr?.response?.data?.error ||
+                "Payment succeeded with Razorpay, but verification failed. Our team will verify it shortly!",
+            );
+          } finally {
+            setLoadingPlanId(null);
+          }
         },
       };
 
@@ -131,9 +168,58 @@ export default function Premium() {
           </div>
         )}
 
+        {/* Payment Success Thank-You Modal */}
+        <AnimatePresence>
+          {successPlan && (
+            <motion.div
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              exit={{ opacity: 0 }}
+              className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/60 backdrop-blur-sm"
+            >
+              <motion.div
+                initial={{ scale: 0.9, y: 20 }}
+                animate={{ scale: 1, y: 0 }}
+                exit={{ scale: 0.9, y: 20 }}
+                transition={{ type: "spring", stiffness: 350, damping: 25 }}
+                className="card w-full max-w-md bg-base-100 shadow-2xl border-2 border-primary/30 p-6 sm:p-8 text-center relative overflow-hidden"
+              >
+                <div className="w-16 h-16 rounded-3xl bg-primary/10 text-primary flex items-center justify-center mx-auto mb-4 shadow-inner">
+                  <CheckCircle2 className="w-9 h-9 stroke-[2.2]" />
+                </div>
+                <div className="badge badge-primary font-bold uppercase tracking-wider text-[11px] px-3 py-1 mb-2 mx-auto">
+                  {successPlan.name} Activated
+                </div>
+                <h2 className="text-xl sm:text-2xl font-black text-base-content tracking-tight mb-2">
+                  Welcome to Orbit {successPlan.name}!
+                </h2>
+                <p className="text-xs sm:text-sm text-base-content/70 leading-relaxed mb-6">
+                  Your payment has been cryptographically verified and your account is upgraded. You now have full access to {successPlan.name} networking perks and discovery quotas!
+                </p>
+                <div className="flex flex-col gap-2.5">
+                  <Link
+                    to="/feed"
+                    className="btn btn-primary btn-sm sm:btn-md rounded-xl text-xs font-bold shadow-md flex items-center justify-center gap-2"
+                  >
+                    <span>Explore Feed Now</span>
+                    <ArrowRight className="w-4 h-4" />
+                  </Link>
+                  <button
+                    type="button"
+                    onClick={() => setSuccessPlan(null)}
+                    className="btn btn-ghost btn-xs text-base-content/60 cursor-pointer"
+                  >
+                    Stay on Pricing Page
+                  </button>
+                </div>
+              </motion.div>
+            </motion.div>
+          )}
+        </AnimatePresence>
+
         {/* Selected Plan Action Banner */}
         <AnimatePresence>
-          {selectedPlan && (
+          {selectedPlan && !successPlan && (
             <motion.div
               initial={{ opacity: 0, y: -10 }}
               animate={{ opacity: 1, y: 0 }}

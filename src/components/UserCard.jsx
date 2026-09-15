@@ -21,12 +21,19 @@ export default function UserCard({
   const about = user?.about;
   const skills = Array.isArray(user?.skills) ? user.skills : [];
   const membershipType = user?.membershipType;
+  const isPremium = membershipType === "premium";
+  const isPro = membershipType === "pro";
 
   const maxWidthClass = className.includes("max-w-") ? "" : "max-w-sm";
+  const tierCardClass = isPremium
+    ? "border-2 border-amber-500/50 shadow-amber-500/10 hover:border-amber-500/80 sm:min-h-[500px]"
+    : isPro
+      ? "border-2 border-primary/40 shadow-primary/10 hover:border-primary/70 sm:min-h-[480px]"
+      : "border border-base-content/10 hover:border-primary/30 sm:min-h-[460px]";
 
   return (
     <div
-      className={`card w-full ${maxWidthClass} min-h-[440px] xs:min-h-[460px] sm:min-h-[480px] bg-base-100 shadow-xl border border-base-content/10 hover:border-primary/30 overflow-hidden transition-all duration-300 hover:shadow-2xl flex flex-col justify-between select-none ${className}`}
+      className={`card w-full ${maxWidthClass} min-h-[440px] xs:min-h-[460px] bg-base-100 shadow-xl ${tierCardClass} overflow-hidden transition-all duration-300 hover:shadow-2xl flex flex-col justify-between select-none ${className}`}
     >
       {/* Photo with Overlay Badges */}
       <figure className="p-3 pb-0 relative">
@@ -52,14 +59,14 @@ export default function UserCard({
           </div>
 
           {/* Membership / Plan Badge */}
-          {membershipType === "pro" && (
-            <div className="absolute top-2.5 right-2.5 px-2.5 py-1 rounded-full bg-primary text-primary-content text-[11px] font-bold font-mono tracking-wider shadow-md">
-              PRO
+          {isPro && (
+            <div className="absolute top-2.5 right-2.5 px-2.5 py-1 rounded-full bg-primary text-primary-content text-[11px] font-bold font-mono tracking-wider flex items-center gap-1 shadow-md">
+              <Zap className="w-3 h-3 stroke-[2.5]" /> PRO
             </div>
           )}
-          {membershipType === "premium" && (
-            <div className="absolute top-2.5 right-2.5 px-2.5 py-1 rounded-full bg-warning text-warning-content text-[11px] font-bold font-mono tracking-wider flex items-center gap-1 shadow-md">
-              <Crown className="w-3 h-3 stroke-[2.5]" /> VIP
+          {isPremium && (
+            <div className="absolute top-2.5 right-2.5 px-2.5 py-1 rounded-full bg-gradient-to-r from-amber-500 to-yellow-400 text-black text-[11px] font-black font-mono tracking-wider flex items-center gap-1 shadow-lg">
+              <Crown className="w-3.5 h-3.5 stroke-[2.5]" /> VIP
             </div>
           )}
 
@@ -77,10 +84,22 @@ export default function UserCard({
               <h2 className="card-title text-lg sm:text-xl font-bold tracking-tight text-base-content truncate">
                 {fullName}
               </h2>
-              <ShieldCheck
-                className="w-4 h-4 text-primary stroke-[2.5] shrink-0"
-                title="Verified Builder"
-              />
+              {isPremium ? (
+                <Crown
+                  className="w-4 h-4 text-amber-500 fill-amber-500/20 stroke-[2.5] shrink-0"
+                  title="VIP Premium Builder"
+                />
+              ) : isPro ? (
+                <Zap
+                  className="w-4 h-4 text-primary fill-primary/20 stroke-[2.5] shrink-0"
+                  title="Pro Builder"
+                />
+              ) : (
+                <ShieldCheck
+                  className="w-4 h-4 text-base-content/40 stroke-[2.5] shrink-0"
+                  title="Verified Builder"
+                />
+              )}
             </div>
             {(age || gender) && (
               <span className="text-xs font-semibold text-base-content/65 bg-base-200 px-2 py-0.5 rounded-full shrink-0 capitalize">
