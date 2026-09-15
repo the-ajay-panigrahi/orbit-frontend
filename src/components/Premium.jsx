@@ -1,8 +1,17 @@
 import { useState } from "react";
 import { useSelector } from "react-redux";
+import axios from "axios";
 import { motion, AnimatePresence } from "motion/react";
-import { ShieldCheck, Sparkles, HelpCircle, ChevronDown, CheckCircle2 } from "lucide-react";
+import {
+  ShieldCheck,
+  Sparkles,
+  HelpCircle,
+  ChevronDown,
+  CheckCircle2,
+  AlertCircle,
+} from "lucide-react";
 import PlanCards from "./PlanCards";
+import { BASE_URL } from "../utils/constants";
 
 const FAQS = [
   {
@@ -28,14 +37,67 @@ export default function Premium() {
   const currentPlan = user?.membershipType || "basic";
   const [selectedPlan, setSelectedPlan] = useState(null);
   const [openFaqIndex, setOpenFaqIndex] = useState(null);
-
-  const handleSelectPlan = (plan) => {
-    setSelectedPlan(plan);
-  };
+  const [loadingPlanId, setLoadingPlanId] = useState(null);
+  const [errorMessage, setErrorMessage] = useState("");
 
   const toggleFaq = (index) => {
     setOpenFaqIndex(openFaqIndex === index ? null : index);
   };
+
+  const handleBuyPlan = async (plan) => {
+    if (!plan || plan.id === "basic") return;
+    if (loadingPlanId) return;
+
+    if (!window.Razorpay) {
+      setErrorMessage(
+        "Razorpay SDK failed to load. Please check your internet connection and refresh.",
+      );
+      return;
+    }
+
+    try {
+      setLoadingPlanId(plan.id);
+      setErrorMessage("");
+      setSelectedPlan(plan);
+
+      const response = await axios.post(
+        `${BASE_URL}/payment/create`,
+        { membershipType: plan.id },
+        { withCredentials: true },
+      );
+
+      const orderData = response?.data?.data;
+      const { amount, keyId, currency, orderId, notes } = orderData;
+
+      const options = {
+        key: keyId,
+        amount,
+        currency,
+        name: "Orbit",
+        description: `${plan.name} Membership Upgrade`,
+        order_id: orderId,
+        prefill: {
+          name: `${notes?.firstName || user?.firstName || ""} ${notes?.lastName || user?.lastName || ""}`.trim(),
+          email: notes?.email || user?.email || "",
+        },
+        theme: {
+          color: "#1e1815",
+        },
+      };
+
+      const razorpayInstance = new window.Razorpay(options);
+      razorpayInstance.open();
+    } catch (err) {
+      console.error("Failed to initiate payment:", err);
+      setErrorMessage(
+        err?.response?.data?.error ||
+          "Failed to initialize payment. Please try again.",
+      );
+    } finally {
+      setLoadingPlanId(null);
+    }
+  };
+
 
   return (
     <div className="min-h-[calc(100vh-4rem)] bg-base-200/40 py-10 sm:py-14 px-4 sm:px-6 lg:px-8 transition-colors">
@@ -60,6 +122,14 @@ export default function Premium() {
             <span className="font-bold capitalize text-primary font-mono">{currentPlan}</span>
           </div>
         </div>
+
+        {/* Error Alert */}
+        {errorMessage && (
+          <div className="mb-6 max-w-xl mx-auto p-3.5 rounded-xl bg-error/10 border border-error/25 text-error text-xs flex items-center gap-2.5">
+            <AlertCircle className="w-4 h-4 shrink-0" />
+            <span>{errorMessage}</span>
+          </div>
+        )}
 
         {/* Selected Plan Action Banner */}
         <AnimatePresence>
@@ -86,14 +156,11 @@ export default function Premium() {
               </div>
               <button
                 type="button"
-                onClick={() => {
-                  alert(
-                    `Razorpay checkout ready for ${selectedPlan.name} (₹${selectedPlan.price}). Backend integration will be connected next!`
-                  );
-                }}
-                className="btn btn-xs sm:btn-sm btn-primary rounded-lg font-semibold shrink-0 cursor-pointer shadow-xs"
+                disabled={loadingPlanId === selectedPlan.id}
+                onClick={() => handleBuyPlan(selectedPlan)}
+                className="btn btn-xs sm:btn-sm btn-primary rounded-lg font-semibold shrink-0 cursor-pointer shadow-xs disabled:opacity-50"
               >
-                Proceed to Pay
+                {loadingPlanId === selectedPlan.id ? "Opening..." : "Proceed to Pay"}
               </button>
             </motion.div>
           )}
@@ -103,7 +170,8 @@ export default function Premium() {
         <PlanCards
           currentPlan={currentPlan}
           isLanding={false}
-          onSelectPlan={handleSelectPlan}
+          onSelectPlan={handleBuyPlan}
+          loadingPlanId={loadingPlanId}
         />
 
         {/* Trust Badges */}

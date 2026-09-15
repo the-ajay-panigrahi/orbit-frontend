@@ -67,6 +67,7 @@ export default function PlanCards({
   currentPlan = "basic",
   isLanding = false,
   onSelectPlan,
+  loadingPlanId = null,
 }) {
   return (
     <div className="grid grid-cols-1 lg:grid-cols-3 gap-6 lg:gap-7 max-w-5xl mx-auto items-stretch py-4">
@@ -193,14 +194,17 @@ export default function PlanCards({
               ) : (
                 <button
                   type="button"
+                  disabled={loadingPlanId === plan.id}
                   onClick={() => onSelectPlan && onSelectPlan(plan)}
-                  className={`btn btn-sm sm:btn-md w-full rounded-xl text-xs font-semibold transition-transform active:scale-[0.98] cursor-pointer ${
+                  className={`btn btn-sm sm:btn-md w-full rounded-xl text-xs font-semibold transition-transform active:scale-[0.98] cursor-pointer disabled:opacity-75 ${
                     isPopular
                       ? "btn-primary shadow-md"
                       : "btn-outline border-base-content/25 hover:bg-base-200 text-base-content"
                   }`}
                 >
-                  <span>{plan.ctaText}</span>
+                  <span>
+                    {loadingPlanId === plan.id ? "Opening..." : plan.ctaText}
+                  </span>
                   <ArrowRight className="w-3.5 h-3.5 stroke-[2.2]" />
                 </button>
               )}
