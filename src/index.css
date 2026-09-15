@@ -116,3 +116,12 @@
 .animate-draw {
   animation: draw-stroke 1.2s ease-out forwards;
 }
+
+/* Prevent browser from forcing an opaque white backdrop on Razorpay checkout iframe */
+iframe[src*="razorpay"],
+.razorpay-container,
+.razorpay-checkout-frame {
+  color-scheme: light !important;
+  background-color: transparent !important;
+}
+
