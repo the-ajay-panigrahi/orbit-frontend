@@ -8,6 +8,7 @@ import Connections from "./components/Connections";
 import Requests from "./components/Requests";
 import Premium from "./components/Premium";
 import PrivateRoute from "./components/PrivateRoute";
+import Chat from "./components/chat/Chat";
 import Terms from "./components/legal/Terms";
 import Privacy from "./components/legal/Privacy";
 import Refund from "./components/legal/Refund";
@@ -64,6 +65,10 @@ const appRouter = createBrowserRouter([
           {
             path: "premium",
             element: <Premium />,
+          },
+          {
+            path: "chat/:targetUserId",
+            element: <Chat />,
           },
         ],
       },

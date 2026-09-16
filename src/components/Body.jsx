@@ -1,5 +1,5 @@
 import { useState, useEffect } from "react";
-import { Outlet } from "react-router-dom";
+import { Outlet, useLocation } from "react-router-dom";
 import { useDispatch, useSelector } from "react-redux";
 import axios from "axios";
 import Navbar from "./Navbar";
@@ -13,6 +13,8 @@ export default function Body() {
   const user = useSelector((store) => store.user);
   const [isLoading, setIsLoading] = useState(!user);
   const { theme, setTheme, themes } = useTheme();
+  const location = useLocation();
+  const isChat = location.pathname.startsWith("/chat");
 
   useEffect(() => {
     const fetchUser = async () => {
@@ -47,12 +49,22 @@ export default function Body() {
   }
 
   return (
-    <div className="min-h-screen bg-base-200 flex flex-col transition-colors duration-200">
+    <div
+      className={`${
+        isChat
+          ? "h-screen overflow-hidden bg-base-100"
+          : "min-h-screen bg-base-200"
+      } flex flex-col transition-colors duration-200`}
+    >
       <Navbar theme={theme} onSelectTheme={setTheme} themes={themes} />
-      <main className="flex-1 flex flex-col">
+      <main
+        className={`flex-1 flex flex-col ${
+          isChat ? "min-h-0 overflow-hidden" : ""
+        }`}
+      >
         <Outlet context={{ theme, setTheme, themes }} />
       </main>
-      <Footer />
+      {!isChat && <Footer />}
     </div>
   );
 }

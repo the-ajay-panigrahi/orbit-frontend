@@ -1,6 +1,6 @@
 import { useState, useEffect } from "react";
+import { Link, useNavigate } from "react-router-dom";
 import { useDispatch, useSelector } from "react-redux";
-import { Link } from "react-router-dom";
 import axios from "axios";
 import { motion } from "motion/react";
 import {
@@ -12,7 +12,6 @@ import {
   Compass,
   Sparkles,
   Lock,
-  Share2,
 } from "lucide-react";
 import { BASE_URL } from "../utils/constants";
 import { addConnections } from "../utils/connectionSlice";
@@ -24,6 +23,7 @@ export default function Connections() {
   const connections = useSelector((store) => store.connections);
   const currentUser = useSelector((store) => store.user);
   const dispatch = useDispatch();
+  const navigate = useNavigate();
 
   const canChat =
     currentUser?.membershipType === "pro" ||
@@ -70,7 +70,7 @@ export default function Connections() {
     return () => controller.abort();
   }, [dispatch]);
 
-  const handleMessageClick = (connectionName) => {
+  const handleMessageClick = (targetUser) => {
     if (!canChat) {
       setToastMessage({
         type: "upgrade",
@@ -79,23 +79,7 @@ export default function Connections() {
       setTimeout(() => setToastMessage(null), 4000);
       return;
     }
-    setToastMessage({
-      type: "info",
-      text: `Direct messaging with ${connectionName} will be available in Orbit Chat!`,
-    });
-    setTimeout(() => setToastMessage(null), 3000);
-  };
-
-  const handleCopyProfileLink = (e, targetUser) => {
-    e.stopPropagation();
-    if (navigator.clipboard) {
-      navigator.clipboard.writeText(`${window.location.origin}/feed`);
-      setToastMessage({
-        type: "info",
-        text: `Copied ${targetUser.firstName}'s Orbit link!`,
-      });
-      setTimeout(() => setToastMessage(""), 2500);
-    }
+    navigate(`/chat/${targetUser._id}`);
   };
 
   const filteredConnections = (connections || []).filter((user) => {
@@ -349,19 +333,10 @@ export default function Connections() {
                 </div>
 
                 <div className="flex items-center gap-1.5 shrink-0">
-                  <button
-                    type="button"
-                    onClick={(e) => handleCopyProfileLink(e, user)}
-                    className="btn btn-ghost btn-circle btn-sm text-base-content/50 hover:text-primary hover:bg-primary/10 transition-colors cursor-pointer"
-                    title={`Share ${user.firstName}'s Orbit profile link`}
-                  >
-                    <Share2 className="w-3.5 h-3.5 stroke-[2.3]" />
-                  </button>
-
                   <motion.button
                     onClick={(e) => {
                       e.stopPropagation();
-                      handleMessageClick(user.firstName);
+                      handleMessageClick(user);
                     }}
                     whileHover={{ scale: 1.04 }}
                     whileTap={{ scale: 0.95 }}
@@ -373,7 +348,7 @@ export default function Connections() {
                     }`}
                     title={
                       canChat
-                        ? `Message ${user.firstName}`
+                        ? `Chat with ${user.firstName}`
                         : "Unlock 1-on-1 Chat with Pro or Premium"
                     }
                   >
@@ -383,7 +358,7 @@ export default function Connections() {
                       <Lock className="w-3.5 h-3.5 text-primary stroke-[2.3]" />
                     )}
                     <span className="hidden xs:inline sm:inline">
-                      {canChat ? "Message" : "Chat (Pro)"}
+                      {canChat ? "Chat" : "Chat (Pro)"}
                     </span>
                   </motion.button>
                 </div>
@@ -405,7 +380,7 @@ export default function Connections() {
           selectedUser && (
             <button
               onClick={() => {
-                handleMessageClick(selectedUser.firstName);
+                handleMessageClick(selectedUser);
                 setSelectedUser(null);
                 setOriginRect(null);
               }}
@@ -422,7 +397,7 @@ export default function Connections() {
               )}
               <span>
                 {canChat
-                  ? `Message ${selectedUser.firstName}`
+                  ? `Chat with ${selectedUser.firstName}`
                   : `Unlock Chat with ${selectedUser.firstName} (Pro)`}
               </span>
             </button>
