@@ -6,6 +6,7 @@ import { ArrowLeft, Send, ShieldCheck, CheckCheck } from "lucide-react";
 import { BASE_URL } from "../../utils/constants";
 import { addConnections } from "../../utils/connectionSlice";
 import ChatUpgradeGate from "./ChatUpgradeGate";
+import { createSocketConnection } from "../../utils/socket";
 
 export default function Chat() {
   const { targetUserId } = useParams();
@@ -15,27 +16,11 @@ export default function Chat() {
   const rawConnections = useSelector((store) => store.connections);
   const connections = useMemo(() => rawConnections || [], [rawConnections]);
 
-  const canChat =
-    currentUser?.membershipType === "pro" ||
-    currentUser?.membershipType === "premium";
+  // Temporarily set to true for testing - anyone can chat
+  // eslint-disable-next-line no-constant-binary-expression
+  const canChat = true || currentUser?.membershipType === "pro";
 
   const [inputText, setInputText] = useState("");
-  const messagesEndRef = useRef(null);
-
-  useEffect(() => {
-    if (connections.length === 0) {
-      axios
-        .get(`${BASE_URL}/user/connections`, { withCredentials: true })
-        .then((res) => dispatch(addConnections(res?.data?.data || [])))
-        .catch(() => {});
-    }
-  }, [connections.length, dispatch]);
-
-  const targetUser = connections.find((u) => u._id === targetUserId);
-  const targetName = targetUser
-    ? `${targetUser.firstName || ""} ${targetUser.lastName || ""}`.trim()
-    : "Orbit Connection";
-
   const [messages, setMessages] = useState([
     {
       id: "1",
@@ -57,6 +42,56 @@ export default function Chat() {
     },
   ]);
 
+  const messagesEndRef = useRef(null);
+  const socketRef = useRef(null);
+
+  useEffect(() => {
+    if (connections.length === 0) {
+      axios
+        .get(`${BASE_URL}/user/connections`, { withCredentials: true })
+        .then((res) => dispatch(addConnections(res?.data?.data || [])))
+        .catch(() => { });
+    }
+  }, [connections.length, dispatch]);
+
+  useEffect(() => {
+    if (!currentUser?._id || !targetUserId) return;
+    const socket = createSocketConnection();
+    socketRef.current = socket;
+
+    // As soon as the page loaded, the socket connection is made and the joinChat event is emitted
+    socket.emit("joinChat", {
+      firstName: currentUser.firstName,
+      currentUserId: currentUser._id,
+      targetUserId,
+    });
+
+    // Listen for incoming messages from the room
+    socket.on("messageReceived", ({ firstName, text }) => {
+      console.log(`${firstName}: ${text}`);
+      if (firstName !== currentUser.firstName) {
+        setMessages((prev) => [
+          ...prev,
+          {
+            id: Date.now().toString(),
+            sender: "them",
+            text,
+            time: new Date().toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" }),
+          },
+        ]);
+      }
+    });
+
+    return () => {
+      socket.disconnect();
+    };
+  }, [currentUser?._id, targetUserId, currentUser?.firstName]);
+
+  const targetUser = connections.find((u) => u._id === targetUserId);
+  const targetName = targetUser
+    ? `${targetUser.firstName || ""} ${targetUser.lastName || ""}`.trim()
+    : "Orbit Connection";
+
   useEffect(() => {
     messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
   }, [messages]);
@@ -64,6 +99,14 @@ export default function Chat() {
   const handleSendMessage = (e) => {
     e.preventDefault();
     if (!inputText.trim()) return;
+
+    // Emit the message event to the backend socket server
+    socketRef.current?.emit("sendMessage", {
+      firstName: currentUser.firstName,
+      currentUserId: currentUser._id,
+      targetUserId,
+      text: inputText.trim(),
+    });
 
     const newMessage = {
       id: Date.now().toString(),
@@ -134,11 +177,10 @@ export default function Chat() {
                 className={`chat ${isMe ? "chat-end" : "chat-start"}`}
               >
                 <div
-                  className={`chat-bubble text-xs sm:text-sm leading-relaxed shadow-xs ${
-                    isMe
-                      ? "chat-bubble-primary font-medium"
-                      : "bg-base-200 text-base-content border border-base-content/8"
-                  }`}
+                  className={`chat-bubble text-xs sm:text-sm leading-relaxed shadow-xs ${isMe
+                    ? "chat-bubble-primary font-medium"
+                    : "bg-base-200 text-base-content border border-base-content/8"
+                    }`}
                 >
                   {msg.text}
                 </div>

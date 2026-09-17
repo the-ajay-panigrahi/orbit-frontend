@@ -25,9 +25,9 @@ export default function Connections() {
   const dispatch = useDispatch();
   const navigate = useNavigate();
 
-  const canChat =
-    currentUser?.membershipType === "pro" ||
-    currentUser?.membershipType === "premium";
+  // Temporarily set to true for testing - anyone can chat
+  // eslint-disable-next-line no-constant-binary-expression
+  const canChat = true || currentUser?.membershipType === "pro";
 
   const [selectedUser, setSelectedUser] = useState(null);
   const [originRect, setOriginRect] = useState(null);
