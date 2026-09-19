@@ -205,7 +205,7 @@ export default function Profile() {
   };
 
   return (
-    <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 py-4 sm:py-6">
+    <div className="w-full max-w-[920px] mx-auto px-4 sm:px-6 py-4 sm:py-6 flex-1 flex flex-col">
       {/* Header */}
       <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-2 pb-3 border-b border-base-content/8 mb-4">
         <div>
