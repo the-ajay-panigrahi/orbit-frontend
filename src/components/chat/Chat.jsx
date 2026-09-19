@@ -2,7 +2,7 @@ import { useState, useEffect, useRef, useMemo } from "react";
 import { useSelector, useDispatch } from "react-redux";
 import { useParams, Link } from "react-router-dom";
 import axios from "axios";
-import { ArrowLeft, Send, ShieldCheck, CheckCheck } from "lucide-react";
+import { ArrowLeft, Send, ShieldCheck, CheckCheck, Lock } from "lucide-react";
 import { BASE_URL } from "../../utils/constants";
 import { addConnections } from "../../utils/connectionSlice";
 import ChatUpgradeGate from "./ChatUpgradeGate";
@@ -21,29 +21,14 @@ export default function Chat() {
   const canChat = true || currentUser?.membershipType === "pro";
 
   const [inputText, setInputText] = useState("");
-  const [messages, setMessages] = useState([
-    {
-      id: "1",
-      sender: "them",
-      text: `Hey ${currentUser?.firstName || "there"}! Great connecting with you on Orbit.`,
-      time: "10:30 AM",
-    },
-    {
-      id: "2",
-      sender: "me",
-      text: "Hey! Glad to connect as well. What projects are you building right now?",
-      time: "10:32 AM",
-    },
-    {
-      id: "3",
-      sender: "them",
-      text: "Currently hacking on a modern full-stack web application. Let's sync up soon!",
-      time: "10:33 AM",
-    },
-  ]);
+  const [messages, setMessages] = useState([]);
+  const [notConnected, setNotConnected] = useState(false);
+  const [isTargetTyping, setIsTargetTyping] = useState(false);
 
   const messagesEndRef = useRef(null);
   const socketRef = useRef(null);
+  const typingTimeoutRef = useRef(null);
+  const isTypingRef = useRef(false);
 
   useEffect(() => {
     if (connections.length === 0) {
@@ -53,6 +38,37 @@ export default function Chat() {
         .catch(() => { });
     }
   }, [connections.length, dispatch]);
+
+  useEffect(() => {
+    if (!targetUserId || !currentUser?._id) return;
+
+    const fetchChatMessages = async () => {
+      try {
+        const res = await axios.get(`${BASE_URL}/chat/${targetUserId}`, {
+          withCredentials: true,
+        });
+        const chatMessages = (res.data?.messages || []).map((msg) => {
+          const senderIdStr = msg.senderId?._id?.toString() || msg.senderId?.toString();
+          const currentUserIdStr = currentUser._id.toString();
+          const isMe = senderIdStr === currentUserIdStr;
+          return {
+            id: msg._id,
+            sender: isMe ? "me" : "them",
+            text: msg.text,
+            time: new Date(msg.createdAt).toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" }),
+          };
+        });
+        setMessages(chatMessages);
+      } catch (err) {
+        if (err.response?.status === 403) {
+          setNotConnected(true);
+        }
+        console.error("Failed to load chat history:", err);
+      }
+    };
+
+    fetchChatMessages();
+  }, [targetUserId, currentUser?._id]);
 
   useEffect(() => {
     if (!currentUser?._id || !targetUserId) return;
@@ -67,9 +83,13 @@ export default function Chat() {
     });
 
     // Listen for incoming messages from the room
-    socket.on("messageReceived", ({ firstName, text }) => {
-      console.log(`${firstName}: ${text}`);
-      if (firstName !== currentUser.firstName) {
+    socket.on("messageReceived", ({ firstName, text, senderId }) => {
+      setIsTargetTyping(false);
+      const isMe =
+        (senderId && senderId.toString() === currentUser._id.toString()) ||
+        firstName === currentUser.firstName;
+
+      if (!isMe) {
         setMessages((prev) => [
           ...prev,
           {
@@ -82,7 +102,17 @@ export default function Chat() {
       }
     });
 
+    // Typing indicators from peer
+    socket.on("userTyping", () => {
+      setIsTargetTyping(true);
+    });
+
+    socket.on("userStoppedTyping", () => {
+      setIsTargetTyping(false);
+    });
+
     return () => {
+      if (typingTimeoutRef.current) clearTimeout(typingTimeoutRef.current);
       socket.disconnect();
     };
   }, [currentUser?._id, targetUserId, currentUser?.firstName]);
@@ -94,11 +124,39 @@ export default function Chat() {
 
   useEffect(() => {
     messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
-  }, [messages]);
+  }, [messages, isTargetTyping]);
+
+  const handleInputChange = (e) => {
+    setInputText(e.target.value);
+
+    if (!socketRef.current) return;
+
+    if (!isTypingRef.current) {
+      isTypingRef.current = true;
+      socketRef.current.emit("typing", { targetUserId });
+    }
+
+    if (typingTimeoutRef.current) {
+      clearTimeout(typingTimeoutRef.current);
+    }
+
+    typingTimeoutRef.current = setTimeout(() => {
+      socketRef.current?.emit("stopTyping", { targetUserId });
+      isTypingRef.current = false;
+    }, 2000);
+  };
 
   const handleSendMessage = (e) => {
     e.preventDefault();
     if (!inputText.trim()) return;
+
+    if (typingTimeoutRef.current) {
+      clearTimeout(typingTimeoutRef.current);
+    }
+    if (isTypingRef.current) {
+      socketRef.current?.emit("stopTyping", { targetUserId });
+      isTypingRef.current = false;
+    }
 
     // Emit the message event to the backend socket server
     socketRef.current?.emit("sendMessage", {
@@ -118,6 +176,25 @@ export default function Chat() {
     setMessages((prev) => [...prev, newMessage]);
     setInputText("");
   };
+
+  if (notConnected) {
+    return (
+      <div className="flex-1 flex items-center justify-center p-6 bg-base-100">
+        <div className="max-w-md w-full bg-base-200/60 backdrop-blur-md rounded-2xl border border-base-content/10 p-8 text-center space-y-4 shadow-sm">
+          <div className="w-12 h-12 rounded-2xl bg-warning/10 text-warning flex items-center justify-center mx-auto">
+            <Lock className="w-6 h-6" />
+          </div>
+          <h2 className="text-lg font-bold text-base-content">Connection Required</h2>
+          <p className="text-xs text-base-content/70 leading-relaxed">
+            You can only message members you have an accepted connection with. Connect with them first to start chatting!
+          </p>
+          <Link to="/connections" className="btn btn-primary btn-sm rounded-xl">
+            View My Connections
+          </Link>
+        </div>
+      </div>
+    );
+  }
 
   if (!canChat) {
     return <ChatUpgradeGate />;
@@ -191,6 +268,16 @@ export default function Chat() {
               </div>
             );
           })}
+          {isTargetTyping && (
+            <div className="chat chat-start animate-fade-in">
+              <div className="chat-bubble bg-base-200 text-base-content/70 border border-base-content/8 py-2 px-3.5 flex items-center gap-1.5 shadow-xs">
+                <span className="text-xs mr-1 font-medium">{targetUser?.firstName || "They"} is typing</span>
+                <span className="w-1.5 h-1.5 rounded-full bg-primary/70 animate-bounce [animation-delay:-0.3s]" />
+                <span className="w-1.5 h-1.5 rounded-full bg-primary/70 animate-bounce [animation-delay:-0.15s]" />
+                <span className="w-1.5 h-1.5 rounded-full bg-primary/70 animate-bounce" />
+              </div>
+            </div>
+          )}
           <div ref={messagesEndRef} />
         </div>
       </div>
@@ -205,7 +292,7 @@ export default function Chat() {
             type="text"
             placeholder={`Message ${targetUser?.firstName || targetName}...`}
             value={inputText}
-            onChange={(e) => setInputText(e.target.value)}
+            onChange={handleInputChange}
             className="input input-sm sm:input-md flex-1 rounded-xl bg-base-200/80 border-none text-xs sm:text-sm focus:ring-1 focus:ring-primary focus:outline-none"
           />
           <button
