@@ -205,29 +205,29 @@ export default function Profile() {
   };
 
   return (
-    <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 py-8 sm:py-12">
+    <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 py-4 sm:py-6">
       {/* Header */}
-      <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 pb-6 border-b border-base-content/8 mb-8">
+      <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-2 pb-3 border-b border-base-content/8 mb-4">
         <div>
-          <div className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-primary/10 text-primary text-xs font-bold mb-2">
-            <Sparkles className="w-3.5 h-3.5 stroke-[2.5]" />
+          <div className="inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full bg-primary/10 text-primary text-[11px] font-bold mb-1">
+            <Sparkles className="w-3 h-3 stroke-[2.5]" />
             <span>Profile Studio</span>
           </div>
-          <h1 className="text-2xl sm:text-3xl font-extrabold tracking-tight text-base-content">
+          <h1 className="text-xl sm:text-2xl font-extrabold tracking-tight text-base-content">
             Design your builder presence.
           </h1>
-          <p className="text-sm text-base-content/65 max-w-lg mt-1">
+          <p className="text-xs sm:text-sm text-base-content/65 max-w-lg mt-0.5">
             Keep your profile fresh. Changes update the live discovery card in real time.
           </p>
         </div>
       </div>
 
-      {/* Main Studio Grid */}
-      <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 items-start">
+      {/* Main Studio Grid: Rigid 1fr and 384px tracks that never fluctuate between tabs */}
+      <div className="grid grid-cols-1 lg:grid-cols-[1fr_384px] gap-6 lg:gap-8 items-start">
         {/* Left Column: Segmented Form Tabs */}
-        <div className="lg:col-span-7 min-w-0 w-full bg-base-100 shadow-xl border border-base-content/10 p-5 sm:p-7 rounded-3xl">
+        <div className="w-full min-w-0 bg-base-100 shadow-xl border border-base-content/10 p-4 sm:p-6 rounded-2xl">
           {/* Segmented Controller */}
-          <div className="grid grid-cols-3 p-1 rounded-2xl bg-base-200/80 border border-base-content/8 mb-6 text-xs font-semibold">
+          <div className="grid grid-cols-3 p-1 rounded-xl bg-base-200/80 border border-base-content/8 mb-4 text-xs font-semibold">
             <button
               type="button"
               onClick={() => setActiveTab("identity")}
@@ -266,14 +266,14 @@ export default function Profile() {
             </button>
           </div>
 
-          <form onSubmit={handleSaveProfile} className="space-y-6">
+          <form onSubmit={handleSaveProfile} className="space-y-5">
             {/* Tab 1: Identity */}
             {activeTab === "identity" && (
               <motion.div
                 initial={{ opacity: 0, x: -10 }}
                 animate={{ opacity: 1, x: 0 }}
                 transition={{ duration: 0.2 }}
-                className="space-y-4 min-h-[360px]"
+                className="space-y-3.5 min-h-[290px]"
               >
                 <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                   <div>
@@ -360,7 +360,7 @@ export default function Profile() {
                 initial={{ opacity: 0, x: -10 }}
                 animate={{ opacity: 1, x: 0 }}
                 transition={{ duration: 0.2 }}
-                className="space-y-4 min-h-[360px]"
+                className="space-y-3.5 min-h-[290px]"
               >
                 <div>
                   <label className="text-xs font-bold text-base-content/80 mb-1.5 block">
@@ -398,12 +398,12 @@ export default function Profile() {
                     </span>
                   </div>
                   <textarea
-                    rows={4}
+                    rows={3}
                     value={about}
                     onChange={(e) => setAbout(e.target.value)}
                     placeholder="Describe your background, what projects you are actively hacking on, and what type of builder you want to connect with..."
                     maxLength={500}
-                    className="textarea textarea-bordered textarea-sm w-full rounded-xl focus:textarea-primary text-sm leading-relaxed"
+                    className="textarea textarea-bordered textarea-sm w-full rounded-xl focus:textarea-primary text-sm leading-relaxed resize-none"
                   />
                 </div>
               </motion.div>
@@ -415,7 +415,7 @@ export default function Profile() {
                 initial={{ opacity: 0, x: -10 }}
                 animate={{ opacity: 1, x: 0 }}
                 transition={{ duration: 0.2 }}
-                className="space-y-4 min-h-[360px]"
+                className="space-y-3.5 min-h-[290px]"
               >
                 <div>
                   <div className="flex items-center justify-between mb-1.5">
@@ -543,8 +543,8 @@ export default function Profile() {
           </form>
         </div>
 
-        {/* Right Column: Live Card Preview & Strength Checklist */}
-        <div className="lg:col-span-5 min-w-0 w-full flex flex-col items-center justify-start gap-4 select-none lg:sticky lg:top-24">
+        {/* Right Column: Live Card Preview locked to exact 384px width */}
+        <div className="w-full max-w-sm mx-auto flex flex-col items-center justify-start gap-3 select-none lg:sticky lg:top-20 shrink-0">
           <div className="w-full max-w-sm flex items-center justify-between px-1 text-xs font-mono text-base-content/60">
             <span className="font-bold">Live Discovery Card</span>
             <span className="badge badge-xs badge-primary font-mono font-bold">
