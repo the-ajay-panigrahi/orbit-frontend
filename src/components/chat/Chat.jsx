@@ -3,10 +3,13 @@ import { useSelector, useDispatch } from "react-redux";
 import { useParams, Link } from "react-router-dom";
 import axios from "axios";
 import { ArrowLeft, Send, ShieldCheck, Lock } from "lucide-react";
+import { Virtuoso } from "react-virtuoso";
 import { BASE_URL } from "../../utils/constants";
 import { addConnections } from "../../utils/connectionSlice";
 import ChatUpgradeGate from "./ChatUpgradeGate";
 import { createSocketConnection } from "../../utils/socket";
+
+const START_INDEX = 10000;
 
 export default function Chat() {
   const { targetUserId } = useParams();
@@ -33,8 +36,11 @@ export default function Chat() {
   const [notConnected, setNotConnected] = useState(false);
   const [isTargetTyping, setIsTargetTyping] = useState(false);
   const [isOnline, setIsOnline] = useState(false);
+  const [hasMore, setHasMore] = useState(false);
+  const [isLoadingMore, setIsLoadingMore] = useState(false);
+  const [firstItemIndex, setFirstItemIndex] = useState(START_INDEX);
 
-  const messagesEndRef = useRef(null);
+  const virtuosoRef = useRef(null);
   const socketRef = useRef(null);
   const typingTimeoutRef = useRef(null);
   const isTypingRef = useRef(false);
@@ -53,10 +59,11 @@ export default function Chat() {
 
     const fetchChatMessages = async () => {
       try {
-        const res = await axios.get(`${BASE_URL}/chat/${targetUserId}`, {
+        const res = await axios.get(`${BASE_URL}/chat/${targetUserId}?limit=25&skip=0`, {
           withCredentials: true,
         });
-        const chatMessages = (res.data?.messages || []).map((msg) => {
+        const rawMessages = res.data?.messages || [];
+        const chatMessages = rawMessages.map((msg) => {
           const senderIdStr = msg.senderId?._id?.toString() || msg.senderId?.toString();
           const currentUserIdStr = currentUser._id.toString();
           const isMe = senderIdStr === currentUserIdStr;
@@ -73,7 +80,9 @@ export default function Chat() {
             time: new Date(msg.createdAt).toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" }),
           };
         });
+        setFirstItemIndex(START_INDEX - chatMessages.length);
         setMessages(chatMessages);
+        setHasMore(Boolean(res.data?.hasMore));
       } catch (err) {
         if (err.response?.status === 403) {
           setNotConnected(true);
@@ -84,6 +93,46 @@ export default function Chat() {
 
     fetchChatMessages();
   }, [targetUserId, currentUser?._id, targetUser]);
+
+  const loadOlderMessages = async () => {
+    if (!hasMore || isLoadingMore || messages.length === 0) return;
+    setIsLoadingMore(true);
+    try {
+      const res = await axios.get(
+        `${BASE_URL}/chat/${targetUserId}?limit=25&skip=${messages.length}`,
+        { withCredentials: true }
+      );
+      const rawMessages = res.data?.messages || [];
+      if (rawMessages.length > 0) {
+        const olderMessages = rawMessages.map((msg) => {
+          const senderIdStr = msg.senderId?._id?.toString() || msg.senderId?.toString();
+          const currentUserIdStr = currentUser._id.toString();
+          const isMe = senderIdStr === currentUserIdStr;
+          return {
+            id: msg._id,
+            sender: isMe ? "me" : "them",
+            senderName: isMe
+              ? currentUser.firstName
+              : (msg.senderId?.firstName || targetUser?.firstName || "Peer"),
+            senderAvatar: isMe
+              ? (currentUser.profilePictureUrl || "/default-avatar.svg")
+              : (msg.senderId?.profilePictureUrl || targetUser?.profilePictureUrl || "/default-avatar.svg"),
+            text: msg.text,
+            time: new Date(msg.createdAt).toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" }),
+          };
+        });
+        setFirstItemIndex((prev) => prev - olderMessages.length);
+        setMessages((prev) => [...olderMessages, ...prev]);
+        setHasMore(Boolean(res.data?.hasMore));
+      } else {
+        setHasMore(false);
+      }
+    } catch (err) {
+      console.error("Failed to load older messages:", err);
+    } finally {
+      setIsLoadingMore(false);
+    }
+  };
 
   useEffect(() => {
     if (!currentUser?._id || !targetUserId) return;
@@ -154,10 +203,6 @@ export default function Chat() {
     };
   }, [currentUser?._id, targetUserId, currentUser?.firstName, targetUser]);
 
-  useEffect(() => {
-    messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
-  }, [messages, isTargetTyping]);
-
   const handleInputChange = (e) => {
     setInputText(e.target.value);
 
@@ -209,6 +254,14 @@ export default function Chat() {
 
     setMessages((prev) => [...prev, newMessage]);
     setInputText("");
+
+    setTimeout(() => {
+      virtuosoRef.current?.scrollToIndex({
+        index: "LAST",
+        align: "end",
+        behavior: "smooth",
+      });
+    }, 50);
   };
 
   if (notConnected) {
@@ -285,47 +338,68 @@ export default function Chat() {
         </span>
       </header>
 
-      {/* Message Feed (Scrollbar comes within this container) */}
-      <div className="flex-1 overflow-y-auto custom-scrollbar p-4 sm:p-6 min-h-0">
-        <div className="max-w-4xl mx-auto space-y-3">
-          {messages.map((msg) => {
+      {/* Virtualized Message Feed with Scroll-Up Pagination */}
+      <div className="flex-1 min-h-0 w-full">
+        <Virtuoso
+          ref={virtuosoRef}
+          firstItemIndex={firstItemIndex}
+          initialTopMostItemIndex={Math.max(0, messages.length - 1)}
+          data={messages}
+          startReached={loadOlderMessages}
+          followOutput="auto"
+          className="custom-scrollbar h-full"
+          components={{
+            Header: () => (
+              <div className="py-2 text-center text-xs text-base-content/40">
+                {isLoadingMore ? (
+                  <div className="flex items-center justify-center gap-1.5 py-1">
+                    <span className="loading loading-spinner loading-xs text-primary"></span>
+                    <span>Loading older messages...</span>
+                  </div>
+                ) : hasMore ? (
+                  <span className="opacity-50">Scroll up for older messages</span>
+                ) : messages.length > 0 ? (
+                  <span className="opacity-40 font-mono text-[10px] uppercase tracking-wider">Beginning of conversation</span>
+                ) : null}
+              </div>
+            ),
+          }}
+          itemContent={(_index, msg) => {
             const isMe = msg.sender === "me";
             return (
-              <div
-                key={msg.id}
-                className={`chat ${isMe ? "chat-end" : "chat-start"}`}
-              >
-                <div className="chat-image avatar">
-                  <div className="w-8 h-8 rounded-xl border border-base-content/10 overflow-hidden bg-base-200 shrink-0">
-                    <img
-                      src={msg.senderAvatar || "/default-avatar.svg"}
-                      alt={msg.senderName}
-                      onError={(e) => {
-                        e.target.src = "/default-avatar.svg";
-                      }}
-                    />
+              <div className="px-4 sm:px-6 py-1.5 max-w-4xl mx-auto">
+                <div className={`chat ${isMe ? "chat-end" : "chat-start"}`}>
+                  <div className="chat-image avatar">
+                    <div className="w-8 h-8 rounded-xl border border-base-content/10 overflow-hidden bg-base-200 shrink-0">
+                      <img
+                        src={msg.senderAvatar || "/default-avatar.svg"}
+                        alt={msg.senderName}
+                        onError={(e) => {
+                          e.target.src = "/default-avatar.svg";
+                        }}
+                      />
+                    </div>
                   </div>
-                </div>
-                <div className="chat-header text-[11px] opacity-60 mb-0.5 px-0.5">
-                  {msg.senderName}
-                </div>
-                <div
-                  className={`chat-bubble text-xs sm:text-sm leading-relaxed shadow-xs ${
-                    isMe
-                      ? "chat-bubble-primary font-medium"
-                      : "bg-base-200 text-base-content border border-base-content/8"
-                  }`}
-                >
-                  {msg.text}
-                </div>
-                <div className="chat-footer opacity-40 text-[10px] font-mono mt-0.5 px-0.5">
-                  {msg.time}
+                  <div className="chat-header text-[11px] opacity-60 mb-0.5 px-0.5">
+                    {msg.senderName}
+                  </div>
+                  <div
+                    className={`chat-bubble text-xs sm:text-sm leading-relaxed shadow-xs ${
+                      isMe
+                        ? "chat-bubble-primary font-medium"
+                        : "bg-base-200 text-base-content border border-base-content/8"
+                    }`}
+                  >
+                    {msg.text}
+                  </div>
+                  <div className="chat-footer opacity-40 text-[10px] font-mono mt-0.5 px-0.5">
+                    {msg.time}
+                  </div>
                 </div>
               </div>
             );
-          })}
-          <div ref={messagesEndRef} />
-        </div>
+          }}
+        />
       </div>
 
       {/* Typing Indicator Bar - Pinned right above input footer */}
