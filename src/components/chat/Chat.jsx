@@ -17,13 +17,20 @@ export default function Chat() {
   const rawConnections = useSelector((store) => store.connections);
   const connections = useMemo(() => rawConnections || [], [rawConnections]);
 
-  const targetUser = useMemo(
+  // Ensure connections are loaded if user navigates directly or refreshes
+  useEffect(() => {
+    if (!rawConnections) {
+      axios
+        .get(`${BASE_URL}/user/connections`, { withCredentials: true })
+        .then((res) => dispatch(addConnections(res?.data?.data || [])))
+        .catch((err) => console.error("Could not fetch connections in chat:", err));
+    }
+  }, [rawConnections, dispatch]);
+
+  const targetUserFromStore = useMemo(
     () => connections.find((u) => u._id === targetUserId),
     [connections, targetUserId]
   );
-  const targetName = targetUser
-    ? `${targetUser.firstName || ""} ${targetUser.lastName || ""}`.trim()
-    : "Orbit Connection";
 
   // Temporarily set to true for testing - anyone can chat
   // eslint-disable-next-line no-constant-binary-expression
@@ -34,6 +41,8 @@ export default function Chat() {
     messages,
     notConnected,
     isTargetTyping,
+    typingUserName,
+    chatPartner,
     isOnline,
     hasMore,
     isLoadingMore,
@@ -42,7 +51,12 @@ export default function Chat() {
     handleInputChange,
     handleSendMessage,
     loadOlderMessages,
-  } = useChat({ targetUserId, currentUser, targetUser });
+  } = useChat({ targetUserId, currentUser, targetUser: targetUserFromStore });
+
+  const activeTarget = chatPartner || targetUserFromStore;
+  const targetName = activeTarget
+    ? `${activeTarget.firstName || ""} ${activeTarget.lastName || ""}`.trim()
+    : "Orbit Connection";
 
   if (notConnected) {
     return (
@@ -69,57 +83,59 @@ export default function Chat() {
 
   return (
     <div className="flex-1 w-full h-full flex flex-col bg-base-100 min-h-0 overflow-hidden">
-      {/* Chat Header */}
-      <header className="px-4 sm:px-8 py-3.5 border-b border-base-content/10 bg-base-100/95 backdrop-blur-sm flex items-center justify-between shrink-0">
-        <div className="flex items-center gap-3 min-w-0">
-          <Link
-            to="/connections"
-            className="btn btn-ghost btn-circle btn-sm text-base-content/70 hover:text-base-content -ml-1"
-            title="Back to Connections"
-          >
-            <ArrowLeft className="w-4 h-4" />
-          </Link>
-
-          <div className="relative shrink-0">
-            <img
-              src={targetUser?.profilePictureUrl || "/default-avatar.svg"}
-              alt={targetName}
-              className="w-10 h-10 rounded-xl object-cover border border-base-content/10 bg-base-200"
-              onError={(e) => {
-                e.target.src = "/default-avatar.svg";
-              }}
-            />
-            <span
-              className={`absolute -bottom-0.5 -right-0.5 w-3 h-3 rounded-full border-2 border-base-100 transition-colors duration-300 ${
-                isOnline ? "bg-emerald-500" : "bg-base-content/25"
-              }`}
-            />
-          </div>
-
-          <div className="flex flex-col min-w-0">
-            <div className="flex items-center gap-1.5">
-              <h3 className="text-sm font-bold text-base-content truncate">
-                {targetName}
-              </h3>
-              <ShieldCheck className="w-3.5 h-3.5 text-primary shrink-0" />
-            </div>
-            <span
-              className={`text-[11px] font-medium transition-colors duration-300 ${
-                isOnline ? "text-emerald-500" : "text-base-content/40"
-              }`}
+      {/* Chat Header - Aligned with max-w-6xl Navbar */}
+      <header className="border-b border-base-content/10 bg-base-100/95 backdrop-blur-sm shrink-0 px-4 sm:px-6 lg:px-8">
+        <div className="max-w-6xl mx-auto w-full flex items-center justify-between py-3">
+          <div className="flex items-center gap-3 min-w-0">
+            <Link
+              to="/connections"
+              className="btn btn-ghost btn-circle btn-sm text-base-content/70 hover:text-base-content -ml-1"
+              title="Back to Connections"
             >
-              {isOnline ? "Online" : "Offline"}
-            </span>
-          </div>
-        </div>
+              <ArrowLeft className="w-4 h-4" />
+            </Link>
 
-        <span className="text-[10px] font-mono uppercase tracking-wider text-base-content/40 bg-base-200 px-2 py-0.5 rounded-md">
-          1-on-1
-        </span>
+            <div className="relative shrink-0">
+              <img
+                src={activeTarget?.profilePictureUrl || "/default-avatar.svg"}
+                alt={targetName}
+                className="w-10 h-10 rounded-xl object-cover border border-base-content/10 bg-base-200"
+                onError={(e) => {
+                  e.target.src = "/default-avatar.svg";
+                }}
+              />
+              <span
+                className={`absolute -bottom-0.5 -right-0.5 w-3 h-3 rounded-full border-2 border-base-100 transition-colors duration-300 ${
+                  isOnline ? "bg-emerald-500" : "bg-base-content/25"
+                }`}
+              />
+            </div>
+
+            <div className="flex flex-col min-w-0">
+              <div className="flex items-center gap-1.5">
+                <h3 className="text-sm font-bold text-base-content truncate">
+                  {targetName}
+                </h3>
+                <ShieldCheck className="w-3.5 h-3.5 text-primary shrink-0" />
+              </div>
+              <span
+                className={`text-[11px] font-medium transition-colors duration-300 ${
+                  isOnline ? "text-emerald-500" : "text-base-content/40"
+                }`}
+              >
+                {isOnline ? "Online" : "Offline"}
+              </span>
+            </div>
+          </div>
+
+          <span className="text-[10px] font-mono uppercase tracking-wider text-base-content/40 bg-base-200 px-2 py-0.5 rounded-md">
+            1-on-1
+          </span>
+        </div>
       </header>
 
       {/* Virtualized Message Feed with Scroll-Up Pagination */}
-      <div className="flex-1 min-h-0 w-full">
+      <div className="flex-1 min-h-0 w-full flex flex-col">
         <Virtuoso
           ref={virtuosoRef}
           firstItemIndex={firstItemIndex}
@@ -191,7 +207,7 @@ export default function Chat() {
               <span className="w-1.5 h-1.5 rounded-full bg-primary animate-bounce [animation-delay:-0.15s]" />
               <span className="w-1.5 h-1.5 rounded-full bg-primary animate-bounce" />
             </span>
-            <span>{targetUser?.firstName || "They"} is typing...</span>
+            <span>{typingUserName || activeTarget?.firstName || "Connection"} is typing...</span>
           </div>
         )}
       </div>
@@ -204,7 +220,7 @@ export default function Chat() {
         >
           <input
             type="text"
-            placeholder={`Message ${targetUser?.firstName || targetName}...`}
+            placeholder={`Message ${activeTarget?.firstName || targetName}...`}
             value={inputText}
             onChange={handleInputChange}
             className="input input-sm sm:input-md flex-1 rounded-xl bg-base-200/80 border-none text-xs sm:text-sm focus:ring-1 focus:ring-primary focus:outline-none"
