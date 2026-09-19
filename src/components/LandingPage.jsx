@@ -20,6 +20,7 @@ import {
   CheckCircle2,
   ChevronDown,
   HelpCircle,
+  Rocket,
 } from "lucide-react";
 import OrbitLogo from "./OrbitLogo";
 import UserCard from "./UserCard";
@@ -655,35 +656,44 @@ export default function LandingPage() {
 
                 {idx < JOURNEY_STEPS.length - 1 && (
                   <>
-                    <div className="hidden md:flex items-center justify-center px-3 z-10 shrink-0 self-center">
+                    <div className="hidden md:flex items-center justify-center px-2 z-10 shrink-0 self-center">
                       <HandDrawnArrow
                         variant={idx === 0 ? "top-to-bottom" : "bottom-to-top"}
-                        label={
-                          idx === 0 ? "Mutual match! ⚡" : "Start building! 🚀"
+                        label={idx === 0 ? "Mutual match!" : "Start building!"}
+                        icon={idx === 0 ? Zap : Rocket}
+                        iconClassName={
+                          idx === 0
+                            ? "text-amber-500 fill-amber-500/20"
+                            : "text-primary"
                         }
                       />
                     </div>
-                    <div className="md:hidden flex flex-col items-center justify-center py-3 gap-1">
-                      <span className="font-handwriting text-primary text-sm font-bold">
-                        {idx === 0 ? "Mutual match! ⚡" : "Start building! 🚀"}
+                    <div className="md:hidden flex flex-col items-center justify-center py-3 gap-1.5">
+                      <span className="font-handwriting text-primary text-sm font-bold flex items-center gap-1.5">
+                        <span>{idx === 0 ? "Mutual match!" : "Start building!"}</span>
+                        {idx === 0 ? (
+                          <Zap className="w-3.5 h-3.5 text-amber-500 fill-amber-500/20 stroke-[2.3] shrink-0" />
+                        ) : (
+                          <Rocket className="w-3.5 h-3.5 text-primary stroke-[2.3] shrink-0" />
+                        )}
                       </span>
                       <svg
                         width="24"
                         height="36"
                         viewBox="0 0 24 36"
                         fill="none"
-                        className="text-primary/70"
+                        className="text-primary/80 overflow-visible"
                       >
                         <path
                           d="M 12 2 C 18 12, 6 22, 12 30"
                           stroke="currentColor"
-                          strokeWidth="3.5"
+                          strokeWidth="3.2"
                           strokeLinecap="round"
                         />
                         <polyline
                           points="6,24 12,32 18,24"
                           stroke="currentColor"
-                          strokeWidth="3.5"
+                          strokeWidth="3.2"
                           strokeLinecap="round"
                           strokeLinejoin="round"
                         />

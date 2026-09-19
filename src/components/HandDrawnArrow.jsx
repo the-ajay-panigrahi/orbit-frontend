@@ -1,5 +1,7 @@
 export default function HandDrawnArrow({
   label,
+  icon: Icon,
+  iconClassName = "",
   variant = "top-to-bottom",
   className = "",
 }) {
@@ -8,64 +10,67 @@ export default function HandDrawnArrow({
       className={`hidden md:flex flex-col items-center justify-center relative select-none pointer-events-none px-2 py-1 ${className}`}
     >
       {label && (
-        <span className="font-handwriting text-primary text-base lg:text-lg font-bold tracking-wide -rotate-3 mb-1 drop-shadow-xs whitespace-nowrap">
-          {label}
-        </span>
+        <div className="font-handwriting text-primary text-base lg:text-lg font-bold tracking-wide -rotate-2 mb-1.5 drop-shadow-xs flex items-center gap-1.5 whitespace-nowrap">
+          <span>{label}</span>
+          {Icon && (
+            <Icon className={`w-4 h-4 stroke-[2.3] shrink-0 ${iconClassName}`} />
+          )}
+        </div>
       )}
       {variant === "top-to-bottom" ? (
         <svg
-          width="136"
-          height="68"
-          viewBox="-4 -4 140 72"
+          width="132"
+          height="52"
+          viewBox="0 0 132 52"
           fill="none"
           xmlns="http://www.w3.org/2000/svg"
-          className="text-primary/80 overflow-visible drop-shadow-xs"
+          className="text-primary/85 overflow-visible drop-shadow-xs"
         >
-          {/* Thick organic bezier curve swooping from top to bottom */}
+          {/* Smooth organic curve flowing left-to-right with arch */}
           <path
-            d="M 10 12 C 45 4, 75 8, 85 26 C 92 40, 78 52, 65 48 C 50 44, 55 24, 75 22 C 95 20, 115 38, 124 44"
+            d="M 8 36 C 36 12, 74 12, 112 26"
             fill="none"
             stroke="currentColor"
-            strokeWidth="3.5"
+            strokeWidth="3.2"
             strokeLinecap="round"
             strokeLinejoin="round"
             vectorEffect="non-scaling-stroke"
           />
-          {/* Bold hand-drawn arrowhead */}
+          {/* Crisp, unmistakable forward-pointing arrowhead with 20px right margin */}
           <path
-            d="M 112 36 L 124 44 L 115 54"
+            d="M 98 18 L 114 26 L 99 34"
             fill="none"
             stroke="currentColor"
-            strokeWidth="3.5"
+            strokeWidth="3.2"
             strokeLinecap="round"
             strokeLinejoin="round"
           />
         </svg>
       ) : (
         <svg
-          width="136"
-          height="68"
-          viewBox="-4 -4 140 72"
+          width="132"
+          height="52"
+          viewBox="0 0 132 52"
           fill="none"
           xmlns="http://www.w3.org/2000/svg"
-          className="text-primary/80 overflow-visible drop-shadow-xs"
+          className="text-primary/85 overflow-visible drop-shadow-xs"
         >
-          {/* Second connector with organic looping curve */}
+          {/* Second connector with organic dip flowing left-to-right */}
           <path
-            d="M 8 20 C 40 45, 65 52, 85 40 C 105 28, 95 10, 80 14 C 65 18, 75 38, 95 38 C 110 38, 118 28, 124 22"
+            d="M 8 18 C 38 40, 76 40, 112 25"
             fill="none"
             stroke="currentColor"
-            strokeWidth="3.5"
+            strokeWidth="3.2"
             strokeLinecap="round"
             strokeLinejoin="round"
             vectorEffect="non-scaling-stroke"
           />
-          {/* Bold hand-drawn arrowhead */}
+          {/* Crisp, unmistakable forward-pointing arrowhead with 20px right margin */}
           <path
-            d="M 114 16 L 124 22 L 118 32"
+            d="M 98 17 L 114 25 L 99 33"
             fill="none"
             stroke="currentColor"
-            strokeWidth="3.5"
+            strokeWidth="3.2"
             strokeLinecap="round"
             strokeLinejoin="round"
           />
