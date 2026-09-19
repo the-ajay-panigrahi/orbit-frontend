@@ -78,7 +78,7 @@ export default function Navbar({ theme, onSelectTheme, themes }) {
         <div className="max-w-6xl mx-auto w-full flex items-center justify-between">
           <div className="flex-1 flex items-center">
           <Link
-            to={user ? "/feed" : "/"}
+            to="/"
             className="flex items-center gap-2 select-none"
             aria-label="Orbit Home"
           >
