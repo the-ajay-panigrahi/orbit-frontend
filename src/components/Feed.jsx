@@ -132,16 +132,6 @@ export default function Feed() {
         </div>
       )}
 
-      <div className="mb-2.5 sm:mb-3 flex items-center gap-2 px-3 py-1 rounded-full bg-base-100 border border-base-content/10 shadow-2xs text-xs font-mono text-base-content/75">
-        <span className="relative flex h-2 w-2">
-          <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-primary opacity-75" />
-          <span className="relative inline-flex rounded-full h-2 w-2 bg-primary" />
-        </span>
-        <span>
-          {feed.length} {feed.length === 1 ? "builder" : "builders"} in your Orbit
-        </span>
-      </div>
-
       <div className="relative w-full max-w-sm flex items-center justify-center">
         {nextUser && (
           <div
