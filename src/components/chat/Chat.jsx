@@ -24,6 +24,7 @@ export default function Chat() {
   const [messages, setMessages] = useState([]);
   const [notConnected, setNotConnected] = useState(false);
   const [isTargetTyping, setIsTargetTyping] = useState(false);
+  const [isOnline, setIsOnline] = useState(false);
 
   const messagesEndRef = useRef(null);
   const socketRef = useRef(null);
@@ -80,6 +81,26 @@ export default function Chat() {
       firstName: currentUser.firstName,
       currentUserId: currentUser._id,
       targetUserId,
+    });
+
+    // Check peer's online status initially
+    socket.emit("checkUserOnline", { targetUserId }, (response) => {
+      if (response?.isOnline !== undefined) {
+        setIsOnline(response.isOnline);
+      }
+    });
+
+    // Real-time presence updates
+    socket.on("userOnline", ({ userId }) => {
+      if (userId === targetUserId) {
+        setIsOnline(true);
+      }
+    });
+
+    socket.on("userOffline", ({ userId }) => {
+      if (userId === targetUserId) {
+        setIsOnline(false);
+      }
     });
 
     // Listen for incoming messages from the room
@@ -222,7 +243,11 @@ export default function Chat() {
                 e.target.src = "/default-avatar.svg";
               }}
             />
-            <span className="absolute -bottom-0.5 -right-0.5 w-3 h-3 rounded-full bg-emerald-500 border-2 border-base-100" />
+            <span
+              className={`absolute -bottom-0.5 -right-0.5 w-3 h-3 rounded-full border-2 border-base-100 transition-colors duration-300 ${
+                isOnline ? "bg-emerald-500" : "bg-base-content/25"
+              }`}
+            />
           </div>
 
           <div className="flex flex-col min-w-0">
@@ -232,8 +257,12 @@ export default function Chat() {
               </h3>
               <ShieldCheck className="w-3.5 h-3.5 text-primary shrink-0" />
             </div>
-            <span className="text-[11px] text-emerald-500 font-medium">
-              Online
+            <span
+              className={`text-[11px] font-medium transition-colors duration-300 ${
+                isOnline ? "text-emerald-500" : "text-base-content/40"
+              }`}
+            >
+              {isOnline ? "Online" : "Offline"}
             </span>
           </div>
         </div>
