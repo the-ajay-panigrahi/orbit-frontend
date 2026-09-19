@@ -2,7 +2,7 @@ import { useState, useEffect, useRef, useMemo } from "react";
 import { useSelector, useDispatch } from "react-redux";
 import { useParams, Link } from "react-router-dom";
 import axios from "axios";
-import { ArrowLeft, Send, ShieldCheck, CheckCheck, Lock } from "lucide-react";
+import { ArrowLeft, Send, ShieldCheck, Lock } from "lucide-react";
 import { BASE_URL } from "../../utils/constants";
 import { addConnections } from "../../utils/connectionSlice";
 import ChatUpgradeGate from "./ChatUpgradeGate";
@@ -15,6 +15,14 @@ export default function Chat() {
   const currentUser = useSelector((store) => store.user);
   const rawConnections = useSelector((store) => store.connections);
   const connections = useMemo(() => rawConnections || [], [rawConnections]);
+
+  const targetUser = useMemo(
+    () => connections.find((u) => u._id === targetUserId),
+    [connections, targetUserId]
+  );
+  const targetName = targetUser
+    ? `${targetUser.firstName || ""} ${targetUser.lastName || ""}`.trim()
+    : "Orbit Connection";
 
   // Temporarily set to true for testing - anyone can chat
   // eslint-disable-next-line no-constant-binary-expression
@@ -55,6 +63,12 @@ export default function Chat() {
           return {
             id: msg._id,
             sender: isMe ? "me" : "them",
+            senderName: isMe
+              ? currentUser.firstName
+              : (msg.senderId?.firstName || targetUser?.firstName || "Peer"),
+            senderAvatar: isMe
+              ? (currentUser.profilePictureUrl || "/default-avatar.svg")
+              : (msg.senderId?.profilePictureUrl || targetUser?.profilePictureUrl || "/default-avatar.svg"),
             text: msg.text,
             time: new Date(msg.createdAt).toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" }),
           };
@@ -69,7 +83,7 @@ export default function Chat() {
     };
 
     fetchChatMessages();
-  }, [targetUserId, currentUser?._id]);
+  }, [targetUserId, currentUser?._id, targetUser]);
 
   useEffect(() => {
     if (!currentUser?._id || !targetUserId) return;
@@ -116,6 +130,8 @@ export default function Chat() {
           {
             id: Date.now().toString(),
             sender: "them",
+            senderName: firstName || targetUser?.firstName || "Peer",
+            senderAvatar: targetUser?.profilePictureUrl || "/default-avatar.svg",
             text,
             time: new Date().toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" }),
           },
@@ -136,12 +152,7 @@ export default function Chat() {
       if (typingTimeoutRef.current) clearTimeout(typingTimeoutRef.current);
       socket.disconnect();
     };
-  }, [currentUser?._id, targetUserId, currentUser?.firstName]);
-
-  const targetUser = connections.find((u) => u._id === targetUserId);
-  const targetName = targetUser
-    ? `${targetUser.firstName || ""} ${targetUser.lastName || ""}`.trim()
-    : "Orbit Connection";
+  }, [currentUser?._id, targetUserId, currentUser?.firstName, targetUser]);
 
   useEffect(() => {
     messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
@@ -190,6 +201,8 @@ export default function Chat() {
     const newMessage = {
       id: Date.now().toString(),
       sender: "me",
+      senderName: currentUser.firstName,
+      senderAvatar: currentUser.profilePictureUrl || "/default-avatar.svg",
       text: inputText.trim(),
       time: new Date().toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" }),
     };
@@ -282,33 +295,51 @@ export default function Chat() {
                 key={msg.id}
                 className={`chat ${isMe ? "chat-end" : "chat-start"}`}
               >
+                <div className="chat-image avatar">
+                  <div className="w-8 h-8 rounded-xl border border-base-content/10 overflow-hidden bg-base-200 shrink-0">
+                    <img
+                      src={msg.senderAvatar || "/default-avatar.svg"}
+                      alt={msg.senderName}
+                      onError={(e) => {
+                        e.target.src = "/default-avatar.svg";
+                      }}
+                    />
+                  </div>
+                </div>
+                <div className="chat-header text-[11px] opacity-60 mb-0.5 px-0.5">
+                  {msg.senderName}
+                </div>
                 <div
-                  className={`chat-bubble text-xs sm:text-sm leading-relaxed shadow-xs ${isMe
-                    ? "chat-bubble-primary font-medium"
-                    : "bg-base-200 text-base-content border border-base-content/8"
-                    }`}
+                  className={`chat-bubble text-xs sm:text-sm leading-relaxed shadow-xs ${
+                    isMe
+                      ? "chat-bubble-primary font-medium"
+                      : "bg-base-200 text-base-content border border-base-content/8"
+                  }`}
                 >
                   {msg.text}
                 </div>
-                <div className="chat-footer opacity-45 text-[10px] font-mono mt-1 flex items-center gap-1">
-                  <span>{msg.time}</span>
-                  {isMe && <CheckCheck className="w-3 h-3 text-primary" />}
+                <div className="chat-footer opacity-40 text-[10px] font-mono mt-0.5 px-0.5">
+                  {msg.time}
                 </div>
               </div>
             );
           })}
-          {isTargetTyping && (
-            <div className="chat chat-start animate-fade-in">
-              <div className="chat-bubble bg-base-200 text-base-content/70 border border-base-content/8 py-2 px-3.5 flex items-center gap-1.5 shadow-xs">
-                <span className="text-xs mr-1 font-medium">{targetUser?.firstName || "They"} is typing</span>
-                <span className="w-1.5 h-1.5 rounded-full bg-primary/70 animate-bounce [animation-delay:-0.3s]" />
-                <span className="w-1.5 h-1.5 rounded-full bg-primary/70 animate-bounce [animation-delay:-0.15s]" />
-                <span className="w-1.5 h-1.5 rounded-full bg-primary/70 animate-bounce" />
-              </div>
-            </div>
-          )}
           <div ref={messagesEndRef} />
         </div>
+      </div>
+
+      {/* Typing Indicator Bar - Pinned right above input footer */}
+      <div className="h-6 px-4 sm:px-6 max-w-4xl mx-auto w-full flex items-center shrink-0">
+        {isTargetTyping && (
+          <div className="flex items-center gap-2 text-xs text-primary font-medium animate-fade-in">
+            <span className="flex items-center gap-1">
+              <span className="w-1.5 h-1.5 rounded-full bg-primary animate-bounce [animation-delay:-0.3s]" />
+              <span className="w-1.5 h-1.5 rounded-full bg-primary animate-bounce [animation-delay:-0.15s]" />
+              <span className="w-1.5 h-1.5 rounded-full bg-primary animate-bounce" />
+            </span>
+            <span>{targetUser?.firstName || "They"} is typing...</span>
+          </div>
+        )}
       </div>
 
       {/* Bottom-aligned Input (Always visible, pinned at bottom) */}
