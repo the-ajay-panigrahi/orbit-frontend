@@ -163,24 +163,25 @@ export default function Chat() {
           itemContent={(_index, msg) => {
             const isMe = msg.sender === "me";
             return (
-              <div className="px-4 sm:px-6 py-1.5 max-w-4xl mx-auto">
+              <div className="px-4 sm:px-6 py-2 max-w-4xl mx-auto">
                 <div className={`chat ${isMe ? "chat-end" : "chat-start"}`}>
                   <div className="chat-image avatar">
-                    <div className="w-8 h-8 rounded-xl border border-base-content/10 overflow-hidden bg-base-200 shrink-0">
+                    <div className="w-9 h-9 sm:w-10 sm:h-10 rounded-xl border border-base-content/10 overflow-hidden bg-base-200 shrink-0 shadow-2xs">
                       <img
                         src={msg.senderAvatar || "/default-avatar.svg"}
                         alt={msg.senderName}
+                        className="w-full h-full object-cover"
                         onError={(e) => {
                           e.target.src = "/default-avatar.svg";
                         }}
                       />
                     </div>
                   </div>
-                  <div className="chat-header text-[11px] opacity-60 mb-0.5 px-0.5">
+                  <div className="chat-header text-xs font-bold text-base-content/85 mb-1 px-1">
                     {msg.senderName}
                   </div>
                   <div
-                    className={`chat-bubble text-xs sm:text-sm leading-relaxed shadow-xs ${
+                    className={`chat-bubble text-sm sm:text-[15px] leading-relaxed shadow-xs py-2 px-3.5 sm:px-4 ${
                       isMe
                         ? "chat-bubble-primary font-medium"
                         : "bg-base-200 text-base-content border border-base-content/8"
@@ -188,7 +189,7 @@ export default function Chat() {
                   >
                     {msg.text}
                   </div>
-                  <div className="chat-footer opacity-40 text-[10px] font-mono mt-0.5 px-0.5">
+                  <div className="chat-footer opacity-60 text-[11px] font-mono mt-1 px-1">
                     {msg.time}
                   </div>
                 </div>

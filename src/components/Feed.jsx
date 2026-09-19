@@ -122,7 +122,7 @@ export default function Feed() {
       : 0;
 
   return (
-    <div className="flex-1 flex flex-col items-center justify-center p-3 sm:p-6 pb-20 sm:pb-6 select-none relative overflow-hidden">
+    <div className="flex-1 flex flex-col items-center justify-center p-2 sm:p-4 pb-16 sm:pb-4 select-none relative overflow-hidden">
       {toastMessage && (
         <div className="toast toast-top toast-center z-50 transition-all duration-300">
           <div className="alert alert-neutral py-2 px-4 shadow-xl border border-base-content/10 text-xs font-medium flex items-center gap-2">
@@ -132,7 +132,7 @@ export default function Feed() {
         </div>
       )}
 
-      <div className="mb-4 flex items-center gap-2 px-3.5 py-1.5 rounded-full bg-base-100 border border-base-content/10 shadow-2xs text-xs font-mono text-base-content/75">
+      <div className="mb-2.5 sm:mb-3 flex items-center gap-2 px-3 py-1 rounded-full bg-base-100 border border-base-content/10 shadow-2xs text-xs font-mono text-base-content/75">
         <span className="relative flex h-2 w-2">
           <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-primary opacity-75" />
           <span className="relative inline-flex rounded-full h-2 w-2 bg-primary" />
@@ -142,7 +142,7 @@ export default function Feed() {
         </span>
       </div>
 
-      <div className="relative w-full max-w-sm min-h-[480px] xs:min-h-[520px] sm:min-h-[540px] flex items-center justify-center">
+      <div className="relative w-full max-w-sm flex items-center justify-center">
         {nextUser && (
           <div
             key={nextUser._id}

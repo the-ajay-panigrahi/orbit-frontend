@@ -15,6 +15,7 @@ export default function Body() {
   const { theme, setTheme, themes } = useTheme();
   const location = useLocation();
   const isChat = location.pathname.startsWith("/chat");
+  const isFeed = location.pathname === "/feed";
 
   useEffect(() => {
     const fetchUser = async () => {
@@ -53,13 +54,19 @@ export default function Body() {
       className={`${
         isChat
           ? "h-screen overflow-hidden bg-base-100"
-          : "min-h-screen bg-base-200"
+          : isFeed
+            ? "min-h-screen md:h-screen md:overflow-hidden bg-base-200"
+            : "min-h-screen bg-base-200"
       } flex flex-col transition-colors duration-200`}
     >
       <Navbar theme={theme} onSelectTheme={setTheme} themes={themes} />
       <main
         className={`flex-1 flex flex-col ${
-          isChat ? "min-h-0 overflow-hidden" : ""
+          isChat
+            ? "min-h-0 overflow-hidden"
+            : isFeed
+              ? "md:min-h-0 md:overflow-hidden"
+              : ""
         }`}
       >
         <Outlet context={{ theme, setTheme, themes }} />

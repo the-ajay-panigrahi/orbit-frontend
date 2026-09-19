@@ -26,18 +26,18 @@ export default function UserCard({
 
   const maxWidthClass = className.includes("max-w-") ? "" : "max-w-sm";
   const tierCardClass = isPremium
-    ? "border-2 border-amber-500/50 shadow-amber-500/10 hover:border-amber-500/80 sm:min-h-[500px]"
+    ? "border-2 border-amber-500/50 shadow-amber-500/10 hover:border-amber-500/80"
     : isPro
-      ? "border-2 border-primary/40 shadow-primary/10 hover:border-primary/70 sm:min-h-[480px]"
-      : "border border-base-content/10 hover:border-primary/30 sm:min-h-[460px]";
+      ? "border-2 border-primary/40 shadow-primary/10 hover:border-primary/70"
+      : "border border-base-content/10 hover:border-primary/30";
 
   return (
     <div
-      className={`card w-full ${maxWidthClass} min-h-[440px] xs:min-h-[460px] bg-base-100 shadow-xl ${tierCardClass} overflow-hidden transition-all duration-300 hover:shadow-2xl flex flex-col justify-between select-none ${className}`}
+      className={`card w-full ${maxWidthClass} bg-base-100 shadow-xl ${tierCardClass} overflow-hidden transition-all duration-300 hover:shadow-2xl flex flex-col justify-between select-none ${className}`}
     >
       {/* Photo with Overlay Badges */}
       <figure className="p-3 pb-0 relative">
-        <div className="w-full h-48 xs:h-52 sm:h-56 rounded-2xl bg-base-200 text-base-content flex items-center justify-center overflow-hidden border border-base-content/8 relative group">
+        <div className="w-full h-36 sm:h-40 rounded-2xl bg-base-200 text-base-content flex items-center justify-center overflow-hidden border border-base-content/8 relative group">
           <img
             src={profilePictureUrl}
             alt={fullName}
@@ -51,12 +51,6 @@ export default function UserCard({
               e.target.src = "/default-avatar.svg";
             }}
           />
-
-          {/* Orbit Builder Badge */}
-          <div className="absolute top-2.5 left-2.5 px-2.5 py-1 rounded-full bg-black/60 backdrop-blur-md border border-white/20 text-[11px] font-semibold text-white flex items-center gap-1.5 shadow-md">
-            <span className="w-1.5 h-1.5 rounded-full bg-primary animate-pulse" />
-            <span>Orbit Builder</span>
-          </div>
 
           {/* Membership / Plan Badge */}
           {isPro && (

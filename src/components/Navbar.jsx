@@ -147,8 +147,8 @@ export default function Navbar({ theme, onSelectTheme, themes }) {
                     : "btn-ghost text-base-content/75 hover:text-base-content hover:bg-base-content/10"
                 }`}
               >
-                <Sparkles className="w-4 h-4 text-primary stroke-[2.3]" />
-                <span>Premium</span>
+                <Sparkles className="w-4 h-4 text-amber-500 fill-amber-500/20 stroke-[2.3]" />
+                <span>Plans</span>
               </Link>
             </nav>
           )}
@@ -171,7 +171,7 @@ export default function Navbar({ theme, onSelectTheme, themes }) {
 
             <div
               tabIndex={0}
-              className="dropdown-content z-50 p-3 shadow-2xl bg-base-100 rounded-2xl border border-base-content/15 mt-2 fixed inset-x-3 top-16 max-w-sm mx-auto sm:absolute sm:inset-x-auto sm:right-0 sm:top-auto sm:w-96 sm:max-w-md sm:mx-0"
+              className="dropdown-content z-60 p-3 shadow-2xl bg-base-100 rounded-2xl border border-base-content/15 mt-2 fixed inset-x-3 top-16 max-w-sm mx-auto sm:absolute sm:inset-x-auto sm:right-0 sm:top-auto sm:w-96 sm:max-w-md sm:mx-0"
             >
               <div className="flex items-center justify-between gap-2 pb-2.5 mb-2 border-b border-base-content/10">
                 <div className="flex items-center gap-1.5 shrink-0">
@@ -627,8 +627,8 @@ export default function Navbar({ theme, onSelectTheme, themes }) {
                 : "text-base-content/65 hover:text-base-content"
             }`}
           >
-            <Sparkles className="w-5 h-5 text-primary" />
-            <span className="text-[10px]">Premium</span>
+            <Sparkles className="w-5 h-5 text-amber-500" />
+            <span className="text-[10px]">Plans</span>
           </Link>
         </nav>
       )}

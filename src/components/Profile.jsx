@@ -225,7 +225,7 @@ export default function Profile() {
       {/* Main Studio Grid */}
       <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 items-start">
         {/* Left Column: Segmented Form Tabs */}
-        <div className="lg:col-span-7 bg-base-100 shadow-xl border border-base-content/10 p-6 sm:p-7 rounded-3xl">
+        <div className="lg:col-span-7 min-w-0 w-full bg-base-100 shadow-xl border border-base-content/10 p-5 sm:p-7 rounded-3xl">
           {/* Segmented Controller */}
           <div className="grid grid-cols-3 p-1 rounded-2xl bg-base-200/80 border border-base-content/8 mb-6 text-xs font-semibold">
             <button
@@ -488,23 +488,23 @@ export default function Profile() {
             )}
 
             {/* Bottom Actions */}
-            <div className="flex items-center justify-between pt-5 border-t border-base-content/8">
+            <div className="flex flex-col sm:flex-row items-stretch sm:items-center justify-between gap-3 pt-5 border-t border-base-content/8">
               <button
                 type="button"
                 onClick={handleReset}
                 disabled={isSaving}
-                className="btn btn-sm btn-ghost gap-1.5 text-xs text-base-content/60 hover:text-base-content cursor-pointer"
+                className="btn btn-sm btn-ghost gap-1.5 text-xs text-base-content/60 hover:text-base-content cursor-pointer order-2 sm:order-1 w-full sm:w-auto"
               >
                 <RotateCcw className="w-3.5 h-3.5 stroke-[2.3]" />
                 <span>Reset to Saved</span>
               </button>
 
-              <div className="flex items-center gap-2">
+              <div className="flex flex-col sm:flex-row items-stretch sm:items-center gap-2 order-1 sm:order-2 w-full sm:w-auto">
                 {activeTab === "identity" && (
                   <button
                     type="button"
                     onClick={() => setActiveTab("vision")}
-                    className="btn btn-sm btn-outline text-xs cursor-pointer"
+                    className="btn btn-sm btn-outline text-xs cursor-pointer w-full sm:w-auto text-center"
                   >
                     Next: Role &amp; Bio →
                   </button>
@@ -513,7 +513,7 @@ export default function Profile() {
                   <button
                     type="button"
                     onClick={() => setActiveTab("skills")}
-                    className="btn btn-sm btn-outline text-xs cursor-pointer"
+                    className="btn btn-sm btn-outline text-xs cursor-pointer w-full sm:w-auto text-center"
                   >
                     Next: Skills &rarr;
                   </button>
@@ -524,7 +524,7 @@ export default function Profile() {
                   whileHover={{ y: -1 }}
                   whileTap={{ scale: 0.97 }}
                   transition={springTap}
-                  className="btn btn-sm btn-primary gap-2 text-xs shadow-md shadow-primary/20 cursor-pointer"
+                  className="btn btn-sm btn-primary gap-2 text-xs shadow-md shadow-primary/20 cursor-pointer w-full sm:w-auto"
                 >
                   {isSaving ? (
                     <>
@@ -544,7 +544,7 @@ export default function Profile() {
         </div>
 
         {/* Right Column: Live Card Preview & Strength Checklist */}
-        <div className="lg:col-span-5 flex flex-col items-center justify-start gap-4 select-none lg:sticky lg:top-24">
+        <div className="lg:col-span-5 min-w-0 w-full flex flex-col items-center justify-start gap-4 select-none lg:sticky lg:top-24">
           <div className="w-full max-w-sm flex items-center justify-between px-1 text-xs font-mono text-base-content/60">
             <span className="font-bold">Live Discovery Card</span>
             <span className="badge badge-xs badge-primary font-mono font-bold">
@@ -554,10 +554,10 @@ export default function Profile() {
 
           <div
             onClick={() => setIsZoomOpen(true)}
-            className="cursor-pointer group relative transition-transform duration-200 hover:scale-[1.015] active:scale-[0.99] w-full max-w-sm flex justify-center"
+            className="cursor-pointer group relative transition-transform duration-200 hover:scale-[1.015] active:scale-[0.99] w-full max-w-sm mx-auto flex justify-center"
             title="Click card to inspect in 3D"
           >
-            <UserCard user={previewUser} showActions={false} />
+            <UserCard user={previewUser} showActions={false} className="w-full max-w-sm mx-auto" />
             <div className="absolute top-6 right-6 opacity-0 group-hover:opacity-100 transition-opacity bg-base-100/90 backdrop-blur-md px-3 py-1.5 rounded-full text-xs font-semibold text-primary shadow-xl border border-base-content/10 pointer-events-none flex items-center gap-1.5">
               <Maximize2 className="w-3.5 h-3.5 stroke-[2.3]" />
               <span>Tap to Zoom 3D</span>

@@ -11,7 +11,11 @@ export default function Footer() {
   // Sleek, minimal footer on app/auth pages so it doesn't crowd workspace
   if (!isLanding) {
     return (
-      <footer className="w-full bg-base-100/80 backdrop-blur-md border-t border-base-content/8 py-3.5 px-4 sm:px-8 text-xs text-base-content/50 transition-colors">
+      <footer
+        className={`w-full bg-base-100/80 backdrop-blur-md border-t border-base-content/8 px-4 sm:px-8 text-xs text-base-content/50 transition-colors ${
+          user ? "pt-3.5 pb-20 md:py-3.5" : "py-3.5"
+        }`}
+      >
         <div className="max-w-6xl mx-auto flex flex-col sm:flex-row items-center justify-between gap-3">
           <div className="flex items-center gap-2.5">
             <Link to="/" className="flex items-center gap-1.5 font-bold text-base-content/80 hover:text-primary transition-colors">

@@ -327,7 +327,7 @@ export default function LandingPage() {
             animate={{ opacity: 1, y: 0, scale: 1 }}
             exit={{ opacity: 0, y: -20, scale: 0.94 }}
             transition={{ type: "spring", stiffness: 400, damping: 26 }}
-            className="fixed top-20 left-1/2 -translate-x-1/2 z-50 w-full max-w-sm px-4 pointer-events-auto"
+            className="fixed top-20 left-1/2 -translate-x-1/2 z-35 w-full max-w-sm px-4 pointer-events-auto"
           >
             <div className="relative overflow-hidden p-3 px-3.5 rounded-2xl border border-primary/40 bg-base-100/95 backdrop-blur-xl shadow-2xl shadow-primary/20 flex items-center justify-between gap-3 text-base-content">
               <div className="absolute -top-10 -right-10 w-24 h-24 bg-primary/15 rounded-full blur-xl pointer-events-none" />
@@ -418,7 +418,7 @@ export default function LandingPage() {
               to discover the right partners to build, connect, and grow with.
             </p>
 
-            <div className="flex flex-col xs:flex-row items-stretch xs:items-center justify-center lg:justify-start gap-3 pt-1 w-full xs:w-auto">
+            <div className="flex flex-row flex-wrap items-center justify-center lg:justify-start gap-3 pt-1 w-full sm:w-auto">
               <motion.div
                 whileHover={{ y: -2 }}
                 whileTap={{ scale: 0.97 }}
@@ -426,7 +426,7 @@ export default function LandingPage() {
               >
                 <Link
                   to={user ? "/feed" : "/login?mode=signup"}
-                  className="btn btn-primary btn-md px-6 rounded-xl font-semibold shadow-md hover:shadow-lg transition-shadow flex items-center justify-center gap-2 group cursor-pointer w-full xs:w-auto"
+                  className="btn btn-primary btn-md px-6 rounded-xl font-semibold shadow-md hover:shadow-lg transition-shadow flex items-center justify-center gap-2 group cursor-pointer"
                 >
                   <span>{user ? "Open Feed" : "Get Started Free"}</span>
                   <ArrowRight className="w-4 h-4 stroke-[2.5] transition-transform group-hover:translate-x-0.5" />
@@ -435,7 +435,7 @@ export default function LandingPage() {
 
               <a
                 href="#how-it-works"
-                className="btn btn-outline btn-md border-base-content/20 hover:bg-base-200 text-base-content px-6 rounded-xl font-semibold transition-all cursor-pointer w-full xs:w-auto text-center flex items-center justify-center gap-2"
+                className="btn btn-outline btn-md border-base-content/20 hover:bg-base-200 text-base-content px-6 rounded-xl font-semibold transition-all cursor-pointer text-center flex items-center justify-center gap-2"
               >
                 <Compass className="w-4 h-4 stroke-[2.3]" />
                 <span>How It Works</span>

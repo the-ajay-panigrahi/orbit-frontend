@@ -326,7 +326,7 @@ export default function Connections() {
                           {skills.slice(0, 3).join(" • ")}
                         </span>
                       ) : (
-                        <span>Orbit Builder</span>
+                        <span>Member</span>
                       )}
                     </div>
                   </div>
