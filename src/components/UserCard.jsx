@@ -37,7 +37,7 @@ export default function UserCard({
     >
       {/* Photo with Overlay Badges */}
       <figure className="p-3 pb-0 relative">
-        <div className="w-full h-36 sm:h-40 rounded-2xl bg-base-200 text-base-content flex items-center justify-center overflow-hidden border border-base-content/8 relative group">
+        <div className="w-full h-52 sm:h-60 rounded-2xl bg-base-200 text-base-content flex items-center justify-center overflow-hidden border border-base-content/8 relative group">
           <img
             src={profilePictureUrl}
             alt={fullName}
