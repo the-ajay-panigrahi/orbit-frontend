@@ -37,7 +37,7 @@ export default function UserCard({
     >
       {/* Photo with Overlay Badges */}
       <figure className="p-3 pb-0 relative">
-        <div className="w-full h-52 sm:h-60 rounded-2xl bg-base-200 text-base-content flex items-center justify-center overflow-hidden border border-base-content/8 relative group">
+        <div className="w-full h-48 sm:h-56 rounded-2xl bg-base-200 text-base-content flex items-center justify-center overflow-hidden border border-base-content/8 relative group">
           <img
             src={profilePictureUrl}
             alt={fullName}
@@ -70,7 +70,7 @@ export default function UserCard({
       </figure>
 
       {/* Card Body */}
-      <div className="card-body p-4 gap-2.5 flex-1 flex flex-col justify-between">
+      <div className="card-body p-3.5 sm:p-4 gap-2 sm:gap-2.5 flex-1 flex flex-col justify-between">
         {/* Name & Demographics */}
         <div>
           <div className="flex items-center justify-between gap-2">

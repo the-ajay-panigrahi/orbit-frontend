@@ -205,18 +205,18 @@ export default function Profile() {
   };
 
   return (
-    <div className="w-full max-w-[920px] mx-auto px-4 sm:px-6 py-4 sm:py-6 flex-1 flex flex-col">
+    <div className="w-full max-w-[920px] mx-auto px-4 sm:px-6 py-2.5 sm:py-3.5 flex-1 flex flex-col justify-center">
       {/* Header */}
-      <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-2 pb-3 border-b border-base-content/8 mb-4">
+      <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-2 pb-2 sm:pb-2.5 border-b border-base-content/8 mb-3">
         <div>
-          <div className="inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full bg-primary/10 text-primary text-[11px] font-bold mb-1">
+          <div className="inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full bg-primary/10 text-primary text-[11px] font-bold mb-0.5">
             <Sparkles className="w-3 h-3 stroke-[2.5]" />
             <span>Profile Studio</span>
           </div>
-          <h1 className="text-xl sm:text-2xl font-extrabold tracking-tight text-base-content">
+          <h1 className="text-lg sm:text-xl font-extrabold tracking-tight text-base-content">
             Design your builder presence.
           </h1>
-          <p className="text-xs sm:text-sm text-base-content/65 max-w-lg mt-0.5">
+          <p className="text-xs text-base-content/65 max-w-lg">
             Keep your profile fresh. Changes update the live discovery card in real time.
           </p>
         </div>
@@ -225,9 +225,9 @@ export default function Profile() {
       {/* Main Studio Grid: Locked equal-height columns that never fluctuate between tabs */}
       <div className="profile-studio-grid">
         {/* Left Column: Segmented Form Tabs */}
-        <div className="w-full min-w-0 bg-base-100 shadow-xl border border-base-content/10 p-5 sm:p-6 rounded-3xl flex flex-col justify-between h-full">
+        <div className="w-full min-w-0 bg-base-100 shadow-xl border border-base-content/10 p-4 sm:p-5 rounded-3xl flex flex-col justify-between h-full">
           {/* Segmented Controller */}
-          <div className="grid grid-cols-3 p-1 rounded-xl bg-base-200/80 border border-base-content/8 mb-4 text-xs font-semibold shrink-0">
+          <div className="grid grid-cols-3 p-1 rounded-xl bg-base-200/80 border border-base-content/8 mb-3 text-xs font-semibold shrink-0">
             <button
               type="button"
               onClick={() => setActiveTab("identity")}
@@ -266,7 +266,7 @@ export default function Profile() {
             </button>
           </div>
 
-          <form onSubmit={handleSaveProfile} className="space-y-4 flex-1 flex flex-col justify-between">
+          <form onSubmit={handleSaveProfile} className="space-y-3 flex-1 flex flex-col justify-between">
             <div className="flex-1 flex flex-col justify-start">
               {/* Tab 1: Identity */}
               {activeTab === "identity" && (
@@ -274,7 +274,7 @@ export default function Profile() {
                   initial={{ opacity: 0, x: -10 }}
                   animate={{ opacity: 1, x: 0 }}
                   transition={{ duration: 0.2 }}
-                  className="space-y-3.5 w-full"
+                  className="space-y-2.5 sm:space-y-3 w-full"
                 >
                 <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                   <div>
@@ -361,7 +361,7 @@ export default function Profile() {
                 initial={{ opacity: 0, x: -10 }}
                 animate={{ opacity: 1, x: 0 }}
                 transition={{ duration: 0.2 }}
-                className="space-y-3.5 w-full"
+                className="space-y-2.5 sm:space-y-3 w-full"
               >
                 <div>
                   <label className="text-xs font-bold text-base-content/80 mb-1.5 block">
@@ -416,7 +416,7 @@ export default function Profile() {
                 initial={{ opacity: 0, x: -10 }}
                 animate={{ opacity: 1, x: 0 }}
                 transition={{ duration: 0.2 }}
-                className="space-y-3.5 w-full"
+                className="space-y-2.5 sm:space-y-3 w-full"
               >
                 <div>
                   <div className="flex items-center justify-between mb-1.5">
@@ -490,7 +490,7 @@ export default function Profile() {
             </div>
 
             {/* Bottom Actions */}
-            <div className="flex flex-col sm:flex-row items-stretch sm:items-center justify-between gap-3 pt-5 mt-auto border-t border-base-content/8 shrink-0">
+            <div className="flex flex-col sm:flex-row items-stretch sm:items-center justify-between gap-3 pt-3.5 sm:pt-4 mt-auto border-t border-base-content/8 shrink-0">
               <button
                 type="button"
                 onClick={handleReset}
@@ -546,7 +546,7 @@ export default function Profile() {
         </div>
 
         {/* Right Column: Live Card Preview locked to exact 384px width, equal height */}
-        <div className="w-full max-w-sm mx-auto flex flex-col items-center justify-start gap-3 select-none h-full shrink-0">
+        <div className="w-full max-w-sm mx-auto flex flex-col items-center justify-start gap-2.5 select-none h-full shrink-0">
           <div className="w-full max-w-sm flex items-center justify-between px-1 text-xs font-mono text-base-content/60 shrink-0">
             <span className="font-bold">Live Discovery Card</span>
             <span className="badge badge-xs badge-primary font-mono font-bold">

@@ -16,6 +16,7 @@ export default function Body() {
   const location = useLocation();
   const isChat = location.pathname.startsWith("/chat");
   const isFeed = location.pathname === "/feed";
+  const isProfile = location.pathname === "/profile";
 
   useEffect(() => {
     const fetchUser = async () => {
@@ -71,7 +72,7 @@ export default function Body() {
       >
         <Outlet context={{ theme, setTheme, themes }} />
       </main>
-      {!isChat && <Footer />}
+      {!isChat && !isProfile && <Footer />}
     </div>
   );
 }
