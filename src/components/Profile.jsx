@@ -222,12 +222,12 @@ export default function Profile() {
         </div>
       </div>
 
-      {/* Main Studio Grid: Rigid 1fr and 384px tracks that never fluctuate between tabs */}
-      <div className="grid grid-cols-1 lg:grid-cols-[1fr_384px] gap-6 lg:gap-8 items-start">
+      {/* Main Studio Grid: Locked equal-height columns that never fluctuate between tabs */}
+      <div className="profile-studio-grid">
         {/* Left Column: Segmented Form Tabs */}
-        <div className="w-full min-w-0 bg-base-100 shadow-xl border border-base-content/10 p-4 sm:p-6 rounded-2xl">
+        <div className="w-full min-w-0 bg-base-100 shadow-xl border border-base-content/10 p-5 sm:p-6 rounded-3xl flex flex-col justify-between h-full">
           {/* Segmented Controller */}
-          <div className="grid grid-cols-3 p-1 rounded-xl bg-base-200/80 border border-base-content/8 mb-4 text-xs font-semibold">
+          <div className="grid grid-cols-3 p-1 rounded-xl bg-base-200/80 border border-base-content/8 mb-4 text-xs font-semibold shrink-0">
             <button
               type="button"
               onClick={() => setActiveTab("identity")}
@@ -266,15 +266,16 @@ export default function Profile() {
             </button>
           </div>
 
-          <form onSubmit={handleSaveProfile} className="space-y-5">
-            {/* Tab 1: Identity */}
-            {activeTab === "identity" && (
-              <motion.div
-                initial={{ opacity: 0, x: -10 }}
-                animate={{ opacity: 1, x: 0 }}
-                transition={{ duration: 0.2 }}
-                className="space-y-3.5 min-h-[290px]"
-              >
+          <form onSubmit={handleSaveProfile} className="space-y-4 flex-1 flex flex-col justify-between">
+            <div className="flex-1 flex flex-col justify-start">
+              {/* Tab 1: Identity */}
+              {activeTab === "identity" && (
+                <motion.div
+                  initial={{ opacity: 0, x: -10 }}
+                  animate={{ opacity: 1, x: 0 }}
+                  transition={{ duration: 0.2 }}
+                  className="space-y-3.5 w-full"
+                >
                 <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                   <div>
                     <label className="text-xs font-bold text-base-content/80 mb-1.5 block">
@@ -360,7 +361,7 @@ export default function Profile() {
                 initial={{ opacity: 0, x: -10 }}
                 animate={{ opacity: 1, x: 0 }}
                 transition={{ duration: 0.2 }}
-                className="space-y-3.5 min-h-[290px]"
+                className="space-y-3.5 w-full"
               >
                 <div>
                   <label className="text-xs font-bold text-base-content/80 mb-1.5 block">
@@ -415,7 +416,7 @@ export default function Profile() {
                 initial={{ opacity: 0, x: -10 }}
                 animate={{ opacity: 1, x: 0 }}
                 transition={{ duration: 0.2 }}
-                className="space-y-3.5 min-h-[290px]"
+                className="space-y-3.5 w-full"
               >
                 <div>
                   <div className="flex items-center justify-between mb-1.5">
@@ -486,9 +487,10 @@ export default function Profile() {
                 </div>
               </motion.div>
             )}
+            </div>
 
             {/* Bottom Actions */}
-            <div className="flex flex-col sm:flex-row items-stretch sm:items-center justify-between gap-3 pt-5 border-t border-base-content/8">
+            <div className="flex flex-col sm:flex-row items-stretch sm:items-center justify-between gap-3 pt-5 mt-auto border-t border-base-content/8 shrink-0">
               <button
                 type="button"
                 onClick={handleReset}
@@ -543,9 +545,9 @@ export default function Profile() {
           </form>
         </div>
 
-        {/* Right Column: Live Card Preview locked to exact 384px width */}
-        <div className="w-full max-w-sm mx-auto flex flex-col items-center justify-start gap-3 select-none lg:sticky lg:top-20 shrink-0">
-          <div className="w-full max-w-sm flex items-center justify-between px-1 text-xs font-mono text-base-content/60">
+        {/* Right Column: Live Card Preview locked to exact 384px width, equal height */}
+        <div className="w-full max-w-sm mx-auto flex flex-col items-center justify-start gap-3 select-none h-full shrink-0">
+          <div className="w-full max-w-sm flex items-center justify-between px-1 text-xs font-mono text-base-content/60 shrink-0">
             <span className="font-bold">Live Discovery Card</span>
             <span className="badge badge-xs badge-primary font-mono font-bold">
               Real-time Sync
@@ -554,10 +556,10 @@ export default function Profile() {
 
           <div
             onClick={() => setIsZoomOpen(true)}
-            className="cursor-pointer group relative transition-transform duration-200 hover:scale-[1.015] active:scale-[0.99] w-full max-w-sm mx-auto flex justify-center"
+            className="cursor-pointer group relative transition-transform duration-200 hover:scale-[1.01] active:scale-[0.99] w-full max-w-sm mx-auto flex-1 flex flex-col justify-start"
             title="Click card to inspect in 3D"
           >
-            <UserCard user={previewUser} showActions={false} className="w-full max-w-sm mx-auto" />
+            <UserCard user={previewUser} showActions={false} className="w-full max-w-sm mx-auto h-full flex-1" />
             <div className="absolute top-6 right-6 opacity-0 group-hover:opacity-100 transition-opacity bg-base-100/90 backdrop-blur-md px-3 py-1.5 rounded-full text-xs font-semibold text-primary shadow-xl border border-base-content/10 pointer-events-none flex items-center gap-1.5">
               <Maximize2 className="w-3.5 h-3.5 stroke-[2.3]" />
               <span>Tap to Zoom 3D</span>

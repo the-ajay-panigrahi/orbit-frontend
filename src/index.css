@@ -60,6 +60,22 @@
   background-size: 24px 24px;
 }
 
+/* Rock-solid profile studio grid: strictly equal-height cards and locked widths */
+.profile-studio-grid {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 1.5rem;
+  width: 100%;
+}
+
+@media (min-width: 1024px) {
+  .profile-studio-grid {
+    grid-template-columns: minmax(0, 1fr) 384px;
+    gap: 2rem;
+    align-items: stretch;
+  }
+}
+
 /* Feature card hover styling — clean and uniform across all themes */
 .spotlight-card {
   background-color: var(--color-base-100);
