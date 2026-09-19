@@ -1,4 +1,4 @@
-import { useState, useEffect, useRef, useMemo } from "react";
+import { useEffect, useMemo } from "react";
 import { useSelector, useDispatch } from "react-redux";
 import { useParams, Link } from "react-router-dom";
 import axios from "axios";
@@ -6,10 +6,8 @@ import { ArrowLeft, Send, ShieldCheck, Lock } from "lucide-react";
 import { Virtuoso } from "react-virtuoso";
 import { BASE_URL } from "../../utils/constants";
 import { addConnections } from "../../utils/connectionSlice";
+import { useChat } from "../../hooks/useChat";
 import ChatUpgradeGate from "./ChatUpgradeGate";
-import { createSocketConnection } from "../../utils/socket";
-
-const START_INDEX = 10000;
 
 export default function Chat() {
   const { targetUserId } = useParams();
@@ -31,238 +29,20 @@ export default function Chat() {
   // eslint-disable-next-line no-constant-binary-expression
   const canChat = true || currentUser?.membershipType === "pro";
 
-  const [inputText, setInputText] = useState("");
-  const [messages, setMessages] = useState([]);
-  const [notConnected, setNotConnected] = useState(false);
-  const [isTargetTyping, setIsTargetTyping] = useState(false);
-  const [isOnline, setIsOnline] = useState(false);
-  const [hasMore, setHasMore] = useState(false);
-  const [isLoadingMore, setIsLoadingMore] = useState(false);
-  const [firstItemIndex, setFirstItemIndex] = useState(START_INDEX);
-
-  const virtuosoRef = useRef(null);
-  const socketRef = useRef(null);
-  const typingTimeoutRef = useRef(null);
-  const isTypingRef = useRef(false);
-
-  useEffect(() => {
-    if (connections.length === 0) {
-      axios
-        .get(`${BASE_URL}/user/connections`, { withCredentials: true })
-        .then((res) => dispatch(addConnections(res?.data?.data || [])))
-        .catch(() => { });
-    }
-  }, [connections.length, dispatch]);
-
-  useEffect(() => {
-    if (!targetUserId || !currentUser?._id) return;
-
-    const fetchChatMessages = async () => {
-      try {
-        const res = await axios.get(`${BASE_URL}/chat/${targetUserId}?limit=25&skip=0`, {
-          withCredentials: true,
-        });
-        const rawMessages = res.data?.messages || [];
-        const chatMessages = rawMessages.map((msg) => {
-          const senderIdStr = msg.senderId?._id?.toString() || msg.senderId?.toString();
-          const currentUserIdStr = currentUser._id.toString();
-          const isMe = senderIdStr === currentUserIdStr;
-          return {
-            id: msg._id,
-            sender: isMe ? "me" : "them",
-            senderName: isMe
-              ? currentUser.firstName
-              : (msg.senderId?.firstName || targetUser?.firstName || "Peer"),
-            senderAvatar: isMe
-              ? (currentUser.profilePictureUrl || "/default-avatar.svg")
-              : (msg.senderId?.profilePictureUrl || targetUser?.profilePictureUrl || "/default-avatar.svg"),
-            text: msg.text,
-            time: new Date(msg.createdAt).toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" }),
-          };
-        });
-        setFirstItemIndex(START_INDEX - chatMessages.length);
-        setMessages(chatMessages);
-        setHasMore(Boolean(res.data?.hasMore));
-      } catch (err) {
-        if (err.response?.status === 403) {
-          setNotConnected(true);
-        }
-        console.error("Failed to load chat history:", err);
-      }
-    };
-
-    fetchChatMessages();
-  }, [targetUserId, currentUser?._id, targetUser]);
-
-  const loadOlderMessages = async () => {
-    if (!hasMore || isLoadingMore || messages.length === 0) return;
-    setIsLoadingMore(true);
-    try {
-      const res = await axios.get(
-        `${BASE_URL}/chat/${targetUserId}?limit=25&skip=${messages.length}`,
-        { withCredentials: true }
-      );
-      const rawMessages = res.data?.messages || [];
-      if (rawMessages.length > 0) {
-        const olderMessages = rawMessages.map((msg) => {
-          const senderIdStr = msg.senderId?._id?.toString() || msg.senderId?.toString();
-          const currentUserIdStr = currentUser._id.toString();
-          const isMe = senderIdStr === currentUserIdStr;
-          return {
-            id: msg._id,
-            sender: isMe ? "me" : "them",
-            senderName: isMe
-              ? currentUser.firstName
-              : (msg.senderId?.firstName || targetUser?.firstName || "Peer"),
-            senderAvatar: isMe
-              ? (currentUser.profilePictureUrl || "/default-avatar.svg")
-              : (msg.senderId?.profilePictureUrl || targetUser?.profilePictureUrl || "/default-avatar.svg"),
-            text: msg.text,
-            time: new Date(msg.createdAt).toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" }),
-          };
-        });
-        setFirstItemIndex((prev) => prev - olderMessages.length);
-        setMessages((prev) => [...olderMessages, ...prev]);
-        setHasMore(Boolean(res.data?.hasMore));
-      } else {
-        setHasMore(false);
-      }
-    } catch (err) {
-      console.error("Failed to load older messages:", err);
-    } finally {
-      setIsLoadingMore(false);
-    }
-  };
-
-  useEffect(() => {
-    if (!currentUser?._id || !targetUserId) return;
-    const socket = createSocketConnection();
-    socketRef.current = socket;
-
-    // As soon as the page loaded, the socket connection is made and the joinChat event is emitted
-    socket.emit("joinChat", {
-      firstName: currentUser.firstName,
-      currentUserId: currentUser._id,
-      targetUserId,
-    });
-
-    // Check peer's online status initially
-    socket.emit("checkUserOnline", { targetUserId }, (response) => {
-      if (response?.isOnline !== undefined) {
-        setIsOnline(response.isOnline);
-      }
-    });
-
-    // Real-time presence updates
-    socket.on("userOnline", ({ userId }) => {
-      if (userId === targetUserId) {
-        setIsOnline(true);
-      }
-    });
-
-    socket.on("userOffline", ({ userId }) => {
-      if (userId === targetUserId) {
-        setIsOnline(false);
-      }
-    });
-
-    // Listen for incoming messages from the room
-    socket.on("messageReceived", ({ firstName, text, senderId }) => {
-      setIsTargetTyping(false);
-      const isMe =
-        (senderId && senderId.toString() === currentUser._id.toString()) ||
-        firstName === currentUser.firstName;
-
-      if (!isMe) {
-        setMessages((prev) => [
-          ...prev,
-          {
-            id: Date.now().toString(),
-            sender: "them",
-            senderName: firstName || targetUser?.firstName || "Peer",
-            senderAvatar: targetUser?.profilePictureUrl || "/default-avatar.svg",
-            text,
-            time: new Date().toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" }),
-          },
-        ]);
-      }
-    });
-
-    // Typing indicators from peer
-    socket.on("userTyping", () => {
-      setIsTargetTyping(true);
-    });
-
-    socket.on("userStoppedTyping", () => {
-      setIsTargetTyping(false);
-    });
-
-    return () => {
-      if (typingTimeoutRef.current) clearTimeout(typingTimeoutRef.current);
-      socket.disconnect();
-    };
-  }, [currentUser?._id, targetUserId, currentUser?.firstName, targetUser]);
-
-  const handleInputChange = (e) => {
-    setInputText(e.target.value);
-
-    if (!socketRef.current) return;
-
-    if (!isTypingRef.current) {
-      isTypingRef.current = true;
-      socketRef.current.emit("typing", { targetUserId });
-    }
-
-    if (typingTimeoutRef.current) {
-      clearTimeout(typingTimeoutRef.current);
-    }
-
-    typingTimeoutRef.current = setTimeout(() => {
-      socketRef.current?.emit("stopTyping", { targetUserId });
-      isTypingRef.current = false;
-    }, 2000);
-  };
-
-  const handleSendMessage = (e) => {
-    e.preventDefault();
-    if (!inputText.trim()) return;
-
-    if (typingTimeoutRef.current) {
-      clearTimeout(typingTimeoutRef.current);
-    }
-    if (isTypingRef.current) {
-      socketRef.current?.emit("stopTyping", { targetUserId });
-      isTypingRef.current = false;
-    }
-
-    // Emit the message event to the backend socket server
-    socketRef.current?.emit("sendMessage", {
-      firstName: currentUser.firstName,
-      currentUserId: currentUser._id,
-      targetUserId,
-      text: inputText.trim(),
-    });
-
-    const newMessage = {
-      id: Date.now().toString(),
-      sender: "me",
-      senderName: currentUser.firstName,
-      senderAvatar: currentUser.profilePictureUrl || "/default-avatar.svg",
-      text: inputText.trim(),
-      time: new Date().toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" }),
-    };
-
-    setMessages((prev) => [...prev, newMessage]);
-    setInputText("");
-
-    setTimeout(() => {
-      virtuosoRef.current?.scrollToIndex({
-        index: "LAST",
-        align: "end",
-        behavior: "smooth",
-      });
-    }, 50);
-  };
+  const {
+    inputText,
+    messages,
+    notConnected,
+    isTargetTyping,
+    isOnline,
+    hasMore,
+    isLoadingMore,
+    firstItemIndex,
+    virtuosoRef,
+    handleInputChange,
+    handleSendMessage,
+    loadOlderMessages,
+  } = useChat({ targetUserId, currentUser, targetUser });
 
   if (notConnected) {
     return (
