@@ -31,13 +31,9 @@ export default function HandwrittenText({
         count += 1;
         setVisibleCount(count);
 
-        // When all characters including the full stop are typed
         if (count >= characters.length) {
           clearInterval(intervalId);
-          // Wait a natural human beat after the full stop, THEN trigger the underline
-          setTimeout(() => {
-            setIsTypingDone(true);
-          }, 220);
+          setTimeout(() => setIsTypingDone(true), 220);
         }
       }, charSpeed);
     }, startDelay);
@@ -65,7 +61,6 @@ export default function HandwrittenText({
                 isTyped ? "opacity-100" : "opacity-0"
               }`}
               style={{
-                // Preserve whitespace naturally without collapsing
                 whiteSpace: char === " " ? "pre" : "normal",
                 transform: isTyped && isCurrent ? "scale(1.06)" : "scale(1)",
                 transition: "transform 75ms ease-out, opacity 40ms ease-in",
@@ -77,7 +72,6 @@ export default function HandwrittenText({
         })}
       </span>
 
-      {/* Hand-drawn underline swoosh spanning the FULL phrase from 'm' to past the full stop '.' */}
       <svg
         className={`absolute -bottom-2 -left-1 h-4 text-primary/70 overflow-visible pointer-events-none ${underlineClassName}`}
         style={{ width: "calc(100% + 8px)" }}
