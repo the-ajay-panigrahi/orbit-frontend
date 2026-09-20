@@ -18,8 +18,8 @@ import { addUser } from "../utils/userSlice";
 
 const FAQS = [
   {
-    q: "How do the daily swipe limits work?",
-    a: "Limits reset automatically every 24 hours from your first interaction. Basic members get 10 requests/day, Pro gets 50, and Premium has no limits.",
+    q: "How do connection request limits work?",
+    a: "Basic members get 10 connection requests to start. Pro members get 50 connection requests that reset every 24 hours, and Premium members enjoy unlimited requests.",
   },
   {
     q: "When can I start chatting with my connections?",

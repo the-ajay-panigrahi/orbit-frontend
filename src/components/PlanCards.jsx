@@ -14,7 +14,7 @@ const PLANS = [
     period: "/month",
     icon: Sparkles,
     features: [
-      "10 daily connection requests",
+      "10 connection requests",
       "Standard feed discovery",
       "Mutual match connections",
       "Public profile & skill tags",
@@ -39,7 +39,7 @@ const PLANS = [
       "Full 1-on-1 chat with mutual matches",
       "Pro Member profile badge",
     ],
-    disabledFeatures: ["Unlimited daily connection requests"],
+    disabledFeatures: ["Unlimited connection requests"],
     isPopular: true,
     ctaText: "Upgrade to Pro",
   },
@@ -52,7 +52,7 @@ const PLANS = [
     period: "/month",
     icon: Crown,
     features: [
-      "Unlimited daily connection requests",
+      "Unlimited connection requests",
       "Full 1-on-1 chat with mutual matches",
       "Gold Member profile badge",
       "Highlighted profile card in feed",

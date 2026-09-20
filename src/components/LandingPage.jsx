@@ -114,8 +114,8 @@ const JOURNEY_STEPS = [
 
 const FAQS = [
   {
-    q: "How do the daily swipe limits work?",
-    a: "Limits reset automatically every 24 hours from your first interaction. Basic members get 10 requests/day, Pro gets 50, and Premium has no limits.",
+    q: "How do connection request limits work?",
+    a: "Basic members get 10 connection requests to start. Pro members get 50 connection requests that reset every 24 hours, and Premium members enjoy unlimited requests.",
   },
   {
     q: "When can I start chatting with my connections?",
@@ -726,8 +726,8 @@ export default function LandingPage() {
               Choose your networking pace
             </h2>
             <p className="text-sm text-base-content/65 leading-relaxed">
-              Start free with basic daily discovery, or unlock 1-on-1 chat and
-              unlimited swipes with Pro or Premium.
+              Start free with 10 connection requests, or unlock daily discovery,
+              1-on-1 chat, and unlimited swipes with Pro or Premium.
             </p>
           </div>
 
