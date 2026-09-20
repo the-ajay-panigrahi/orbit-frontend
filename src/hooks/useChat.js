@@ -114,11 +114,26 @@ export function useChat({ targetUserId, currentUser, targetUser }) {
     }
   };
 
+  const chatPartnerRef = useRef(chatPartner);
+  const targetUserRef = useRef(targetUser);
+
+  useEffect(() => {
+    chatPartnerRef.current = chatPartner;
+  }, [chatPartner]);
+
+  useEffect(() => {
+    targetUserRef.current = targetUser;
+  }, [targetUser]);
+
   // Socket connection and real-time events lifecycle
   useEffect(() => {
     if (!currentUser?._id || !targetUserId) return;
     const socket = createSocketConnection();
     socketRef.current = socket;
+
+    socket.on("connect_error", (err) => {
+      console.warn("Socket connection error:", err.message);
+    });
 
     socket.emit("joinChat", {
       firstName: currentUser.firstName,
@@ -156,8 +171,8 @@ export function useChat({ targetUserId, currentUser, targetUser }) {
           {
             id: Date.now().toString(),
             sender: "them",
-            senderName: firstName || chatPartner?.firstName || targetUser?.firstName || "Peer",
-            senderAvatar: chatPartner?.profilePictureUrl || targetUser?.profilePictureUrl || "/default-avatar.svg",
+            senderName: firstName || chatPartnerRef.current?.firstName || targetUserRef.current?.firstName || "Peer",
+            senderAvatar: chatPartnerRef.current?.profilePictureUrl || targetUserRef.current?.profilePictureUrl || "/default-avatar.svg",
             text,
             time: new Date().toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" }),
           },
@@ -166,7 +181,7 @@ export function useChat({ targetUserId, currentUser, targetUser }) {
     });
 
     socket.on("userTyping", ({ firstName }) => {
-      setTypingUserName(firstName || chatPartner?.firstName || targetUser?.firstName || "");
+      setTypingUserName(firstName || chatPartnerRef.current?.firstName || targetUserRef.current?.firstName || "");
       setIsTargetTyping(true);
     });
 
@@ -179,7 +194,7 @@ export function useChat({ targetUserId, currentUser, targetUser }) {
       if (typingTimeoutRef.current) clearTimeout(typingTimeoutRef.current);
       socket.disconnect();
     };
-  }, [currentUser?._id, targetUserId, currentUser?.firstName, targetUser, chatPartner]);
+  }, [currentUser?._id, targetUserId, currentUser?.firstName]);
 
   // Input change with debounce typing indicator
   const handleInputChange = (e) => {
