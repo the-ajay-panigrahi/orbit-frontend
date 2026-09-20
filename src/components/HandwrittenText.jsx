@@ -1,101 +1,109 @@
-import { useState, useEffect } from "react";
 import { motion } from "motion/react";
 
 /**
- * HandwrittenText - An authentic character-by-character typewriter effect
- * followed by a full-width hand-drawn SVG underline flourish.
+ * HandwrittenText — Organic ink-pen writing effect with full-width underline.
  *
- * Sequence:
- * 1. Mounts with full text pre-measured in layout (Zero CLS layout shift).
- * 2. Types every character one by one ('m', 'o', 'v', 'e', ' ', 'w', 'i', 't', 'h', ' ', 'y', 'o', 'u', '.').
- * 3. Once the final full stop '.' is rendered, pauses for a natural beat (200ms).
- * 4. THEN triggers the hand-drawn SVG underline, which sweeps across the entire
- *    bottom baseline from under 'm' all the way under and past the full stop '.'.
+ * Each character springs into view from below with rotation and blur,
+ * simulating a pen nib pressing ink onto paper. Once the final character
+ * settles, a thick hand-drawn underline swooshes across the entire phrase.
+ *
+ * The SVG underline uses `left-0 right-0` to match the exact width of
+ * its `inline-block` parent at any viewport size — no calc() hacks.
  */
 export default function HandwrittenText({
   text = "move with you.",
   className = "",
   underlineClassName = "",
-  startDelay = 400,
-  charSpeed = 80,
+  startDelay = 0.4,
+  charStagger = 0.055,
 }) {
   const characters = Array.from(text);
-  const [visibleCount, setVisibleCount] = useState(0);
-  const [isTypingDone, setIsTypingDone] = useState(false);
+  const underlineDelay = startDelay + characters.length * charStagger + 0.28;
 
-  useEffect(() => {
-    let intervalId;
-    const startTimeout = setTimeout(() => {
-      let count = 0;
-      intervalId = setInterval(() => {
-        count += 1;
-        setVisibleCount(count);
+  const containerVariants = {
+    hidden: {},
+    visible: {
+      transition: {
+        staggerChildren: charStagger,
+        delayChildren: startDelay,
+      },
+    },
+  };
 
-        if (count >= characters.length) {
-          clearInterval(intervalId);
-          setTimeout(() => setIsTypingDone(true), 220);
-        }
-      }, charSpeed);
-    }, startDelay);
-
-    return () => {
-      clearTimeout(startTimeout);
-      if (intervalId) clearInterval(intervalId);
-    };
-  }, [text, startDelay, charSpeed, characters.length]);
+  const charVariants = {
+    hidden: {
+      opacity: 0,
+      y: 10,
+      scale: 0.55,
+      rotateZ: -8,
+      filter: "blur(3px)",
+    },
+    visible: {
+      opacity: 1,
+      y: 0,
+      scale: 1,
+      rotateZ: 0,
+      filter: "blur(0px)",
+      transition: {
+        type: "spring",
+        stiffness: 260,
+        damping: 14,
+        mass: 0.5,
+      },
+    },
+  };
 
   return (
     <span
       className={`relative inline-block font-handwriting select-none whitespace-nowrap ${className}`}
       aria-label={text}
     >
-      <span className="inline-flex items-baseline" aria-hidden="true">
-        {characters.map((char, index) => {
-          const isTyped = index < visibleCount;
-          const isCurrent = index === visibleCount - 1;
+      <motion.span
+        className="inline-flex items-baseline"
+        variants={containerVariants}
+        initial="hidden"
+        animate="visible"
+        aria-hidden="true"
+      >
+        {characters.map((char, index) => (
+          <motion.span
+            key={`${char}-${index}`}
+            variants={charVariants}
+            className="inline-block origin-bottom-left"
+            style={{ whiteSpace: char === " " ? "pre" : "normal" }}
+          >
+            {char === " " ? "\u00A0" : char}
+          </motion.span>
+        ))}
+      </motion.span>
 
-          return (
-            <span
-              key={`${char}-${index}`}
-              className={`inline-block ${
-                isTyped ? "opacity-100" : "opacity-0"
-              }`}
-              style={{
-                whiteSpace: char === " " ? "pre" : "normal",
-                transform: isTyped && isCurrent ? "scale(1.06)" : "scale(1)",
-                transition: "transform 75ms ease-out, opacity 40ms ease-in",
-              }}
-            >
-              {char === " " ? "\u00A0" : char}
-            </span>
-          );
-        })}
-      </span>
-
+      {/* Thick, dark, edge-to-edge underline swoosh */}
       <svg
-        className={`absolute -bottom-2 -left-1 h-4 text-primary/70 overflow-visible pointer-events-none ${underlineClassName}`}
-        style={{ width: "calc(100% + 8px)" }}
-        viewBox="0 0 320 16"
+        className={`absolute -bottom-1.5 left-0 w-full h-5 overflow-visible pointer-events-none text-base-content/75 ${underlineClassName}`}
+        viewBox="0 0 100 12"
         fill="none"
         preserveAspectRatio="none"
         aria-hidden="true"
       >
         <motion.path
-          d="M 3 11 C 60 3, 130 14, 195 7 C 245 2, 290 11, 318 6"
+          d="M 0.5 8 C 18 2, 42 11, 55 6 S 82 2, 99.5 7"
           stroke="currentColor"
-          strokeWidth="3.4"
+          strokeWidth="4"
           strokeLinecap="round"
           strokeLinejoin="round"
           vectorEffect="non-scaling-stroke"
           initial={{ pathLength: 0, opacity: 0 }}
-          animate={
-            isTypingDone
-              ? { pathLength: 1, opacity: 1 }
-              : { pathLength: 0, opacity: 0 }
-          }
+          animate={{ pathLength: 1, opacity: 1 }}
           transition={{
-            pathLength: { duration: 0.58, ease: [0.22, 1, 0.36, 1] },
-            opacity: { duration: 0.1 },
+            pathLength: {
+              delay: underlineDelay,
+              duration: 0.5,
+              ease: [0.22, 1, 0.36, 1],
+            },
+            opacity: {
+              delay: underlineDelay,
+              duration: 0.08,
+            },
           }}
         />
       </svg>

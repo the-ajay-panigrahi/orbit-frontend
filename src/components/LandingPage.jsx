@@ -410,8 +410,8 @@ export default function LandingPage() {
               <HandwrittenText
                 text="move with you."
                 className="text-primary text-5xl sm:text-6xl lg:text-7xl font-bold not-italic tracking-wide px-1 rotate-[-1deg]"
-                startDelay={350}
-                charSpeed={75}
+                startDelay={0.4}
+                charStagger={0.055}
               />
             </h1>
 
