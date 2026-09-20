@@ -86,7 +86,7 @@ export default function HandwrittenText({
         aria-hidden="true"
       >
         <motion.path
-          d="M 0.5 8 C 18 2, 42 11, 55 6 S 82 2, 99.5 7"
+          d="M 1 9 C 30 3, 70 12, 99 5"
           stroke="currentColor"
           strokeWidth="4"
           strokeLinecap="round"
