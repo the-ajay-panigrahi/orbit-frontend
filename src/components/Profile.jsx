@@ -124,6 +124,7 @@ export default function Profile() {
     hasSpecial: /[^A-Za-z0-9]/.test(newPassword),
   };
   const isNewPasswordStrong = Object.values(passwordChecks).every(Boolean);
+  const passedChecksCount = Object.values(passwordChecks).filter(Boolean).length;
 
   const handleUpdatePassword = async (e) => {
     if (e) e.preventDefault();
@@ -678,15 +679,56 @@ export default function Profile() {
                   </div>
                 </div>
 
-                {/* Password Strength Checklist */}
-                <div className="p-2.5 rounded-2xl bg-base-200/70 border border-base-content/10 text-[11px] space-y-1.5">
+                {/* Password Strength Meter & Checklist */}
+                <div className="p-2.5 rounded-2xl bg-base-200/70 border border-base-content/10 text-[11px] space-y-2">
                   <div className="flex items-center justify-between">
-                    <span className="font-bold text-base-content/80">Strength Requirements</span>
-                    <span className={`badge badge-xs font-mono font-bold ${isNewPasswordStrong ? "badge-success text-success-content" : "badge-neutral"}`}>
-                      {isNewPasswordStrong ? "Strong Password" : "Incomplete"}
+                    <span className="font-bold text-base-content/80">Password Strength</span>
+                    <span
+                      className={`badge badge-xs font-mono font-bold transition-colors ${
+                        newPassword.length === 0
+                          ? "badge-ghost opacity-60"
+                          : isNewPasswordStrong
+                            ? "badge-success text-success-content"
+                            : passedChecksCount >= 3
+                              ? "badge-warning text-warning-content"
+                              : "badge-error text-error-content"
+                      }`}
+                    >
+                      {newPassword.length === 0
+                        ? "Enter Password"
+                        : isNewPasswordStrong
+                          ? "Strong"
+                          : passedChecksCount >= 3
+                            ? "Moderate"
+                            : "Weak"}
                     </span>
                   </div>
-                  <div className="grid grid-cols-2 gap-x-2 gap-y-1 font-mono text-[10.5px]">
+
+                  {/* 4-segment visual strength meter */}
+                  <div className="grid grid-cols-4 gap-1.5 h-1.5 w-full">
+                    {[1, 2, 3, 4].map((step) => {
+                      const active =
+                        newPassword.length > 0 &&
+                        (step === 4
+                          ? isNewPasswordStrong
+                          : passedChecksCount >= step);
+                      const barColor = isNewPasswordStrong
+                        ? "bg-success"
+                        : passedChecksCount >= 3
+                          ? "bg-warning"
+                          : "bg-error";
+                      return (
+                        <div
+                          key={step}
+                          className={`h-full rounded-full transition-all duration-300 ${
+                            active ? barColor : "bg-base-content/15"
+                          }`}
+                        />
+                      );
+                    })}
+                  </div>
+
+                  <div className="grid grid-cols-2 gap-x-2 gap-y-1 font-mono text-[10.5px] pt-0.5">
                     <span className={passwordChecks.length ? "text-success flex items-center gap-1 font-bold" : "text-base-content/50 flex items-center gap-1"}>
                       <Check className={`w-3 h-3 ${passwordChecks.length ? "stroke-[3]" : "opacity-30"}`} /> 8+ characters
                     </span>
