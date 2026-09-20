@@ -3,12 +3,10 @@ import { motion } from "motion/react";
 /**
  * HandwrittenText — Organic ink-pen writing effect with full-width underline.
  *
- * Each character springs into view from below with rotation and blur,
- * simulating a pen nib pressing ink onto paper. Once the final character
- * settles, a thick hand-drawn underline swooshes across the entire phrase.
- *
- * The SVG underline uses `left-0 right-0` to match the exact width of
- * its `inline-block` parent at any viewport size — no calc() hacks.
+ * Characters spring into view with rotation + blur (pen-on-paper feel).
+ * Underline is revealed via CSS clip-path (left→right wipe), NOT pathLength.
+ * This avoids the SVG pathLength + preserveAspectRatio="none" rendering bug
+ * that causes broken/gapped strokes on wide viewports.
  */
 export default function HandwrittenText({
   text = "move with you.",
@@ -77,36 +75,33 @@ export default function HandwrittenText({
         ))}
       </motion.span>
 
-      {/* Thick, dark, edge-to-edge underline swoosh */}
-      <svg
-        className={`absolute -bottom-1.5 left-0 w-full h-5 overflow-visible pointer-events-none text-base-content/75 ${underlineClassName}`}
-        viewBox="0 0 100 12"
-        fill="none"
-        preserveAspectRatio="none"
+      {/* Underline: full SVG always rendered, revealed left→right via clip-path */}
+      <motion.div
+        className={`absolute -bottom-1.5 left-0 w-full h-5 pointer-events-none ${underlineClassName}`}
+        initial={{ clipPath: "inset(0 100% 0 0)" }}
+        animate={{ clipPath: "inset(0 0% 0 0)" }}
+        transition={{
+          delay: underlineDelay,
+          duration: 0.45,
+          ease: [0.22, 1, 0.36, 1],
+        }}
         aria-hidden="true"
       >
-        <motion.path
-          d="M 1 9 C 30 3, 70 12, 99 5"
-          stroke="currentColor"
-          strokeWidth="4"
-          strokeLinecap="round"
-          strokeLinejoin="round"
-          vectorEffect="non-scaling-stroke"
-          initial={{ pathLength: 0, opacity: 0 }}
-          animate={{ pathLength: 1, opacity: 1 }}
-          transition={{
-            pathLength: {
-              delay: underlineDelay,
-              duration: 0.5,
-              ease: [0.22, 1, 0.36, 1],
-            },
-            opacity: {
-              delay: underlineDelay,
-              duration: 0.08,
-            },
-          }}
-        />
-      </svg>
+        <svg
+          className="w-full h-full text-base-content/80 overflow-visible"
+          viewBox="0 0 100 12"
+          fill="none"
+          preserveAspectRatio="none"
+        >
+          <path
+            d="M 1 9 C 30 3, 70 12, 99 5"
+            stroke="currentColor"
+            strokeWidth="4"
+            strokeLinecap="round"
+            vectorEffect="non-scaling-stroke"
+          />
+        </svg>
+      </motion.div>
     </span>
   );
 }
