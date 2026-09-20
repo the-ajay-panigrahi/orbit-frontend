@@ -1,4 +1,4 @@
-# Orbit — Frontend
+# Orbit | Frontend
 
 **Discover, connect, and collaborate with tech founders, developers, and builders worldwide.**
 
@@ -14,40 +14,76 @@ Orbit is a production-grade developer networking and collaboration platform desi
 
 ## 🖼️ Screenshots
 
-> _Tip: Replace these image placeholders with your repository screenshots or CDN links._
+### Dual Palette Showcase (Caramellatte & Coffee Themes)
 
-<p align="center">
-  <img width="100%" alt="Orbit Landing Page Hero" src="https://github.com/user-attachments/assets/6f278fec-be2c-43f5-a5dc-f0c440fc3882" />
-</p>
+| Caramellatte Theme (Warm Latte Aesthetic) | Coffee Theme (Dark Roast Aesthetic) |
+| :---: | :---: |
+| <img src="./screenshots/landing-caramellatte.png" width="100%" alt="Orbit Landing Page - Caramellatte Theme" /> | <img src="./screenshots/landing-coffee.png" width="100%" alt="Orbit Landing Page - Coffee Theme" /> |
 
-<p align="center">
-  <img width="100%" alt="Discovery Feed & Builder Cards" src="https://github.com/user-attachments/assets/85fbcd03-ff7c-4073-90ce-8ddcb782311b" />
-</p>
+<details>
+<summary><b>View Additional Screenshots & Cloud Infrastructure Previews</b></summary>
 
+<br />
+
+#### Real-Time 1-on-1 Chat Interface
 <p align="center">
   <img width="100%" alt="Real-Time 1-on-1 Chat Interface" src="https://github.com/user-attachments/assets/afd5b98c-8ed7-4bc7-affe-94f97fe07def" />
 </p>
 
+#### Pricing & Premium Membership Tiers
 <p align="center">
   <img width="100%" alt="Pricing & Premium Membership Tiers" src="https://github.com/user-attachments/assets/9151fd48-898a-480a-b2da-51647b7644de" />
 </p>
 
+#### Profile & Customization Settings
 <p align="center">
   <img width="100%" alt="Profile & Customization Settings" src="https://github.com/user-attachments/assets/1266ca4e-8fc4-4354-83fe-94b814beb6f3" />
 </p>
+
+#### AWS EC2 & Cloudflare Deployment Infrastructure
+<p align="center">
+  <!-- Placeholder for AWS / Cloudflare deployment screenshot -->
+  <img width="100%" alt="Cloudflare & AWS EC2 Infrastructure Setup" src="https://github.com/user-attachments/assets/6f278fec-be2c-43f5-a5dc-f0c440fc3882" />
+</p>
+
+</details>
 
 ---
 
 ## 🔧 Features
 
 - **Interactive Discovery Deck:** Dynamic swipeable builder feed with real-time pass/interested actions and 3D card expansion modals.
-- **Real-Time 1-on-1 Messaging:** Instant WebSocket-powered communication with live online/offline badges and real-time typing indicators.
-- **Virtualized Message Stream:** Implemented using `react-virtuoso` for smooth, 60fps infinite scrolling through thousands of messages without layout jank.
+- **Real-Time 1-on-1 Messaging:** Instant WebSocket-powered communication with live online/offline badges, real-time typing indicators, and auto-scroll recovery.
+- **Virtualized Message Stream:** Implemented using `react-virtuoso` for smooth, 60fps infinite scrolling through thousands of messages without DOM bloat or frame drops.
+- **36 Handcrafted DaisyUI Themes:** Complete dynamic theming engine supporting **36 distinct palettes** (including `caramellatte`, `coffee`, `synthwave`, `dracula`, `nord`, and `luxury`) with zero-flicker `localStorage` persistence and an interactive live theme studio.
 - **Bespoke Micro-Interactions:** Custom SVG handwritten title accents, spring-physics modals, and seamless tab transitions orchestrated with `motion/react`.
 - **Tiered Membership Gateways:** Seamless integration with **Razorpay Checkout SDK** for instant upgrades between Free, Pro, and Premium tiers.
-- **Robust Centralized State:** Predictable global state management using **Redux Toolkit** (auth user, feed, incoming requests, and active connections).
-- **Multi-Theme Engine:** Dynamic theme switching powered by DaisyUI themes with local storage persistence.
+- **Robust Centralized State:** Predictable global state management using **Redux Toolkit** (authenticated user, feed deck, incoming requests, and active connections).
+- **Backend Cron Integration:** Fully reactive to automated backend cron reminders (users receive daily AWS SES digests when they have pending connection requests).
 - **Fully Responsive & Accessible:** Optimized for mobile touchscreens, tablets, and high-DPI desktop viewports.
+
+---
+
+## 🎨 36-Theme Engine Architecture
+
+Orbit features a deep design system with **36 curated themes** powered by Tailwind CSS v4 and DaisyUI v5:
+- **Instant Palette Swapping:** Users can switch between 36 themes instantly via the global navigation palette dropdown.
+- **Live Theme Studio:** The landing page features a dedicated interactive showcase previewing popular themes (`caramellatte`, `coffee`, `nord`, `dracula`, `synthwave`, `cyberpunk`, `retro`, `forest`, etc.) so users can explore before signing up.
+- **Persistent State:** Theme preference is persisted via `localStorage` and injected at HTML root level (`data-theme`) to eliminate theme flashing during initial paint.
+
+---
+
+## 🌐 Cloud Infrastructure & Deployment
+
+The Orbit frontend is engineered to be cloud-flexible and resilient:
+
+1. **Self-Hosted Production Setup (AWS + Cloudflare)**:
+   - Built to static production assets via Vite.
+   - Hosted on an **AWS EC2 Ubuntu** instance served by a high-performance **Nginx** web server (`/var/www/html`) with `try_files` SPA routing.
+   - Fronted by **Cloudflare** for edge SSL termination, global CDN caching, and automated DDoS mitigation.
+2. **Cost-Conscious Cloud Redundancy**:
+   - To demonstrate production DevOps mastery, Orbit was deployed from bare-metal on **AWS EC2 with Nginx & Cloudflare**.
+   - Because cloud infrastructure credits on EC2 are finite, the project is architected with cloud portability in mind: the static Vite frontend can seamlessly transition between **Vercel, AWS CloudFront, or Nginx** with zero code refactoring.
 
 ---
 
@@ -95,14 +131,6 @@ Building Orbit allowed me to solve deep real-world frontend engineering challeng
 - **Virtualization:** [React Virtuoso](https://virtuoso.dev/)
 - **HTTP Client:** [Axios](https://axios-http.com/)
 - **Payments:** Razorpay Standard Checkout SDK
-
----
-
-## 📦 Future Enhancements
-
-- **Voice & Video Collaboration:** WebRTC peer-to-peer audio/video calls for 1-on-1 pairing sessions.
-- **Interactive Project Showcases:** Rich media embeds (GitHub repo widgets, live demo previews) directly on builder profiles.
-- **Community Circles:** Public topic channels and group collaboration rooms based on tech stacks.
 
 ---
 
