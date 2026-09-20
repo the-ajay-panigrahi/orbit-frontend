@@ -5,26 +5,23 @@ import { motion } from "motion/react";
  * HandwrittenText - An authentic character-by-character typewriter effect
  * followed by a full-width hand-drawn SVG underline flourish.
  *
- * Performance & A11y:
- * 1. Zero Layout Shift (CLS): Renders characters in place with `opacity-0` / `opacity-100`
- *    so the container dimensions are static from frame 0.
- * 2. True Character Typing: Emits each letter one by one with a rhythmic typewriter cadence.
- * 3. Responsive SVG Underline: Uses `style={{ width: "100%" }}` and `preserveAspectRatio="none"`
- *    with a path spanning the full 0-100% coordinate space so the line stretches
- *    cleanly under "move", "with", and "you." across all screen sizes.
- * 4. A11y: Screen readers announce the entire phrase cleanly via `aria-label`.
+ * Sequence:
+ * 1. Mounts with full text pre-measured in layout (Zero CLS layout shift).
+ * 2. Types every character one by one ('m', 'o', 'v', 'e', ' ', 'w', 'i', 't', 'h', ' ', 'y', 'o', 'u', '.').
+ * 3. Once the final full stop '.' is rendered, pauses for a natural beat (200ms).
+ * 4. THEN triggers the hand-drawn SVG underline, which sweeps across the entire
+ *    bottom baseline from under 'm' all the way under and past the full stop '.'.
  */
 export default function HandwrittenText({
   text = "move with you.",
   className = "",
   underlineClassName = "",
-  startDelay = 350,
-  charSpeed = 70,
+  startDelay = 400,
+  charSpeed = 80,
 }) {
   const characters = Array.from(text);
   const [visibleCount, setVisibleCount] = useState(0);
   const [isTypingDone, setIsTypingDone] = useState(false);
-  const [cursorVisible, setCursorVisible] = useState(true);
 
   useEffect(() => {
     let intervalId;
@@ -33,11 +30,14 @@ export default function HandwrittenText({
       intervalId = setInterval(() => {
         count += 1;
         setVisibleCount(count);
+
+        // When all characters including the full stop are typed
         if (count >= characters.length) {
           clearInterval(intervalId);
-          setIsTypingDone(true);
-          // Fade out the typing cursor after a brief pause
-          setTimeout(() => setCursorVisible(false), 500);
+          // Wait a natural human beat after the full stop, THEN trigger the underline
+          setTimeout(() => {
+            setIsTypingDone(true);
+          }, 220);
         }
       }, charSpeed);
     }, startDelay);
@@ -61,48 +61,35 @@ export default function HandwrittenText({
           return (
             <span
               key={`${char}-${index}`}
-              className={`inline-block transition-opacity duration-75 ${
+              className={`inline-block ${
                 isTyped ? "opacity-100" : "opacity-0"
               }`}
               style={{
                 // Preserve whitespace naturally without collapsing
                 whiteSpace: char === " " ? "pre" : "normal",
-                transform: isTyped && isCurrent ? "scale(1.08)" : "scale(1)",
-                transition: "transform 80ms ease-out, opacity 50ms ease-in",
+                transform: isTyped && isCurrent ? "scale(1.06)" : "scale(1)",
+                transition: "transform 75ms ease-out, opacity 40ms ease-in",
               }}
             >
               {char === " " ? "\u00A0" : char}
             </span>
           );
         })}
-
-        {/* Realistic typewriter blinking cursor */}
-        {cursorVisible && (
-          <motion.span
-            initial={{ opacity: 0 }}
-            animate={{ opacity: [1, 0, 1] }}
-            transition={{ repeat: Infinity, duration: 0.55, ease: "easeInOut" }}
-            className="inline-block text-primary/70 font-sans font-light -ml-0.5 select-none"
-            style={{ fontSize: "0.85em", verticalAlign: "baseline" }}
-          >
-            |
-          </motion.span>
-        )}
       </span>
 
-      {/* Hand-drawn underline swoosh spanning the FULL phrase ("move with you.") */}
+      {/* Hand-drawn underline swoosh spanning the FULL phrase from 'm' to past the full stop '.' */}
       <svg
-        className={`absolute -bottom-2.5 left-0 h-4 text-primary/65 overflow-visible pointer-events-none ${underlineClassName}`}
-        style={{ width: "100%" }}
-        viewBox="0 0 300 14"
+        className={`absolute -bottom-2 -left-1 h-4 text-primary/70 overflow-visible pointer-events-none ${underlineClassName}`}
+        style={{ width: "calc(100% + 8px)" }}
+        viewBox="0 0 320 16"
         fill="none"
         preserveAspectRatio="none"
         aria-hidden="true"
       >
         <motion.path
-          d="M 2 10 C 50 3, 110 13, 170 7 C 220 3, 265 11, 298 6"
+          d="M 3 11 C 60 3, 130 14, 195 7 C 245 2, 290 11, 318 6"
           stroke="currentColor"
-          strokeWidth="3.2"
+          strokeWidth="3.4"
           strokeLinecap="round"
           strokeLinejoin="round"
           vectorEffect="non-scaling-stroke"
@@ -113,8 +100,8 @@ export default function HandwrittenText({
               : { pathLength: 0, opacity: 0 }
           }
           transition={{
-            pathLength: { duration: 0.55, ease: [0.22, 1, 0.36, 1] },
-            opacity: { duration: 0.12 },
+            pathLength: { duration: 0.58, ease: [0.22, 1, 0.36, 1] },
+            opacity: { duration: 0.1 },
           }}
         />
       </svg>
