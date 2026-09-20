@@ -308,7 +308,7 @@ export default function Profile() {
   };
 
   return (
-    <div className="w-full max-w-[920px] mx-auto px-4 sm:px-6 py-2.5 sm:py-3.5 flex-1 flex flex-col justify-center">
+    <div className="w-full max-w-[920px] mx-auto px-4 sm:px-6 py-4 sm:py-6 flex-1 flex flex-col justify-center">
       {/* Header */}
       <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-2 pb-2 sm:pb-2.5 border-b border-base-content/8 mb-3">
         <div>
@@ -328,7 +328,7 @@ export default function Profile() {
       {/* Main Studio Grid: Locked equal-height columns that never fluctuate between tabs */}
       <div className="profile-studio-grid">
         {/* Left Column: Segmented Form Tabs */}
-        <div className="w-full min-w-0 bg-base-100 shadow-xl border border-base-content/10 p-4 sm:p-5 rounded-3xl flex flex-col justify-between h-full">
+        <div className="w-full min-w-0 bg-base-100 shadow-xl border border-base-content/10 p-4 sm:p-5 rounded-3xl flex flex-col justify-between min-h-[460px]">
           {/* Segmented Controller */}
           <div className="grid grid-cols-4 p-1 rounded-xl bg-base-200/80 border border-base-content/8 mb-3 text-xs font-semibold shrink-0">
             <button
@@ -720,7 +720,7 @@ export default function Profile() {
             </div>
 
             {/* Bottom Actions */}
-            <div className="flex flex-col sm:flex-row items-stretch sm:items-center justify-between gap-3 pt-3 sm:pt-3.5 mt-auto border-t border-base-content/8 shrink-0">
+            <div className="flex flex-col sm:flex-row items-stretch sm:items-center justify-between gap-3 pt-3.5 mt-auto border-t border-base-content/8 shrink-0">
               {activeTab === "security" ? (
                 <>
                   <button
@@ -737,14 +737,14 @@ export default function Profile() {
                     <span>Clear Fields</span>
                   </button>
 
-                  <div className="flex flex-col sm:flex-row items-stretch sm:items-center gap-2 order-1 sm:order-2 w-full sm:w-auto">
+                  <div className="flex flex-wrap items-center justify-end gap-2 order-1 sm:order-2 w-full sm:w-auto">
                     <motion.button
                       type="submit"
                       disabled={isUpdatingPassword || !oldPassword || !newPassword || !confirmPassword}
                       whileHover={{ y: -1 }}
                       whileTap={{ scale: 0.97 }}
                       transition={springTap}
-                      className="btn btn-sm btn-primary gap-2 text-xs shadow-md shadow-primary/20 cursor-pointer w-full sm:w-auto"
+                      className="btn btn-sm btn-primary gap-2 text-xs shadow-md shadow-primary/20 cursor-pointer w-full sm:w-auto shrink-0"
                     >
                       {isUpdatingPassword ? (
                         <>
@@ -772,7 +772,7 @@ export default function Profile() {
                     <span>Reset to Saved</span>
                   </button>
 
-                  <div className="flex flex-col sm:flex-row items-stretch sm:items-center gap-2 order-1 sm:order-2 w-full sm:w-auto">
+                  <div className="flex flex-wrap items-center justify-end gap-2 order-1 sm:order-2 w-full sm:w-auto">
                     {activeTab === "identity" && (
                       <button
                         type="button"
@@ -806,7 +806,7 @@ export default function Profile() {
                       whileHover={{ y: -1 }}
                       whileTap={{ scale: 0.97 }}
                       transition={springTap}
-                      className="btn btn-sm btn-primary gap-2 text-xs shadow-md shadow-primary/20 cursor-pointer w-full sm:w-auto"
+                      className="btn btn-sm btn-primary gap-2 text-xs shadow-md shadow-primary/20 cursor-pointer w-full sm:w-auto shrink-0"
                     >
                       {isSaving ? (
                         <>

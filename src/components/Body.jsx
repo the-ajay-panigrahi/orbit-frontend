@@ -55,7 +55,7 @@ export default function Body() {
       className={`${
         isChat
           ? "h-screen overflow-hidden bg-base-100"
-          : isFeed || isProfile
+          : isFeed
             ? "min-h-screen md:h-screen md:overflow-hidden bg-base-200"
             : "min-h-screen bg-base-200"
       } flex flex-col transition-colors duration-200`}
@@ -65,7 +65,7 @@ export default function Body() {
         className={`flex-1 flex flex-col ${
           isChat
             ? "min-h-0 overflow-hidden"
-            : isFeed || isProfile
+            : isFeed
               ? "md:min-h-0 md:overflow-hidden"
               : ""
         }`}
