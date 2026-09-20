@@ -50,39 +50,42 @@ const MOCK_FOUNDERS = [
     age: 34,
     gender: "female",
     about:
-      "Founder of Conviction. Early-stage investor backing technical founders building intelligent software.",
+      "Founder of Conviction. Early-stage investor backing technical founders building intelligent software and AI infrastructure.",
     lookingFor: "Early-stage AI Founders",
     skills: ["AI Systems", "Seed Capital", "Go-To-Market", "Scale"],
     profilePictureUrl:
       "https://images.unsplash.com/photo-1573496359142-b8d87734a5a2?q=75&w=600&auto=format&fit=crop&crop=faces",
+    membershipType: "premium",
     defaultAction: "right",
   },
   {
     _id: "demo-founder-2",
-    firstName: "Elon",
-    lastName: "Musk",
-    age: 52,
+    firstName: "Marcus",
+    lastName: "Chen",
+    age: 29,
     gender: "male",
     about:
-      "Engineering from first principles. Building reusable orbital rockets, electric vehicles, and neural interfaces.",
-    lookingFor: "Hardcore AI & Systems Engineers",
-    skills: ["Architecture", "Physics", "Autonomous Systems", "Robotics"],
+      "Full-stack engineer building high-throughput developer tools and real-time distributed systems. Ex-YC founder passionate about open source.",
+    lookingFor: "Technical Co-founders & Product Designers",
+    skills: ["TypeScript", "Next.js", "Distributed Systems", "Cloud Architecture"],
     profilePictureUrl:
-      "https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?q=75&w=600&auto=format&fit=crop&crop=faces",
-    defaultAction: "left",
+      "https://images.unsplash.com/photo-1506794778202-cad84cf45f1d?q=75&w=600&auto=format&fit=crop&crop=faces",
+    membershipType: "pro",
+    defaultAction: "right",
   },
   {
     _id: "demo-founder-3",
-    firstName: "Alex",
-    lastName: "Morgan",
-    age: 28,
+    firstName: "Maya",
+    lastName: "Patel",
+    age: 27,
     gender: "female",
     about:
-      "Product designer crafting modern web interfaces, micro-interactions, and design systems for builder tools.",
-    lookingFor: "Full-stack Developers for SaaS MVP",
-    skills: ["UI/UX Design", "Figma", "Design Systems", "Tailwind CSS"],
+      "Product designer crafting fluid web interactions, design systems, and high-conversion UX for early-stage startup MVPs.",
+    lookingFor: "Full-Stack Builders for AI SaaS",
+    skills: ["Product Design", "Figma", "Design Systems", "Tailwind CSS"],
     profilePictureUrl:
-      "https://images.unsplash.com/photo-1534528741775-53994a69daeb?q=75&w=600&auto=format&fit=crop&crop=faces",
+      "https://images.unsplash.com/photo-1580489944761-15a19d654956?q=75&w=600&auto=format&fit=crop&crop=faces",
+    membershipType: "pro",
     defaultAction: "right",
   },
 ];
@@ -92,19 +95,19 @@ const JOURNEY_STEPS = [
     icon: Compass,
     stage: "01",
     title: "Intent-Driven Discovery",
-    desc: "Discover founders, developers, designers, and operators filtered by skills, projects, and what you are both looking to build.",
+    desc: "Swipe through cards featuring founders, developers, designers, and operators to discover builders aligned with what you want to create.",
   },
   {
     icon: Users,
     stage: "02",
     title: "Double-Opt-In Matching",
-    desc: "No cold DMs or unwanted pitches. Mutual connections only open when both individuals review goals and agree to connect.",
+    desc: "Zero spam, zero awkward cold outreach. Mutual connections only form when both builders swipe right and agree to connect.",
   },
   {
     icon: MessageSquare,
     stage: "03",
     title: "Direct Chat to Action",
-    desc: "Chat bridges connection to collaboration. Schedule calls, exchange project ideas, and start shipping together.",
+    desc: "Match and unlock real-time 1-on-1 messaging instantly. Exchange project ideas, align on goals, and start building together.",
   },
 ];
 
@@ -376,7 +379,7 @@ export default function LandingPage() {
       </AnimatePresence>
 
       {/* ─── Hero Section ────────────────────────────────────────── */}
-      <section className="relative px-4 sm:px-6 lg:px-8 pt-12 pb-20 sm:pt-16 sm:pb-28 max-w-6xl mx-auto w-full">
+      <section className="relative px-4 sm:px-6 lg:px-8 pt-10 pb-8 sm:pt-14 sm:pb-12 max-w-6xl mx-auto w-full">
         <div className="absolute inset-0 bg-grid-subtle opacity-40 pointer-events-none -z-10" />
         <div className="absolute top-1/3 left-1/2 -translate-x-1/2 -translate-y-1/2 w-80 sm:w-[500px] h-80 sm:h-[500px] bg-primary/8 rounded-full blur-3xl pointer-events-none -z-10" />
 
@@ -608,11 +611,11 @@ export default function LandingPage() {
       {/* ─── 3-Step Journey with Hand-Drawn Arrows ─────────────── */}
       <section
         id="how-it-works"
-        className="relative px-4 sm:px-6 lg:px-8 py-20 sm:py-28 max-w-6xl mx-auto w-full"
+        className="relative px-4 sm:px-6 lg:px-8 pt-6 pb-16 sm:pt-10 sm:pb-20 max-w-6xl mx-auto w-full"
       >
         <div className="absolute inset-0 bg-grid-subtle opacity-25 pointer-events-none -z-10" />
 
-        <div className="text-center space-y-3 mb-16">
+        <div className="text-center space-y-3 mb-10 sm:mb-12">
           <div className="inline-flex items-center gap-2 px-3 py-1.5 rounded-full bg-base-200 border border-base-content/12 text-xs font-semibold text-base-content shadow-xs">
             <Target className="w-3.5 h-3.5 text-primary stroke-[2]" />
             <span>The Orbit Journey</span>
@@ -710,7 +713,7 @@ export default function LandingPage() {
       {/* ─── Membership Tiers & Rich Pricing ──────────────────────── */}
       <section
         id="pricing"
-        className="px-4 sm:px-6 lg:px-8 py-20 bg-base-200/30 border-t border-base-content/8"
+        className="px-4 sm:px-6 lg:px-8 py-16 sm:py-20 bg-base-200/30 border-t border-base-content/8"
       >
         <div className="max-w-5xl mx-auto space-y-12">
           <div className="text-center space-y-3 max-w-xl mx-auto">
@@ -856,7 +859,7 @@ export default function LandingPage() {
       </section>
 
       {/* ─── Final CTA ───────────────────────────────────────────── */}
-      <section className="px-4 sm:px-6 lg:px-8 pb-20 sm:pb-28 pt-8 max-w-4xl mx-auto w-full">
+      <section className="px-4 sm:px-6 lg:px-8 py-14 sm:py-20 max-w-4xl mx-auto w-full">
         <div className="relative rounded-3xl bg-gradient-to-br from-base-100 via-base-100 to-base-200 border border-base-content/10 p-8 sm:p-14 text-center overflow-hidden shadow-2xl">
           <div className="absolute -top-24 -right-24 w-72 h-72 bg-primary/12 rounded-full blur-3xl pointer-events-none" />
           <div className="absolute -bottom-24 -left-24 w-72 h-72 bg-secondary/12 rounded-full blur-3xl pointer-events-none" />
