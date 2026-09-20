@@ -16,6 +16,7 @@ import {
   Zap,
   Users,
   Quote,
+  Sparkles,
 } from "lucide-react";
 import { addUser } from "../utils/userSlice";
 import { BASE_URL } from "../utils/constants";
@@ -80,6 +81,35 @@ export default function Login() {
         err?.response?.data?.error ||
           err?.response?.data?.message ||
           "Authentication failed. Please check your details and try again.",
+      );
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const handleDemoLogin = async () => {
+    setError("");
+    setLoading(true);
+    hasSubmitted.current = true;
+    setEmail("dev@gmail.com");
+    setPassword("dev@1234");
+
+    try {
+      const res = await axios.post(
+        `${BASE_URL}/login`,
+        { email: "dev@gmail.com", password: "dev@1234" },
+        { withCredentials: true }
+      );
+      if (res?.data?.data) {
+        dispatch(addUser(res.data.data));
+      }
+      navigate("/feed");
+    } catch (err) {
+      hasSubmitted.current = false;
+      setError(
+        err?.response?.data?.error ||
+          err?.response?.data?.message ||
+          "Demo login failed. Please try again."
       );
     } finally {
       setLoading(false);
@@ -341,6 +371,29 @@ export default function Login() {
                   </span>
                 </button>
               </form>
+
+              {isLoginForm && (
+                <div className="pt-1">
+                  <div className="relative flex items-center justify-center mb-3">
+                    <div className="border-t border-base-content/10 w-full" />
+                    <span className="bg-base-100 px-3 text-[11px] font-mono uppercase tracking-wider text-base-content/50 shrink-0">
+                      or explore instantly
+                    </span>
+                    <div className="border-t border-base-content/10 w-full" />
+                  </div>
+
+                  <button
+                    type="button"
+                    onClick={handleDemoLogin}
+                    disabled={loading}
+                    className="btn btn-outline border-primary/30 hover:border-primary/60 hover:bg-primary/10 text-primary w-full gap-2 rounded-xl cursor-pointer font-bold text-xs h-11 transition-all group"
+                  >
+                    <Sparkles className="w-4 h-4 text-primary group-hover:scale-110 transition-transform" />
+                    <span>1-Click Recruiter Demo Access</span>
+                    <span className="badge badge-xs badge-primary font-mono ml-auto">VIP Profile</span>
+                  </button>
+                </div>
+              )}
 
               <div className="text-center text-sm text-base-content/75 pt-1">
                 {isLoginForm ? (

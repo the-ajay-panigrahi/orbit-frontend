@@ -638,7 +638,7 @@ export default function Profile() {
                   </div>
                 </div>
 
-                <div className="grid grid-cols-1 sm:grid-cols-2 gap-2.5 sm:gap-3">
+                <div className="space-y-2.5">
                   <div>
                     <label className="text-xs font-bold text-base-content/80 mb-1 block">
                       New Password <span className="text-error">*</span>
@@ -649,7 +649,7 @@ export default function Profile() {
                         required
                         value={newPassword}
                         onChange={(e) => setNewPassword(e.target.value)}
-                        placeholder="New strong password"
+                        placeholder="Enter your new strong password"
                         className="input input-sm input-bordered w-full rounded-xl pr-9 focus:input-primary text-sm font-medium"
                       />
                       <button
@@ -665,7 +665,7 @@ export default function Profile() {
 
                   <div>
                     <label className="text-xs font-bold text-base-content/80 mb-1 block">
-                      Confirm Password <span className="text-error">*</span>
+                      Confirm New Password <span className="text-error">*</span>
                     </label>
                     <div className="relative">
                       <input
@@ -673,7 +673,7 @@ export default function Profile() {
                         required
                         value={confirmPassword}
                         onChange={(e) => setConfirmPassword(e.target.value)}
-                        placeholder="Re-type new password"
+                        placeholder="Re-enter your new password"
                         className={`input input-sm input-bordered w-full rounded-xl pr-9 text-sm font-medium ${
                           confirmPassword && confirmPassword !== newPassword
                             ? "input-error"
