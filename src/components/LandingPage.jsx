@@ -144,6 +144,14 @@ export default function LandingPage() {
     setOpenFaqIndex(openFaqIndex === index ? null : index);
   };
 
+  const handleScrollTo = (e, targetId) => {
+    e.preventDefault();
+    const targetElement = document.getElementById(targetId);
+    if (targetElement) {
+      targetElement.scrollIntoView({ behavior: "smooth", block: "start" });
+    }
+  };
+
   const [dragOffset, setDragOffset] = useState({ x: 0, y: 0 });
   const [isDragging, setIsDragging] = useState(false);
   const [flyDirection, setFlyDirection] = useState(null);
@@ -439,6 +447,7 @@ export default function LandingPage() {
 
               <a
                 href="#how-it-works"
+                onClick={(e) => handleScrollTo(e, "how-it-works")}
                 className="btn btn-outline btn-md border-base-content/20 hover:bg-base-200 text-base-content px-6 rounded-xl font-semibold transition-all cursor-pointer text-center flex items-center justify-center gap-2"
               >
                 <Compass className="w-4 h-4 stroke-[2.3]" />

@@ -3,6 +3,10 @@
   themes: all;
 }
 
+html {
+  scroll-behavior: smooth;
+}
+
 :root {
   font-family:
     "Plus Jakarta Sans",

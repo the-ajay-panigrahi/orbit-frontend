@@ -20,6 +20,7 @@ import {
   Sparkles,
   Crown,
   Zap,
+  KeyRound,
 } from "lucide-react";
 import OrbitLogo from "./OrbitLogo";
 import { removeUser } from "../utils/userSlice";
@@ -374,6 +375,20 @@ export default function Navbar({ theme, onSelectTheme, themes }) {
                   >
                     <User className="w-3.5 h-3.5" />
                     <span>Profile Settings</span>
+                  </Link>
+                </li>
+                <li>
+                  <Link
+                    to="/profile?tab=security"
+                    onClick={() => {
+                      if (document.activeElement) {
+                        document.activeElement.blur();
+                      }
+                    }}
+                    className="flex items-center gap-2 py-2 hover:bg-base-200 rounded-lg transition-colors cursor-pointer text-base-content"
+                  >
+                    <KeyRound className="w-3.5 h-3.5 text-primary" />
+                    <span>Change Password</span>
                   </Link>
                 </li>
                 <li>

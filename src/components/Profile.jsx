@@ -14,6 +14,11 @@ import {
   FileText,
   Plus,
   Maximize2,
+  ShieldCheck,
+  KeyRound,
+  Eye,
+  EyeOff,
+  Lock,
 } from "lucide-react";
 import { BASE_URL } from "../utils/constants";
 import { addUser } from "../utils/userSlice";
@@ -50,7 +55,13 @@ export default function Profile() {
   const dispatch = useDispatch();
   const location = useLocation();
 
-  const [activeTab, setActiveTab] = useState("identity"); // 'identity' | 'vision' | 'skills'
+  const [activeTab, setActiveTab] = useState(() => {
+    const params = new URLSearchParams(window.location.search);
+    const tabParam = params.get("tab");
+    return tabParam && ["identity", "vision", "skills", "security"].includes(tabParam)
+      ? tabParam
+      : "identity";
+  });
 
   const [firstName, setFirstName] = useState(user?.firstName || "");
   const [lastName, setLastName] = useState(user?.lastName || "");
@@ -65,6 +76,15 @@ export default function Profile() {
   const [skillInput, setSkillInput] = useState("");
   const [isZoomOpen, setIsZoomOpen] = useState(false);
 
+  // Security / Password update state
+  const [oldPassword, setOldPassword] = useState("");
+  const [newPassword, setNewPassword] = useState("");
+  const [confirmPassword, setConfirmPassword] = useState("");
+  const [showOldPassword, setShowOldPassword] = useState(false);
+  const [showNewPassword, setShowNewPassword] = useState(false);
+  const [showConfirmPassword, setShowConfirmPassword] = useState(false);
+  const [isUpdatingPassword, setIsUpdatingPassword] = useState(false);
+
   const [isSaving, setIsSaving] = useState(false);
   const [toast, setToast] = useState(() => {
     if (location.state?.welcome) {
@@ -77,6 +97,14 @@ export default function Profile() {
   });
 
   useEffect(() => {
+    const params = new URLSearchParams(location.search);
+    const tabParam = params.get("tab");
+    if (tabParam && ["identity", "vision", "skills", "security"].includes(tabParam)) {
+      setActiveTab(tabParam);
+    }
+  }, [location.search]);
+
+  useEffect(() => {
     if (location.state?.welcome) {
       const timer = setTimeout(() => {
         setToast((curr) =>
@@ -87,6 +115,81 @@ export default function Profile() {
       return () => clearTimeout(timer);
     }
   }, [location.state]);
+
+  const passwordChecks = {
+    length: newPassword.length >= 8,
+    hasLower: /[a-z]/.test(newPassword),
+    hasUpper: /[A-Z]/.test(newPassword),
+    hasNumber: /[0-9]/.test(newPassword),
+    hasSpecial: /[^A-Za-z0-9]/.test(newPassword),
+  };
+  const isNewPasswordStrong = Object.values(passwordChecks).every(Boolean);
+
+  const handleUpdatePassword = async (e) => {
+    if (e) e.preventDefault();
+    if (isUpdatingPassword) return;
+
+    if (!oldPassword) {
+      setToast({ type: "error", message: "Please enter your current password." });
+      return;
+    }
+    if (!newPassword) {
+      setToast({ type: "error", message: "Please enter a new password." });
+      return;
+    }
+    if (oldPassword === newPassword) {
+      setToast({
+        type: "error",
+        message: "New password cannot be the same as your current password.",
+      });
+      return;
+    }
+    if (!isNewPasswordStrong) {
+      setToast({
+        type: "error",
+        message: "Password does not meet strength requirements (8+ chars, upper, lower, number, symbol).",
+      });
+      return;
+    }
+    if (newPassword !== confirmPassword) {
+      setToast({
+        type: "error",
+        message: "New password and confirmation do not match.",
+      });
+      return;
+    }
+
+    setIsUpdatingPassword(true);
+    setToast(null);
+
+    try {
+      const res = await axios.patch(
+        `${BASE_URL}/profile/password`,
+        { oldPassword, newPassword },
+        { withCredentials: true }
+      );
+      setOldPassword("");
+      setNewPassword("");
+      setConfirmPassword("");
+      setToast({
+        type: "success",
+        message: res.data?.message || "Password updated successfully!",
+      });
+      setTimeout(() => setToast(null), 3500);
+    } catch (err) {
+      const errorMsg =
+        err?.response?.data?.error ||
+        err?.response?.data?.message ||
+        "Failed to update password. Please check your current password.";
+      setToast({
+        type: "error",
+        message: typeof errorMsg === "string" ? errorMsg : JSON.stringify(errorMsg),
+      });
+      setTimeout(() => setToast(null), 4500);
+    } finally {
+      setIsUpdatingPassword(false);
+    }
+  };
 
   const handleAddSkill = (rawSkill) => {
     const trimmed = rawSkill.trim().replace(/,/g, "");
@@ -227,11 +330,11 @@ export default function Profile() {
         {/* Left Column: Segmented Form Tabs */}
         <div className="w-full min-w-0 bg-base-100 shadow-xl border border-base-content/10 p-4 sm:p-5 rounded-3xl flex flex-col justify-between h-full">
           {/* Segmented Controller */}
-          <div className="grid grid-cols-3 p-1 rounded-xl bg-base-200/80 border border-base-content/8 mb-3 text-xs font-semibold shrink-0">
+          <div className="grid grid-cols-4 p-1 rounded-xl bg-base-200/80 border border-base-content/8 mb-3 text-xs font-semibold shrink-0">
             <button
               type="button"
               onClick={() => setActiveTab("identity")}
-              className={`flex items-center justify-center gap-2 py-2.5 rounded-xl transition-all cursor-pointer ${
+              className={`flex items-center justify-center gap-1.5 py-2 rounded-xl transition-all cursor-pointer ${
                 activeTab === "identity"
                   ? "bg-base-100 text-primary shadow-xs font-bold"
                   : "text-base-content/70 hover:text-base-content"
@@ -243,7 +346,7 @@ export default function Profile() {
             <button
               type="button"
               onClick={() => setActiveTab("vision")}
-              className={`flex items-center justify-center gap-2 py-2.5 rounded-xl transition-all cursor-pointer ${
+              className={`flex items-center justify-center gap-1.5 py-2 rounded-xl transition-all cursor-pointer ${
                 activeTab === "vision"
                   ? "bg-base-100 text-primary shadow-xs font-bold"
                   : "text-base-content/70 hover:text-base-content"
@@ -255,18 +358,33 @@ export default function Profile() {
             <button
               type="button"
               onClick={() => setActiveTab("skills")}
-              className={`flex items-center justify-center gap-2 py-2.5 rounded-xl transition-all cursor-pointer ${
+              className={`flex items-center justify-center gap-1.5 py-2 rounded-xl transition-all cursor-pointer ${
                 activeTab === "skills"
                   ? "bg-base-100 text-primary shadow-xs font-bold"
                   : "text-base-content/70 hover:text-base-content"
               }`}
             >
               <Layers className="w-3.5 h-3.5 stroke-[2.3]" />
-              <span>Tech Stack</span>
+              <span>Skills</span>
+            </button>
+            <button
+              type="button"
+              onClick={() => setActiveTab("security")}
+              className={`flex items-center justify-center gap-1.5 py-2 rounded-xl transition-all cursor-pointer ${
+                activeTab === "security"
+                  ? "bg-base-100 text-primary shadow-xs font-bold"
+                  : "text-base-content/70 hover:text-base-content"
+              }`}
+            >
+              <ShieldCheck className="w-3.5 h-3.5 stroke-[2.3]" />
+              <span>Security</span>
             </button>
           </div>
 
-          <form onSubmit={handleSaveProfile} className="space-y-3 flex-1 flex flex-col justify-between">
+          <form
+            onSubmit={activeTab === "security" ? handleUpdatePassword : handleSaveProfile}
+            className="space-y-3 flex-1 flex flex-col justify-between"
+          >
             <div className="flex-1 flex flex-col justify-start">
               {/* Tab 1: Identity */}
               {activeTab === "identity" && (
@@ -487,60 +605,224 @@ export default function Profile() {
                 </div>
               </motion.div>
             )}
+
+            {/* Tab 4: Security & Password Update */}
+            {activeTab === "security" && (
+              <motion.div
+                initial={{ opacity: 0, x: -10 }}
+                animate={{ opacity: 1, x: 0 }}
+                transition={{ duration: 0.2 }}
+                className="space-y-2.5 sm:space-y-3 w-full"
+              >
+                <div>
+                  <label className="text-xs font-bold text-base-content/80 mb-1 block">
+                    Current Password <span className="text-error">*</span>
+                  </label>
+                  <div className="relative">
+                    <input
+                      type={showOldPassword ? "text" : "password"}
+                      required
+                      value={oldPassword}
+                      onChange={(e) => setOldPassword(e.target.value)}
+                      placeholder="Enter your current password"
+                      className="input input-sm input-bordered w-full rounded-xl pr-9 focus:input-primary text-sm font-medium"
+                    />
+                    <button
+                      type="button"
+                      onClick={() => setShowOldPassword(!showOldPassword)}
+                      className="absolute right-2.5 top-1/2 -translate-y-1/2 text-base-content/50 hover:text-base-content cursor-pointer"
+                      title={showOldPassword ? "Hide password" : "Show password"}
+                    >
+                      {showOldPassword ? <EyeOff className="w-3.5 h-3.5" /> : <Eye className="w-3.5 h-3.5" />}
+                    </button>
+                  </div>
+                </div>
+
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-2.5 sm:gap-3">
+                  <div>
+                    <label className="text-xs font-bold text-base-content/80 mb-1 block">
+                      New Password <span className="text-error">*</span>
+                    </label>
+                    <div className="relative">
+                      <input
+                        type={showNewPassword ? "text" : "password"}
+                        required
+                        value={newPassword}
+                        onChange={(e) => setNewPassword(e.target.value)}
+                        placeholder="New strong password"
+                        className="input input-sm input-bordered w-full rounded-xl pr-9 focus:input-primary text-sm font-medium"
+                      />
+                      <button
+                        type="button"
+                        onClick={() => setShowNewPassword(!showNewPassword)}
+                        className="absolute right-2.5 top-1/2 -translate-y-1/2 text-base-content/50 hover:text-base-content cursor-pointer"
+                        title={showNewPassword ? "Hide password" : "Show password"}
+                      >
+                        {showNewPassword ? <EyeOff className="w-3.5 h-3.5" /> : <Eye className="w-3.5 h-3.5" />}
+                      </button>
+                    </div>
+                  </div>
+
+                  <div>
+                    <label className="text-xs font-bold text-base-content/80 mb-1 block">
+                      Confirm Password <span className="text-error">*</span>
+                    </label>
+                    <div className="relative">
+                      <input
+                        type={showConfirmPassword ? "text" : "password"}
+                        required
+                        value={confirmPassword}
+                        onChange={(e) => setConfirmPassword(e.target.value)}
+                        placeholder="Re-type new password"
+                        className={`input input-sm input-bordered w-full rounded-xl pr-9 text-sm font-medium ${
+                          confirmPassword && confirmPassword !== newPassword
+                            ? "input-error"
+                            : "focus:input-primary"
+                        }`}
+                      />
+                      <button
+                        type="button"
+                        onClick={() => setShowConfirmPassword(!showConfirmPassword)}
+                        className="absolute right-2.5 top-1/2 -translate-y-1/2 text-base-content/50 hover:text-base-content cursor-pointer"
+                        title={showConfirmPassword ? "Hide password" : "Show password"}
+                      >
+                        {showConfirmPassword ? <EyeOff className="w-3.5 h-3.5" /> : <Eye className="w-3.5 h-3.5" />}
+                      </button>
+                    </div>
+                  </div>
+                </div>
+
+                {/* Password Strength Checklist */}
+                <div className="p-2.5 rounded-2xl bg-base-200/70 border border-base-content/10 text-[11px] space-y-1.5">
+                  <div className="flex items-center justify-between">
+                    <span className="font-bold text-base-content/80">Strength Requirements</span>
+                    <span className={`badge badge-xs font-mono font-bold ${isNewPasswordStrong ? "badge-success text-success-content" : "badge-neutral"}`}>
+                      {isNewPasswordStrong ? "Strong Password" : "Incomplete"}
+                    </span>
+                  </div>
+                  <div className="grid grid-cols-2 gap-x-2 gap-y-1 font-mono text-[10.5px]">
+                    <span className={passwordChecks.length ? "text-success flex items-center gap-1 font-bold" : "text-base-content/50 flex items-center gap-1"}>
+                      <Check className={`w-3 h-3 ${passwordChecks.length ? "stroke-[3]" : "opacity-30"}`} /> 8+ characters
+                    </span>
+                    <span className={passwordChecks.hasUpper ? "text-success flex items-center gap-1 font-bold" : "text-base-content/50 flex items-center gap-1"}>
+                      <Check className={`w-3 h-3 ${passwordChecks.hasUpper ? "stroke-[3]" : "opacity-30"}`} /> 1 uppercase
+                    </span>
+                    <span className={passwordChecks.hasLower ? "text-success flex items-center gap-1 font-bold" : "text-base-content/50 flex items-center gap-1"}>
+                      <Check className={`w-3 h-3 ${passwordChecks.hasLower ? "stroke-[3]" : "opacity-30"}`} /> 1 lowercase
+                    </span>
+                    <span className={passwordChecks.hasNumber && passwordChecks.hasSpecial ? "text-success flex items-center gap-1 font-bold" : "text-base-content/50 flex items-center gap-1"}>
+                      <Check className={`w-3 h-3 ${passwordChecks.hasNumber && passwordChecks.hasSpecial ? "stroke-[3]" : "opacity-30"}`} /> 1 num &amp; symbol
+                    </span>
+                  </div>
+                </div>
+              </motion.div>
+            )}
             </div>
 
             {/* Bottom Actions */}
-            <div className="flex flex-col sm:flex-row items-stretch sm:items-center justify-between gap-3 pt-3.5 sm:pt-4 mt-auto border-t border-base-content/8 shrink-0">
-              <button
-                type="button"
-                onClick={handleReset}
-                disabled={isSaving}
-                className="btn btn-sm btn-ghost gap-1.5 text-xs text-base-content/60 hover:text-base-content cursor-pointer order-2 sm:order-1 w-full sm:w-auto"
-              >
-                <RotateCcw className="w-3.5 h-3.5 stroke-[2.3]" />
-                <span>Reset to Saved</span>
-              </button>
+            <div className="flex flex-col sm:flex-row items-stretch sm:items-center justify-between gap-3 pt-3 sm:pt-3.5 mt-auto border-t border-base-content/8 shrink-0">
+              {activeTab === "security" ? (
+                <>
+                  <button
+                    type="button"
+                    onClick={() => {
+                      setOldPassword("");
+                      setNewPassword("");
+                      setConfirmPassword("");
+                    }}
+                    disabled={isUpdatingPassword}
+                    className="btn btn-sm btn-ghost gap-1.5 text-xs text-base-content/60 hover:text-base-content cursor-pointer order-2 sm:order-1 w-full sm:w-auto"
+                  >
+                    <RotateCcw className="w-3.5 h-3.5 stroke-[2.3]" />
+                    <span>Clear Fields</span>
+                  </button>
 
-              <div className="flex flex-col sm:flex-row items-stretch sm:items-center gap-2 order-1 sm:order-2 w-full sm:w-auto">
-                {activeTab === "identity" && (
+                  <div className="flex flex-col sm:flex-row items-stretch sm:items-center gap-2 order-1 sm:order-2 w-full sm:w-auto">
+                    <motion.button
+                      type="submit"
+                      disabled={isUpdatingPassword || !oldPassword || !newPassword || !confirmPassword}
+                      whileHover={{ y: -1 }}
+                      whileTap={{ scale: 0.97 }}
+                      transition={springTap}
+                      className="btn btn-sm btn-primary gap-2 text-xs shadow-md shadow-primary/20 cursor-pointer w-full sm:w-auto"
+                    >
+                      {isUpdatingPassword ? (
+                        <>
+                          <span className="loading loading-spinner loading-xs" />
+                          <span>Updating...</span>
+                        </>
+                      ) : (
+                        <>
+                          <KeyRound className="w-3.5 h-3.5 stroke-[2.5]" />
+                          <span>Update Password</span>
+                        </>
+                      )}
+                    </motion.button>
+                  </div>
+                </>
+              ) : (
+                <>
                   <button
                     type="button"
-                    onClick={() => setActiveTab("vision")}
-                    className="btn btn-sm btn-outline text-xs cursor-pointer w-full sm:w-auto text-center"
+                    onClick={handleReset}
+                    disabled={isSaving}
+                    className="btn btn-sm btn-ghost gap-1.5 text-xs text-base-content/60 hover:text-base-content cursor-pointer order-2 sm:order-1 w-full sm:w-auto"
                   >
-                    Next: Role &amp; Bio →
+                    <RotateCcw className="w-3.5 h-3.5 stroke-[2.3]" />
+                    <span>Reset to Saved</span>
                   </button>
-                )}
-                {activeTab === "vision" && (
-                  <button
-                    type="button"
-                    onClick={() => setActiveTab("skills")}
-                    className="btn btn-sm btn-outline text-xs cursor-pointer w-full sm:w-auto text-center"
-                  >
-                    Next: Skills &rarr;
-                  </button>
-                )}
-                <motion.button
-                  type="submit"
-                  disabled={isSaving}
-                  whileHover={{ y: -1 }}
-                  whileTap={{ scale: 0.97 }}
-                  transition={springTap}
-                  className="btn btn-sm btn-primary gap-2 text-xs shadow-md shadow-primary/20 cursor-pointer w-full sm:w-auto"
-                >
-                  {isSaving ? (
-                    <>
-                      <span className="loading loading-spinner loading-xs" />
-                      <span>Saving...</span>
-                    </>
-                  ) : (
-                    <>
-                      <Save className="w-3.5 h-3.5 stroke-[2.5]" />
-                      <span>Save Profile</span>
-                    </>
-                  )}
-                </motion.button>
-              </div>
+
+                  <div className="flex flex-col sm:flex-row items-stretch sm:items-center gap-2 order-1 sm:order-2 w-full sm:w-auto">
+                    {activeTab === "identity" && (
+                      <button
+                        type="button"
+                        onClick={() => setActiveTab("vision")}
+                        className="btn btn-sm btn-outline text-xs cursor-pointer w-full sm:w-auto text-center"
+                      >
+                        Next: Role &amp; Bio →
+                      </button>
+                    )}
+                    {activeTab === "vision" && (
+                      <button
+                        type="button"
+                        onClick={() => setActiveTab("skills")}
+                        className="btn btn-sm btn-outline text-xs cursor-pointer w-full sm:w-auto text-center"
+                      >
+                        Next: Skills &rarr;
+                      </button>
+                    )}
+                    {activeTab === "skills" && (
+                      <button
+                        type="button"
+                        onClick={() => setActiveTab("security")}
+                        className="btn btn-sm btn-outline text-xs cursor-pointer w-full sm:w-auto text-center"
+                      >
+                        Next: Security &rarr;
+                      </button>
+                    )}
+                    <motion.button
+                      type="submit"
+                      disabled={isSaving}
+                      whileHover={{ y: -1 }}
+                      whileTap={{ scale: 0.97 }}
+                      transition={springTap}
+                      className="btn btn-sm btn-primary gap-2 text-xs shadow-md shadow-primary/20 cursor-pointer w-full sm:w-auto"
+                    >
+                      {isSaving ? (
+                        <>
+                          <span className="loading loading-spinner loading-xs" />
+                          <span>Saving...</span>
+                        </>
+                      ) : (
+                        <>
+                          <Save className="w-3.5 h-3.5 stroke-[2.5]" />
+                          <span>Save Profile</span>
+                        </>
+                      )}
+                    </motion.button>
+                  </div>
+                </>
+              )}
             </div>
           </form>
         </div>
