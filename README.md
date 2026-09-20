@@ -142,4 +142,4 @@ npm run build
 **Ajay Panigrahi**
 - Website: [https://withorbit.tech](https://withorbit.tech)
 - GitHub: [@the-ajay-panigrahi](https://github.com/the-ajay-panigrahi)
-- LinkedIn: [Ajay Panigrahi](https://www.linkedin.com/in/theajaypanigrahi/)
+- LinkedIn: [Ajay Panigrahi](https://www.linkedin.com/in/ajay-panigrahi/)
