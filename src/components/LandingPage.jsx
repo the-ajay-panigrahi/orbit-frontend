@@ -27,6 +27,7 @@ import UserCard from "./UserCard";
 import Card3DZoomModal from "./Card3DZoomModal";
 import PlanCards from "./PlanCards";
 import HandDrawnArrow from "./HandDrawnArrow";
+import HandwrittenText from "./HandwrittenText";
 
 const FEATURED_THEMES = [
   "night",
@@ -406,22 +407,12 @@ export default function LandingPage() {
 
             <h1 className="text-4xl sm:text-5xl lg:text-6xl font-extrabold tracking-tight text-base-content leading-[1.15]">
               Find the people who{" "}
-              <span className="font-handwriting text-primary text-5xl sm:text-6xl lg:text-7xl font-bold not-italic inline-block tracking-wide relative px-1 rotate-[-1deg]">
-                move with you.
-                <svg
-                  className="absolute -bottom-2 left-0 w-full h-3.5 text-primary/50 overflow-visible"
-                  viewBox="0 0 200 12"
-                  fill="none"
-                  preserveAspectRatio="none"
-                >
-                  <path
-                    d="M 3 9 C 55 2, 130 11, 197 5"
-                    stroke="currentColor"
-                    strokeWidth="3.5"
-                    strokeLinecap="round"
-                  />
-                </svg>
-              </span>
+              <HandwrittenText
+                text="move with you."
+                className="text-primary text-5xl sm:text-6xl lg:text-7xl font-bold not-italic tracking-wide px-1 rotate-[-1deg]"
+                startDelay={0.35}
+                staggerSpeed={0.045}
+              />
             </h1>
 
             <p className="text-sm sm:text-base text-base-content/70 max-w-lg leading-relaxed">
