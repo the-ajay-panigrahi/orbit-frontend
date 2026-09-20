@@ -513,11 +513,11 @@ export default function LandingPage() {
               </div>
             </div>
 
-            <div className="relative w-full max-w-sm min-h-[440px] sm:min-h-[480px] flex items-center justify-center">
+            <div className="relative w-full max-w-sm h-[520px] sm:h-[540px] flex items-center justify-center">
               {nextUser && (
                 <div
                   key={nextUser._id}
-                  className="absolute inset-0 pointer-events-none flex justify-center"
+                  className="absolute inset-0 pointer-events-none flex justify-center h-full"
                   style={{
                     transform: isDragging
                       ? `scale(${Math.min(0.95 + Math.abs(dragOffset.x) * 0.0004, 1)}) translateY(${Math.max(12 - Math.abs(dragOffset.x) * 0.08, 0)}px)`
@@ -528,7 +528,7 @@ export default function LandingPage() {
                     zIndex: 10,
                   }}
                 >
-                  <UserCard user={nextUser} showActions={false} />
+                  <UserCard user={nextUser} showActions={false} className="h-full w-full" />
                 </div>
               )}
 
@@ -541,7 +541,7 @@ export default function LandingPage() {
                   onPointerUp={handlePointerUp}
                   onPointerCancel={handlePointerCancel}
                   style={cardStyle}
-                  className="relative w-full z-20 touch-none flex justify-center"
+                  className="relative w-full h-full z-20 touch-none flex justify-center"
                 >
                   {connectStampOpacity > 0 && (
                     <div
@@ -562,6 +562,7 @@ export default function LandingPage() {
                   <UserCard
                     user={currentUser}
                     showActions={true}
+                    className="h-full w-full"
                     onPass={() => triggerSwipeAction("left", currentUser)}
                     onConnect={() => triggerSwipeAction("right", currentUser)}
                   />

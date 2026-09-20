@@ -26,9 +26,9 @@ export default function HandDrawnArrow({
           xmlns="http://www.w3.org/2000/svg"
           className="text-primary/85 overflow-visible drop-shadow-xs"
         >
-          {/* Smooth organic curve flowing left-to-right with arch */}
+          {/* Smooth organic curve flowing left-to-right with arch, leveling out toward tip */}
           <path
-            d="M 8 36 C 36 12, 74 12, 112 26"
+            d="M 8 38 C 40 12, 75 26, 110 26"
             fill="none"
             stroke="currentColor"
             strokeWidth="3.2"
@@ -36,9 +36,9 @@ export default function HandDrawnArrow({
             strokeLinejoin="round"
             vectorEffect="non-scaling-stroke"
           />
-          {/* Crisp, unmistakable forward-pointing arrowhead with 20px right margin */}
+          {/* Crisp, unmistakable forward-pointing arrowhead with both wings clearly visible */}
           <path
-            d="M 98 18 L 114 26 L 99 34"
+            d="M 96 16 L 112 26 L 96 36"
             fill="none"
             stroke="currentColor"
             strokeWidth="3.2"
@@ -55,9 +55,9 @@ export default function HandDrawnArrow({
           xmlns="http://www.w3.org/2000/svg"
           className="text-primary/85 overflow-visible drop-shadow-xs"
         >
-          {/* Second connector with organic dip flowing left-to-right */}
+          {/* Second connector with organic dip flowing left-to-right, leveling out toward tip */}
           <path
-            d="M 8 18 C 38 40, 76 40, 112 25"
+            d="M 8 14 C 40 40, 75 26, 110 26"
             fill="none"
             stroke="currentColor"
             strokeWidth="3.2"
@@ -65,9 +65,9 @@ export default function HandDrawnArrow({
             strokeLinejoin="round"
             vectorEffect="non-scaling-stroke"
           />
-          {/* Crisp, unmistakable forward-pointing arrowhead with 20px right margin */}
+          {/* Crisp, unmistakable forward-pointing arrowhead with both wings clearly visible */}
           <path
-            d="M 98 17 L 114 25 L 99 33"
+            d="M 96 16 L 112 26 L 96 36"
             fill="none"
             stroke="currentColor"
             strokeWidth="3.2"

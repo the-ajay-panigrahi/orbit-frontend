@@ -235,20 +235,6 @@ export default function Profile() {
     setSkills((prev) => prev.filter((s) => s !== skillToRemove));
   };
 
-  const handleReset = () => {
-    if (!user) return;
-    setFirstName(user.firstName || "");
-    setLastName(user.lastName || "");
-    setAge(user.age || "");
-    setGender(user.gender || "");
-    setProfilePictureUrl(user.profilePictureUrl || "");
-    setLookingFor(user.lookingFor || "");
-    setAbout(user.about || "");
-    setSkills(user.skills || []);
-    setSkillInput("");
-    setToast(null);
-  };
-
   const handleSaveProfile = async (e) => {
     if (e) e.preventDefault();
     if (isSaving) return;
@@ -720,9 +706,9 @@ export default function Profile() {
             </div>
 
             {/* Bottom Actions */}
-            <div className="flex flex-col sm:flex-row items-stretch sm:items-center justify-between gap-3 pt-3.5 mt-auto border-t border-base-content/8 shrink-0">
+            <div className="flex items-center justify-end gap-2.5 pt-3.5 mt-auto border-t border-base-content/8 shrink-0">
               {activeTab === "security" ? (
-                <>
+                <div className="grid grid-cols-2 sm:flex sm:items-center sm:justify-end gap-2.5 w-full">
                   <button
                     type="button"
                     onClick={() => {
@@ -731,97 +717,84 @@ export default function Profile() {
                       setConfirmPassword("");
                     }}
                     disabled={isUpdatingPassword}
-                    className="btn btn-sm btn-ghost gap-1.5 text-xs text-base-content/60 hover:text-base-content cursor-pointer order-2 sm:order-1 w-full sm:w-auto"
+                    className="btn btn-sm btn-ghost gap-1.5 text-xs text-base-content/60 hover:text-base-content cursor-pointer w-full sm:w-auto"
                   >
                     <RotateCcw className="w-3.5 h-3.5 stroke-[2.3]" />
                     <span>Clear Fields</span>
                   </button>
-
-                  <div className="flex flex-wrap items-center justify-end gap-2 order-1 sm:order-2 w-full sm:w-auto">
-                    <motion.button
-                      type="submit"
-                      disabled={isUpdatingPassword || !oldPassword || !newPassword || !confirmPassword}
-                      whileHover={{ y: -1 }}
-                      whileTap={{ scale: 0.97 }}
-                      transition={springTap}
-                      className="btn btn-sm btn-primary gap-2 text-xs shadow-md shadow-primary/20 cursor-pointer w-full sm:w-auto shrink-0"
-                    >
-                      {isUpdatingPassword ? (
-                        <>
-                          <span className="loading loading-spinner loading-xs" />
-                          <span>Updating...</span>
-                        </>
-                      ) : (
-                        <>
-                          <KeyRound className="w-3.5 h-3.5 stroke-[2.5]" />
-                          <span>Update Password</span>
-                        </>
-                      )}
-                    </motion.button>
-                  </div>
-                </>
-              ) : (
-                <>
-                  <button
-                    type="button"
-                    onClick={handleReset}
-                    disabled={isSaving}
-                    className="btn btn-sm btn-ghost gap-1.5 text-xs text-base-content/60 hover:text-base-content cursor-pointer order-2 sm:order-1 w-full sm:w-auto"
+                  <motion.button
+                    type="submit"
+                    disabled={isUpdatingPassword || !oldPassword || !newPassword || !confirmPassword}
+                    whileHover={{ y: -1 }}
+                    whileTap={{ scale: 0.97 }}
+                    transition={springTap}
+                    className="btn btn-sm btn-primary gap-2 text-xs shadow-md shadow-primary/20 cursor-pointer w-full sm:w-auto"
                   >
-                    <RotateCcw className="w-3.5 h-3.5 stroke-[2.3]" />
-                    <span>Reset to Saved</span>
-                  </button>
-
-                  <div className="flex flex-wrap items-center justify-end gap-2 order-1 sm:order-2 w-full sm:w-auto">
-                    {activeTab === "identity" && (
-                      <button
-                        type="button"
-                        onClick={() => setActiveTab("vision")}
-                        className="btn btn-sm btn-outline text-xs cursor-pointer w-full sm:w-auto text-center"
-                      >
-                        Next: Role &amp; Bio →
-                      </button>
+                    {isUpdatingPassword ? (
+                      <>
+                        <span className="loading loading-spinner loading-xs" />
+                        <span>Updating...</span>
+                      </>
+                    ) : (
+                      <>
+                        <KeyRound className="w-3.5 h-3.5 stroke-[2.5]" />
+                        <span>Update Password</span>
+                      </>
                     )}
-                    {activeTab === "vision" && (
-                      <button
-                        type="button"
-                        onClick={() => setActiveTab("skills")}
-                        className="btn btn-sm btn-outline text-xs cursor-pointer w-full sm:w-auto text-center"
-                      >
-                        Next: Skills &rarr;
-                      </button>
-                    )}
-                    {activeTab === "skills" && (
-                      <button
-                        type="button"
-                        onClick={() => setActiveTab("security")}
-                        className="btn btn-sm btn-outline text-xs cursor-pointer w-full sm:w-auto text-center"
-                      >
-                        Next: Security &rarr;
-                      </button>
-                    )}
-                    <motion.button
-                      type="submit"
-                      disabled={isSaving}
-                      whileHover={{ y: -1 }}
-                      whileTap={{ scale: 0.97 }}
-                      transition={springTap}
-                      className="btn btn-sm btn-primary gap-2 text-xs shadow-md shadow-primary/20 cursor-pointer w-full sm:w-auto shrink-0"
+                  </motion.button>
+                </div>
+              ) : (
+                <div className="grid grid-cols-2 sm:flex sm:items-center sm:justify-end gap-2.5 w-full">
+                  {activeTab === "identity" && (
+                    <button
+                      type="button"
+                      onClick={() => setActiveTab("vision")}
+                      className="btn btn-sm btn-outline text-xs cursor-pointer w-full sm:w-auto text-center"
                     >
-                      {isSaving ? (
-                        <>
-                          <span className="loading loading-spinner loading-xs" />
-                          <span>Saving...</span>
-                        </>
-                      ) : (
-                        <>
-                          <Save className="w-3.5 h-3.5 stroke-[2.5]" />
-                          <span>Save Profile</span>
-                        </>
-                      )}
-                    </motion.button>
-                  </div>
-                </>
+                      Next: Role &amp; Bio →
+                    </button>
+                  )}
+                  {activeTab === "vision" && (
+                    <button
+                      type="button"
+                      onClick={() => setActiveTab("skills")}
+                      className="btn btn-sm btn-outline text-xs cursor-pointer w-full sm:w-auto text-center"
+                    >
+                      Next: Skills &rarr;
+                    </button>
+                  )}
+                  {activeTab === "skills" && (
+                    <button
+                      type="button"
+                      onClick={() => setActiveTab("security")}
+                      className="btn btn-sm btn-outline text-xs cursor-pointer w-full sm:w-auto text-center"
+                    >
+                      Next: Security &rarr;
+                    </button>
+                  )}
+                  <motion.button
+                    type="submit"
+                    disabled={isSaving}
+                    whileHover={{ y: -1 }}
+                    whileTap={{ scale: 0.97 }}
+                    transition={springTap}
+                    className={`btn btn-sm btn-primary gap-2 text-xs shadow-md shadow-primary/20 cursor-pointer w-full sm:w-auto ${
+                      activeTab === "security" ? "" : ""
+                    }`}
+                  >
+                    {isSaving ? (
+                      <>
+                        <span className="loading loading-spinner loading-xs" />
+                        <span>Saving...</span>
+                      </>
+                    ) : (
+                      <>
+                        <Save className="w-3.5 h-3.5 stroke-[2.5]" />
+                        <span>Save Profile</span>
+                      </>
+                    )}
+                  </motion.button>
+                </div>
               )}
             </div>
           </form>

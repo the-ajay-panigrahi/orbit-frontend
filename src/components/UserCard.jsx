@@ -70,7 +70,7 @@ export default function UserCard({
       </figure>
 
       {/* Card Body */}
-      <div className="card-body p-3.5 sm:p-4 gap-2 sm:gap-2.5 flex-1 flex flex-col justify-between">
+      <div className="card-body p-3.5 sm:p-4 gap-2 sm:gap-2.5 flex-1 flex flex-col justify-between min-h-0">
         {/* Name & Demographics */}
         <div>
           <div className="flex items-center justify-between gap-2">
@@ -115,13 +115,13 @@ export default function UserCard({
         </div>
 
         {/* Bio */}
-        <p className="text-xs sm:text-sm text-base-content/75 leading-relaxed break-words line-clamp-3">
+        <p className="text-xs sm:text-sm text-base-content/75 leading-relaxed break-words line-clamp-2">
           {about || "Building and discovering innovative projects on Orbit."}
         </p>
 
         {/* Tech Stack Chips */}
         {skills.length > 0 && (
-          <div className="flex flex-wrap gap-1.5 pt-0.5 max-h-20 overflow-y-auto">
+          <div className="flex flex-wrap gap-1.5 pt-0.5 max-h-16 overflow-hidden">
             {skills.map((skill, idx) => (
               <span
                 key={idx}
