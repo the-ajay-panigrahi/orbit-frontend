@@ -76,11 +76,13 @@ export default function Login() {
         navigate("/profile", { state: { welcome: true } });
       }
     } catch (err) {
-      hasSubmitted.current = false;
+      const rawErr = err?.response?.data?.error || err?.response?.data?.message || err?.message;
       setError(
-        err?.response?.data?.error ||
-          err?.response?.data?.message ||
-          "Authentication failed. Please check your details and try again.",
+        typeof rawErr === "string"
+          ? rawErr
+          : typeof rawErr === "object" && rawErr !== null
+            ? (rawErr.message || JSON.stringify(rawErr))
+            : "Authentication failed. Please check your details and try again."
       );
     } finally {
       setLoading(false);
@@ -105,11 +107,13 @@ export default function Login() {
       }
       navigate("/feed");
     } catch (err) {
-      hasSubmitted.current = false;
+      const rawErr = err?.response?.data?.error || err?.response?.data?.message || err?.message;
       setError(
-        err?.response?.data?.error ||
-          err?.response?.data?.message ||
-          "Demo login failed. Please try again."
+        typeof rawErr === "string"
+          ? rawErr
+          : typeof rawErr === "object" && rawErr !== null
+            ? (rawErr.message || JSON.stringify(rawErr))
+            : "Demo login failed. Please try again."
       );
     } finally {
       setLoading(false);
