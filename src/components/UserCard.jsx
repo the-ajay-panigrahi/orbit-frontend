@@ -121,19 +121,19 @@ export default function UserCard({
 
         {/* Tech Stack Chips */}
         {skills.length > 0 && (
-          <div className="flex flex-wrap items-center gap-1.5 pt-0.5">
-            {skills.slice(0, 4).map((skill, idx) => (
+          <div className="flex flex-nowrap items-center gap-1.5 pt-0.5 max-w-full overflow-hidden">
+            {skills.slice(0, 3).map((skill, idx) => (
               <span
                 key={idx}
-                className="badge badge-sm bg-base-200/80 hover:bg-primary/10 hover:text-primary transition-colors cursor-default text-base-content/75 font-mono text-[11px] border border-base-content/10 py-1.5 px-2 select-none"
+                className="badge badge-sm bg-base-200/80 hover:bg-primary/10 hover:text-primary transition-colors cursor-default text-base-content/75 font-mono text-[11px] border border-base-content/10 py-1.5 px-2 select-none truncate max-w-[110px] shrink-0"
                 title={`Skill: ${skill}`}
               >
                 {skill}
               </span>
             ))}
-            {skills.length > 4 && (
-              <span className="text-[11px] font-mono text-base-content/50 font-medium px-1 select-none">
-                +{skills.length - 4} more
+            {skills.length > 3 && (
+              <span className="text-[11px] font-mono text-base-content/50 font-medium px-1 select-none shrink-0">
+                +{skills.length - 3} more
               </span>
             )}
           </div>
@@ -144,13 +144,13 @@ export default function UserCard({
           {customActions ? (
             <div className="w-full">{customActions}</div>
           ) : showActions ? (
-            <div className="w-full flex items-center justify-center gap-8 px-4 py-0.5">
+            <div className="w-full flex items-center justify-between px-7 sm:px-9 py-0.5">
               <motion.button
                 onClick={onPass}
                 whileHover={{ scale: 1.08 }}
                 whileTap={{ scale: 0.92 }}
                 transition={springTap}
-                className="w-12 h-12 rounded-full flex items-center justify-center bg-base-200/70 hover:bg-error/10 text-base-content/50 hover:text-error border border-base-content/12 hover:border-error/30 transition-all duration-200 cursor-pointer shadow-2xs group"
+                className="w-12 h-12 rounded-full flex items-center justify-center bg-base-200/80 hover:bg-error/15 text-base-content/60 hover:text-error border border-base-content/15 hover:border-error/40 transition-all duration-200 cursor-pointer shadow-xs hover:shadow-md group active:scale-95"
                 aria-label="Pass"
                 title="Pass (Left Arrow)"
               >
@@ -162,7 +162,7 @@ export default function UserCard({
                 whileHover={{ scale: 1.08 }}
                 whileTap={{ scale: 0.92 }}
                 transition={springTap}
-                className="w-12 h-12 rounded-full flex items-center justify-center bg-primary text-primary-content hover:bg-primary/90 border border-primary/20 transition-all duration-200 cursor-pointer shadow-md shadow-primary/20 group"
+                className="w-12 h-12 rounded-full flex items-center justify-center bg-primary text-primary-content hover:bg-primary/90 border border-primary/25 transition-all duration-200 cursor-pointer shadow-md shadow-primary/25 hover:shadow-lg hover:shadow-primary/35 group active:scale-95"
                 aria-label="Connect"
                 title="Connect (Right Arrow)"
               >

@@ -467,13 +467,13 @@ export default function Profile() {
               >
                 <div>
                   <label className="text-xs font-bold text-base-content/80 mb-1.5 block">
-                    What are you looking to build?
+                    Whom are you seeking?
                   </label>
                   <input
                     type="text"
                     value={lookingFor}
                     onChange={(e) => setLookingFor(e.target.value)}
-                    placeholder="e.g. Co-founders for AI DevTools, Early Engineers"
+                    placeholder="e.g. Technical Co-founder, Founding Engineer, Product Designer"
                     maxLength={100}
                     className="input input-sm input-bordered w-full rounded-xl focus:input-primary text-sm font-medium"
                   />
