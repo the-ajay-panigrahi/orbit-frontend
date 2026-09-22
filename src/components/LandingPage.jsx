@@ -54,7 +54,7 @@ const MOCK_FOUNDERS = [
       "20, Engineer | Learning, Building, and Designing Systems with Clarity",
     lookingFor: "Full-stack Builder",
     skills: ["React", "Node.js", "TypeScript", "Next.js"],
-    profilePictureUrl: "/default-avatar.svg",
+    profilePictureUrl: "/harsh-profile.jpg",
     membershipType: "pro",
     defaultAction: "right",
   },
