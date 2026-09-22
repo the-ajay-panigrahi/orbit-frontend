@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { RotateCcw, Sparkles, Compass, Maximize2 } from "lucide-react";
+import { RotateCcw, Sparkles, Compass, Maximize2, ArrowUpRight } from "lucide-react";
 import { motion } from "motion/react";
 import { useFeed } from "../hooks/useFeed";
 import UserCard from "./UserCard";
@@ -101,7 +101,10 @@ export default function Feed() {
   const translateY = flyDirection ? 40 : dragOffset.y;
 
   const cardStyle = {
-    transform: `translate3d(${translateX}px, ${translateY}px, 0) rotate(${rotationDeg}deg)`,
+    transform:
+      isDragging || flyDirection
+        ? `translate3d(${translateX}px, ${translateY}px, 0) rotate(${rotationDeg}deg)`
+        : "none",
     transition: isDragging
       ? "none"
       : "transform 0.28s cubic-bezier(0.25, 1, 0.5, 1), opacity 0.25s ease",
@@ -122,7 +125,7 @@ export default function Feed() {
       : 0;
 
   return (
-    <div className="flex-1 flex flex-col items-center justify-center p-2 sm:p-4 pb-16 sm:pb-4 select-none relative overflow-hidden">
+    <div className="flex-1 flex flex-col items-center justify-center px-4 sm:px-6 py-3 sm:py-6 pb-20 sm:pb-6 select-none relative overflow-hidden w-full">
       {toastMessage && (
         <div className="toast toast-top toast-center z-50 transition-all duration-300">
           <div className="alert alert-neutral py-2 px-4 shadow-xl border border-base-content/10 text-xs font-medium flex items-center gap-2">
@@ -132,7 +135,7 @@ export default function Feed() {
         </div>
       )}
 
-      <div className="relative w-full max-w-sm flex items-center justify-center">
+      <div className="relative w-full max-w-[360px] xs:max-w-[370px] sm:max-w-sm mx-auto flex items-center justify-center">
         {nextUser && (
           <div
             key={nextUser._id}
@@ -181,29 +184,30 @@ export default function Feed() {
             showActions={true}
             onPass={() => triggerSwipeAction("left", currentUser)}
             onConnect={() => triggerSwipeAction("right", currentUser)}
+            onExpand={() => setIsZoomOpen(true)}
           />
         </div>
       </div>
 
       {/* Floating Glass Controls Dock */}
-      <div className="hidden sm:flex items-center gap-2 mt-4 p-1 px-3.5 rounded-full bg-base-100/90 backdrop-blur-md border border-base-content/10 shadow-xs text-xs font-mono text-base-content/65">
-        <div className="flex items-center gap-1">
+      <div className="flex items-center gap-2 mt-3 p-1 px-3.5 rounded-full bg-base-100/90 backdrop-blur-md border border-base-content/10 shadow-xs text-xs font-mono text-base-content/65">
+        <div className="hidden xs:flex items-center gap-1">
           <kbd className="kbd kbd-xs bg-base-200 text-base-content font-bold">←</kbd>
           <span>Pass</span>
         </div>
-        <span className="opacity-25">•</span>
-        <div className="flex items-center gap-1">
+        <span className="hidden xs:inline opacity-25">•</span>
+        <div className="hidden xs:flex items-center gap-1">
           <kbd className="kbd kbd-xs bg-base-200 text-base-content font-bold">→</kbd>
           <span>Connect</span>
         </div>
-        <span className="opacity-25">•</span>
+        <span className="hidden xs:inline opacity-25">•</span>
         <button
           onClick={() => setIsZoomOpen(true)}
           className="flex items-center gap-1 text-primary hover:text-primary/80 font-sans font-semibold cursor-pointer transition-colors"
-          title="Inspect in 3D Modal"
+          title="Inspect full profile details"
         >
-          <Maximize2 className="w-3 h-3 stroke-[2.5]" />
-          <span>3D Zoom</span>
+          <ArrowUpRight className="w-3.5 h-3.5 stroke-[2.5]" />
+          <span>View Details</span>
         </button>
       </div>
 

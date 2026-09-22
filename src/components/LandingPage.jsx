@@ -479,8 +479,8 @@ export default function LandingPage() {
           {/* Right Column: Interactive Card Deck */}
           <motion.div
             className="lg:col-span-5 flex flex-col items-center justify-center select-none w-full max-w-md mx-auto"
-            initial={{ opacity: 0, scale: 0.95 }}
-            animate={{ opacity: 1, scale: 1 }}
+            initial={{ opacity: 0, y: 16 }}
+            animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.6, delay: 0.1, ease: "easeOut" }}
             onMouseEnter={() => setIsHovered(true)}
             onMouseLeave={() => setIsHovered(false)}
@@ -537,6 +537,7 @@ export default function LandingPage() {
                     className="w-full"
                     onPass={() => triggerSwipeAction("left", currentUser)}
                     onConnect={() => triggerSwipeAction("right", currentUser)}
+                    onExpand={() => setIsZoomOpen(true)}
                   />
                 </div>
               )}
