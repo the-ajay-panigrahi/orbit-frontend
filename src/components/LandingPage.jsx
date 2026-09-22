@@ -485,49 +485,7 @@ export default function LandingPage() {
             onMouseEnter={() => setIsHovered(true)}
             onMouseLeave={() => setIsHovered(false)}
           >
-            <div className="w-full max-w-sm flex items-center justify-between px-2 mb-3 text-xs font-mono text-base-content/50">
-              <span className="flex items-center gap-1.5">
-                <span className="relative flex h-2 w-2">
-                  {isAutoplay && !isHovered ? (
-                    <>
-                      <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-primary opacity-75" />
-                      <span className="relative inline-flex rounded-full h-2 w-2 bg-primary" />
-                    </>
-                  ) : (
-                    <span className="relative inline-flex rounded-full h-2 w-2 bg-base-content/30" />
-                  )}
-                </span>
-                <span>
-                  {isHovered
-                    ? "Paused on hover"
-                    : isAutoplay
-                      ? "Auto-play demo"
-                      : "Demo paused"}
-                </span>
-              </span>
-
-              <div className="flex items-center gap-2">
-                <span className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full bg-base-200/80 text-base-content border border-base-content/15 text-xs font-semibold tracking-wide shadow-2xs select-none">
-                  <span className="w-1.5 h-1.5 rounded-full bg-primary shrink-0" />
-                  <span>Demo</span>
-                </span>
-                <span>•</span>
-                <button
-                  onClick={() => setIsAutoplay((prev) => !prev)}
-                  className="hover:text-base-content flex items-center gap-1 text-[11px] cursor-pointer"
-                  title={isAutoplay ? "Pause auto demo" : "Resume auto demo"}
-                >
-                  {isAutoplay ? (
-                    <Pause className="w-3 h-3" />
-                  ) : (
-                    <Play className="w-3 h-3" />
-                  )}
-                  <span>{isAutoplay ? "Pause" : "Play"}</span>
-                </button>
-              </div>
-            </div>
-
-            <div className="relative w-full max-w-sm h-[520px] sm:h-[540px] flex items-center justify-center">
+            <div className="relative w-full max-w-sm flex items-center justify-center">
               {nextUser && (
                 <div
                   key={nextUser._id}
@@ -542,7 +500,7 @@ export default function LandingPage() {
                     zIndex: 10,
                   }}
                 >
-                  <UserCard user={nextUser} showActions={false} className="h-full w-full" />
+                  <UserCard user={nextUser} showActions={false} className="w-full" />
                 </div>
               )}
 
@@ -555,7 +513,7 @@ export default function LandingPage() {
                   onPointerUp={handlePointerUp}
                   onPointerCancel={handlePointerCancel}
                   style={cardStyle}
-                  className="relative w-full h-full z-20 touch-none flex justify-center"
+                  className="relative w-full z-20 touch-none flex justify-center"
                 >
                   {connectStampOpacity > 0 && (
                     <div
@@ -576,39 +534,12 @@ export default function LandingPage() {
                   <UserCard
                     user={currentUser}
                     showActions={true}
-                    className="h-full w-full"
+                    className="w-full"
                     onPass={() => triggerSwipeAction("left", currentUser)}
                     onConnect={() => triggerSwipeAction("right", currentUser)}
                   />
                 </div>
               )}
-            </div>
-
-            {/* Floating Glass Controls Dock */}
-            <div className="hidden sm:flex items-center gap-1.5 mt-3 p-1 px-3.5 rounded-full bg-base-100/90 backdrop-blur-md border border-base-content/10 shadow-xs text-xs font-mono text-base-content/65">
-              <div className="flex items-center gap-1 px-1">
-                <kbd className="kbd kbd-xs bg-base-200 text-base-content font-bold">←</kbd>
-                <span>Pass</span>
-              </div>
-              <span className="opacity-25">•</span>
-              <div className="flex items-center gap-1 px-1">
-                <kbd className="kbd kbd-xs bg-base-200 text-base-content font-bold">→</kbd>
-                <span>Connect</span>
-              </div>
-              <span className="opacity-25">•</span>
-              <div className="flex items-center gap-1 px-1">
-                <kbd className="kbd kbd-xs bg-base-200 text-base-content font-bold">Space</kbd>
-                <span>{isAutoplay ? "Pause" : "Play"}</span>
-              </div>
-              <span className="opacity-25">•</span>
-              <button
-                onClick={() => setIsZoomOpen(true)}
-                className="flex items-center gap-1 px-1 text-primary hover:text-primary/80 font-sans font-semibold cursor-pointer transition-colors"
-                title="Inspect in 3D Modal"
-              >
-                <Maximize2 className="w-3 h-3 stroke-[2.5]" />
-                <span>3D Zoom</span>
-              </button>
             </div>
           </motion.div>
         </div>

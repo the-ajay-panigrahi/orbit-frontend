@@ -26,10 +26,10 @@ export default function UserCard({
 
   const maxWidthClass = className.includes("max-w-") ? "" : "max-w-sm";
   const tierCardClass = isPremium
-    ? "border-2 border-amber-500/50 shadow-amber-500/10 hover:border-amber-500/80"
+    ? "border border-amber-500/35 shadow-md shadow-amber-500/5 hover:border-amber-500/60"
     : isPro
-      ? "border-2 border-primary/40 shadow-primary/10 hover:border-primary/70"
-      : "border border-base-content/10 hover:border-primary/30";
+      ? "border border-primary/30 shadow-md shadow-primary/5 hover:border-primary/55"
+      : "border border-base-content/12 shadow-sm hover:border-base-content/25";
 
   return (
     <div
@@ -37,7 +37,7 @@ export default function UserCard({
     >
       {/* Photo with Overlay Badges */}
       <figure className="p-3 pb-0 relative">
-        <div className="w-full h-48 sm:h-56 rounded-2xl bg-base-200 text-base-content flex items-center justify-center overflow-hidden border border-base-content/8 relative group">
+        <div className="w-full h-44 sm:h-50 rounded-2xl bg-base-200 text-base-content flex items-center justify-center overflow-hidden border border-base-content/8 relative group">
           <img
             src={profilePictureUrl}
             alt={fullName}
@@ -121,56 +121,57 @@ export default function UserCard({
 
         {/* Tech Stack Chips */}
         {skills.length > 0 && (
-          <div className="flex flex-wrap gap-1.5 pt-0.5 max-h-16 overflow-hidden">
-            {skills.map((skill, idx) => (
+          <div className="flex flex-wrap items-center gap-1.5 pt-0.5">
+            {skills.slice(0, 4).map((skill, idx) => (
               <span
                 key={idx}
-                className="badge badge-sm bg-base-200/80 hover:bg-primary/15 hover:text-primary transition-colors cursor-default text-base-content/80 font-mono border border-base-content/8 py-2 px-2 select-none"
+                className="badge badge-sm bg-base-200/80 hover:bg-primary/10 hover:text-primary transition-colors cursor-default text-base-content/75 font-mono text-[11px] border border-base-content/10 py-1.5 px-2 select-none"
                 title={`Skill: ${skill}`}
               >
                 {skill}
               </span>
             ))}
+            {skills.length > 4 && (
+              <span className="text-[11px] font-mono text-base-content/50 font-medium px-1 select-none">
+                +{skills.length - 4} more
+              </span>
+            )}
           </div>
         )}
 
         {/* Actions Area */}
-        <div className="card-actions justify-center items-center mt-2 pt-3 border-t border-base-content/8">
+        <div className="card-actions justify-center items-center mt-1 pt-2.5 border-t border-base-content/8">
           {customActions ? (
             <div className="w-full">{customActions}</div>
           ) : showActions ? (
-            <div className="w-full flex items-center justify-around px-4">
+            <div className="w-full flex items-center justify-center gap-8 px-4 py-0.5">
               <motion.button
                 onClick={onPass}
-                whileHover={{ scale: 1.12 }}
-                whileTap={{ scale: 0.9 }}
+                whileHover={{ scale: 1.08 }}
+                whileTap={{ scale: 0.92 }}
                 transition={springTap}
-                className="btn btn-circle btn-md btn-outline border-error/30 text-error hover:bg-error hover:text-error-content hover:border-error transition-colors cursor-pointer shadow-xs"
+                className="w-12 h-12 rounded-full flex items-center justify-center bg-base-200/70 hover:bg-error/10 text-base-content/50 hover:text-error border border-base-content/12 hover:border-error/30 transition-all duration-200 cursor-pointer shadow-2xs group"
                 aria-label="Pass"
                 title="Pass (Left Arrow)"
               >
-                <X className="w-5 h-5 stroke-[2.5]" />
+                <X className="w-5 h-5 stroke-[2.2] transition-transform duration-200 group-hover:rotate-90" />
               </motion.button>
-
-              <div className="text-[10px] font-mono text-base-content/40 uppercase tracking-widest">
-                Swipe / Tap
-              </div>
 
               <motion.button
                 onClick={onConnect}
-                whileHover={{ scale: 1.12 }}
-                whileTap={{ scale: 0.9 }}
+                whileHover={{ scale: 1.08 }}
+                whileTap={{ scale: 0.92 }}
                 transition={springTap}
-                className="btn btn-circle btn-md btn-primary shadow-lg shadow-primary/25 cursor-pointer"
+                className="w-12 h-12 rounded-full flex items-center justify-center bg-primary text-primary-content hover:bg-primary/90 border border-primary/20 transition-all duration-200 cursor-pointer shadow-md shadow-primary/20 group"
                 aria-label="Connect"
                 title="Connect (Right Arrow)"
               >
-                <Heart className="w-5 h-5 stroke-[2.5] fill-current" />
+                <Heart className="w-5 h-5 stroke-[2] fill-current transition-transform duration-200 group-hover:scale-110" />
               </motion.button>
             </div>
           ) : (
-            <div className="w-full flex items-center justify-center">
-              <span className="badge badge-sm badge-primary badge-outline font-mono text-xs gap-1.5 py-2 px-3">
+            <div className="w-full flex items-center justify-center py-0.5">
+              <span className="badge badge-sm badge-ghost font-mono text-[11px] gap-1.5 py-1.5 px-3 border-base-content/15">
                 <span className="w-1.5 h-1.5 rounded-full bg-primary animate-pulse" />
                 Live Preview
               </span>
