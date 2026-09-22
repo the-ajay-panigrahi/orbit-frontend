@@ -46,7 +46,11 @@ export default function UserCard({
             fetchpriority="high"
             loading="eager"
             style={{ objectPosition: "center 18%" }}
-            className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-[1.02]"
+            className={`w-full h-full transition-transform duration-500 group-hover:scale-[1.02] ${
+              profilePictureUrl === "/default-avatar.svg"
+                ? "object-contain p-6 opacity-70"
+                : "object-cover"
+            }`}
             onError={(e) => {
               e.target.src = "/default-avatar.svg";
             }}

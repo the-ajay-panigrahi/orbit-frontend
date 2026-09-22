@@ -45,6 +45,20 @@ const FEATURED_THEMES = [
 
 const MOCK_FOUNDERS = [
   {
+    _id: "demo-founder-harsh",
+    firstName: "Harsh",
+    lastName: "Guleria",
+    age: 20,
+    gender: "male",
+    about:
+      "20, Engineer | Learning, Building, and Designing Systems with Clarity",
+    lookingFor: "Full-stack Builder",
+    skills: ["React", "Node.js", "TypeScript", "Next.js"],
+    profilePictureUrl: "/default-avatar.svg",
+    membershipType: "pro",
+    defaultAction: "right",
+  },
+  {
     _id: "demo-founder-1",
     firstName: "Sarah",
     lastName: "Guo",
