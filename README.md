@@ -7,7 +7,7 @@ A modern developer networking and collaboration platform for tech founders, soft
 ## Live Deployment
 
 - **Production URL:** [https://withorbit.tech/](https://withorbit.tech/)
-- **API Base URL:** `https://withorbit.tech/api`
+- **API Base URL:** `https://api.withorbit.tech`
 
 > [!NOTE]
 > **Production Deployment & Cloud Hosting Notice**
