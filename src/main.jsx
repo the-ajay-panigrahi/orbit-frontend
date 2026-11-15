@@ -9,3 +9,5 @@ createRoot(document.getElementById("root")).render(
     <App />
   </Provider>,
 );
+
+import "./ui-refresh.css";
